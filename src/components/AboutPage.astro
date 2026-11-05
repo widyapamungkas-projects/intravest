@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { routePath, type Locale } from '../i18n';
+import { aboutCopy } from '../about-copy';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = aboutCopy[locale];
+const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
+
+const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border';
+---
+
+<BaseLayout locale={locale} title={c.metaTitle} description={c.description} waHref={wa}>
+  <header class={`${wrap} pb-14 pt-14 sm:pb-20 sm:pt-20`}>
+    <p class="text-sm font-medium uppercase tracking-[0.18em] text-accent">{c.eyebrow}</p>
+    <h1 class="mt-4 max-w-[19ch] text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.title}</h1>
+    <p class="mt-6 max-w-[64ch] text-lg text-muted">{c.intro}</p>
+  </header>
+
+  <section class="border-t border-border">
+    <div class={`${wrap} grid gap-10 py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20`}>
+      <h2 class="text-balance text-2xl font-semibold sm:text-3xl">{c.storyTitle}</h2>
+      <div class="space-y-5 text-muted">
+        {c.storyBody.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-surface-2">
+    <div class={`${wrap} py-16 sm:py-20`}>
+      <h2 class="max-w-[24ch] text-balance text-2xl font-semibold sm:text-3xl">{c.principlesTitle}</h2>
+      <ul class="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2">
+        {c.principles.map((item) => (
+          <li class="border-t border-border pt-5">
+            <h3 class="text-lg font-medium">{item.title}</h3>
+            <p class="mt-2 text-muted">{item.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class={`${wrap} grid gap-10 py-16 sm:py-20 lg:grid-cols-[1fr_1fr] lg:gap-20`}>
+      <div>
+        <h2 class="max-w-[22ch] text-balance text-2xl font-semibold sm:text-3xl">{c.operationsTitle}</h2>
+        <p class="mt-4 text-muted">{c.operationsIntro}</p>
+      </div>
+      <div>
+        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {c.destinations.map((destination) => (
+            <li class="rounded-md border border-border bg-surface px-4 py-3 font-medium">{destination}</li>
+          ))}
+        </ul>
+        <p class="mt-6 text-sm text-muted">{c.note}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-border bg-accent-soft">
+    <div class={`${wrap} py-14 sm:py-16`}>
+      <p class="text-sm font-medium uppercase tracking-[0.16em] text-accent">{c.promiseTitle}</p>
+      <p class="mt-3 max-w-[56ch] text-balance text-2xl font-medium leading-snug sm:text-3xl">{c.promiseBody}</p>
+    </div>
+  </section>
+
+  <section class="border-t border-border">
+    <div class={`${wrap} py-16 sm:py-20`}>
+      <h2 class="max-w-[24ch] text-balance text-2xl font-semibold sm:text-3xl">{c.ctaTitle}</h2>
+      <p class="mt-3 text-muted">{c.ctaBody}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={routePath(locale, 'custom-trip')} class={btnPrimary}>{c.ctaPrimary}</a>
+        <a href={routePath(locale, 'destinations')} class={btnSecondary}>{c.ctaSecondary}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
