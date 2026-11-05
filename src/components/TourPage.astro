@@ -1,0 +1,235 @@
+---
+import { getEntry, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from './Placeholder.astro';
+import { localizedPath, routePath, type Locale } from '../i18n';
+import { site, whatsappLink } from '../site';
+import { durationLabel, formatIDR, tourCopy, tourSlug } from '../tour-copy';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'tours'>;
+}
+const { locale, entry } = Astro.props;
+const c = tourCopy[locale].page;
+const f = c.form;
+const d = entry.data;
+const slug = tourSlug(entry.id);
+const { Content } = await render(entry);
+
+const destination = await getEntry('destinations', `${locale}/${d.destination}`);
+const duration = durationLabel(locale, d.days, d.nights);
+const wa = whatsappLink(c.waMessage(d.code, d.title, duration));
+const pageUrl = new URL(routePath(locale, 'tours', slug), Astro.site).href;
+
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
+const field =
+  'mt-1 block min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text placeholder:text-muted disabled:opacity-50';
+const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
+
+// Structured data. schema.org has no "TourPackage" type; TouristTrip is the closest fit.
+// An unconfirmed (draft) price is left out of the structured data on purpose.
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristTrip',
+  name: `${d.title} (${d.code})`,
+  description: d.summary,
+  url: pageUrl,
+  provider: { '@type': 'TravelAgency', name: site.name, url: new URL(localizedPath(locale, '/'), Astro.site).href },
+  itinerary: {
+    '@type': 'ItemList',
+    itemListElement: d.itinerary.map((day, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: day.title,
+      description: day.plan.join('. '),
+    })),
+  },
+  ...(d.priceIsDraft
+    ? {}
+    : { offers: { '@type': 'Offer', price: d.priceIDR, priceCurrency: 'IDR', url: pageUrl } }),
+};
+---
+
+<BaseLayout locale={locale} title={c.metaTitle(d.title, d.code)} description={d.summary}>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+
+  <article>
+    <header class={`${wrap} pt-14 sm:pt-20`}>
+      <nav aria-label="Breadcrumb">
+        <a
+          href={routePath(locale, 'tours')}
+          class="inline-flex min-h-11 items-center rounded-md text-muted hover:text-text hover:underline"
+        >
+          {c.crumb}
+        </a>
+      </nav>
+      <p class="text-muted">
+        {d.code} · {duration}
+        {
+          destination && (
+            <>
+              {' · '}
+              <a href={routePath(locale, 'destinations', d.destination)} class="hover:text-text hover:underline">
+                {destination.data.title}
+              </a>
+            </>
+          )
+        }
+      </p>
+      <h1 class="mt-1 text-balance text-4xl font-semibold leading-tight sm:text-5xl">{d.title}</h1>
+      <p class="mt-4 max-w-[48ch] text-lg text-muted">{d.summary}</p>
+
+      <p class="mt-6">
+        <span class="text-muted">{c.from}</span>
+        <span class="ml-1 text-2xl font-semibold">{formatIDR(locale, d.priceIDR)}</span>
+        <span class="text-muted"> {c.perPerson}</span>
+      </p>
+      {d.priceIsDraft && <p class="mt-1 text-sm text-muted">{c.draftPrice}</p>}
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
+        <a href={routePath(locale, 'custom-trip')} class={btnSecondary}>{c.customTrip}</a>
+      </div>
+      <Placeholder label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8]" />
+    </header>
+
+    <!-- Overview (MDX body) -->
+    <section class={`${wrap} py-12 sm:py-16`}>
+      <div class="max-w-[68ch] space-y-4 text-lg">
+        <Content />
+      </div>
+    </section>
+
+    <!-- Itinerary -->
+    <section class="border-t border-border">
+      <div class={`${wrap} py-12 sm:py-16`}>
+        <h2 class="text-2xl font-semibold">{c.itinerary}</h2>
+        <ol class="mt-8 space-y-10">
+          {
+            d.itinerary.map((day, i) => (
+              <li class="grid gap-3 md:grid-cols-[1fr_2fr] md:gap-12">
+                <div>
+                  <p class="text-sm font-medium text-accent">{c.day(i + 1)}</p>
+                  <h3 class="mt-1 text-xl font-semibold">{day.title}</h3>
+                </div>
+                <div>
+                  <ul class="list-disc space-y-1 pl-5">
+                    {day.plan.map((p) => (
+                      <li>{p}</li>
+                    ))}
+                  </ul>
+                  <dl class="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                    <dt class="text-muted">{c.meals}</dt>
+                    <dd>{day.meals}</dd>
+                    {day.stay && (
+                      <>
+                        <dt class="text-muted">{c.stay}</dt>
+                        <dd>{day.stay}</dd>
+                      </>
+                    )}
+                  </dl>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- Inclusions / exclusions -->
+    <section class="border-t border-border">
+      <div class={`${wrap} grid gap-10 py-12 sm:py-16 md:grid-cols-2 md:gap-12`}>
+        <div>
+          <h2 class="text-xl font-semibold">{c.inclusions}</h2>
+          <ul class="mt-4 list-disc space-y-2 pl-5">
+            {d.inclusions.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold">{c.exclusions}</h2>
+          <ul class="mt-4 list-disc space-y-2 pl-5">
+            {d.exclusions.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Price -->
+    <section class="border-t border-border">
+      <div class={`${wrap} py-12 sm:py-16`}>
+        <h2 class="text-xl font-semibold">{c.price}</h2>
+        <p class="mt-3">
+          <span class="text-2xl font-semibold">{formatIDR(locale, d.priceIDR)}</span>
+          <span class="text-muted"> {c.perPerson}</span>
+        </p>
+        <p class="mt-1 text-muted">{d.priceNote ?? c.minPax(d.minPax)}</p>
+        {d.priceIsDraft && <p class="mt-1 text-sm text-muted">{c.draftPrice}</p>}
+        <p class="mt-4 max-w-[68ch]">{c.priceIntro}</p>
+      </div>
+    </section>
+  </article>
+
+  <!-- Inquiry form + WhatsApp -->
+  <section id="inquiry" class="border-t border-border bg-surface-2">
+    <div class={`${wrap} grid gap-10 py-16 sm:py-20 md:grid-cols-[1fr_1.2fr] md:gap-16`}>
+      <div>
+        <h2 class="text-balance text-2xl font-semibold leading-tight sm:text-3xl">{f.title}</h2>
+        <p class="mt-3 text-muted">{f.intro}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
+          <a href={`mailto:${site.email}`} class={btnSecondary}>{site.email}</a>
+        </div>
+      </div>
+
+      <form method="POST" action={site.forms.tour} class="space-y-5">
+        <input type="hidden" name="package" value={`${d.code} ${d.title}`} />
+        <input type="hidden" name="_subject" value={`Tour inquiry: ${d.code} ${d.title}`} />
+        <!-- Honeypot: real visitors never see or fill this -->
+        <div hidden>
+          <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div>
+          <label for="tour-name" class="font-medium">{f.name}</label>
+          <input id="tour-name" name="name" type="text" required autocomplete="name" class={field} />
+        </div>
+        <div>
+          <label for="tour-email" class="font-medium">{f.email}</label>
+          <input id="tour-email" name="email" type="email" required autocomplete="email" class={field} />
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="tour-date" class="font-medium">{f.date}</label>
+            <input id="tour-date" name="travel_date" type="date" aria-describedby="tour-date-hint" class={field} />
+            <p id="tour-date-hint" class="mt-1 text-sm text-muted">{f.dateHint}</p>
+          </div>
+          <div>
+            <label for="tour-pax" class="font-medium">{f.pax}</label>
+            <input
+              id="tour-pax"
+              name="pax"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="50"
+              value={d.minPax}
+              required
+              class={field}
+            />
+          </div>
+        </div>
+        <div>
+          <label for="tour-notes" class="font-medium">{f.notes}</label>
+          <textarea id="tour-notes" name="notes" rows="4" aria-describedby="tour-notes-hint" class={field}></textarea>
+          <p id="tour-notes-hint" class="mt-1 text-sm text-muted">{f.notesHint}</p>
+        </div>
+        <button type="submit" class={btnPrimary}>{f.submit}</button>
+        <p class="text-sm text-muted">{f.privacy}</p>
+      </form>
+    </div>
+  </section>
+</BaseLayout>

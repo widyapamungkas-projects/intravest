@@ -14,7 +14,6 @@ interface DestCopy {
     cta: string;
     customTrip: string;
     packagesTitle: string;
-    packagesEmpty: (name: string) => string;
     packagesLink: string;
     ctaTitle: (name: string) => string;
     ctaSub: string;
@@ -41,8 +40,6 @@ export const destCopy: Record<Locale, DestCopy> = {
       cta: 'Ask about this trip',
       customTrip: 'Plan a custom trip',
       packagesTitle: 'Packages',
-      packagesEmpty: (name) =>
-        `Fixed packages for ${name} will be listed here. In the meantime, we can plan a trip around your dates.`,
       packagesLink: 'See all tours',
       ctaTitle: (name) => `Thinking about ${name}?`,
       ctaSub: 'Share your dates and group size. We will reply with a plan and a price.',
@@ -67,8 +64,6 @@ export const destCopy: Record<Locale, DestCopy> = {
       cta: 'Tanya soal trip ini',
       customTrip: 'Rencanakan trip custom',
       packagesTitle: 'Paket',
-      packagesEmpty: (name) =>
-        `Paket tetap untuk ${name} akan tampil di sini. Sementara itu, kami bisa menyusun trip sesuai tanggalmu.`,
       packagesLink: 'Lihat semua paket wisata',
       ctaTitle: (name) => `Tertarik ke ${name}?`,
       ctaSub: 'Kirim tanggal dan jumlah peserta. Kami balas dengan rencana dan harga.',

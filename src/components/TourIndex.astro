@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TourCard from './TourCard.astro';
+import type { Locale } from '../i18n';
+import { destSlug } from '../dest-copy';
+import { tourCopy } from '../tour-copy';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = tourCopy[locale].index;
+
+const tours = (await getCollection('tours', ({ id }) => id.startsWith(`${locale}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const destinations = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const chip =
+  'inline-flex min-h-11 items-center rounded-md border border-border bg-surface px-4 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-on-accent';
+---
+
+<BaseLayout locale={locale} title={c.metaTitle} description={c.description}>
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.title}</h1>
+    <p class="mt-4 text-lg text-muted">{c.intro}</p>
+
+    <!-- Filter: without JavaScript every package simply stays visible -->
+    <div class="mt-10" role="group" aria-label={c.filterLabel} data-tour-filter>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class={chip} data-filter="all" aria-pressed="true">{c.filterAll}</button>
+        {
+          destinations.map((d) => (
+            <button type="button" class={chip} data-filter={destSlug(d.id)} aria-pressed="false">
+              {d.data.title}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-tour-list>
+      {
+        tours.map((t) => (
+          <li data-destination={t.data.destination}>
+            <TourCard locale={locale} entry={t} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 text-muted" data-tour-empty hidden></p>
+  </div>
+</BaseLayout>
+
+<script define:vars={{ emptyMessages: Object.fromEntries(destinations.map((d) => [destSlug(d.id), c.empty(d.data.title)])) }}>
+  const root = document.querySelector('[data-tour-filter]');
+  const items = document.querySelectorAll('[data-tour-list] > li');
+  const empty = document.querySelector('[data-tour-empty]');
+
+  root?.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-filter]');
+    if (!button) return;
+    const filter = button.dataset.filter;
+
+    root.querySelectorAll('button[data-filter]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b === button));
+    });
+
+    let visible = 0;
+    items.forEach((li) => {
+      const show = filter === 'all' || li.dataset.destination === filter;
+      li.hidden = !show;
+      if (show) visible += 1;
+    });
+
+    if (visible === 0 && filter !== 'all') {
+      empty.textContent = emptyMessages[filter] ?? '';
+      empty.hidden = false;
+    } else {
+      empty.hidden = true;
+    }
+  });
+</script>

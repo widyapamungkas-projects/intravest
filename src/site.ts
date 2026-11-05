@@ -14,6 +14,10 @@ export const site = {
       id: 'Halo Intravest, saya menemukan website kalian dan ingin tanya soal trip.',
     } satisfies Record<Locale, string>,
   },
+  // Form endpoints. Set the PUBLIC_* variables in Netlify; the fallback is a PLACEHOLDER that will not deliver.
+  forms: {
+    tour: import.meta.env.PUBLIC_FORMSPREE_TOUR ?? 'https://formspree.io/f/xxxxxxxx',
+  },
   // TODO: replace '#' with real profile URLs once the accounts exist
   social: {
     instagram: '#',

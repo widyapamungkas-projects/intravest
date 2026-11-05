@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import TourPage from '../../../components/TourPage.astro';
+import { tourSlug } from '../../../tour-copy';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('tours', ({ id }) => id.startsWith('id/'));
+  return entries.map((entry) => ({ params: { slug: tourSlug(entry.id) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<TourPage locale="id" entry={entry} />

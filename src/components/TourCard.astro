@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Placeholder from './Placeholder.astro';
+import { routePath, type Locale } from '../i18n';
+import { durationLabel, formatIDR, tourCopy, tourSlug } from '../tour-copy';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'tours'>;
+}
+const { locale, entry } = Astro.props;
+const c = tourCopy[locale].card;
+const d = entry.data;
+---
+
+<a
+  href={routePath(locale, 'tours', tourSlug(entry.id))}
+  class="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-raised transition-shadow hover:shadow-floating"
+>
+  <Placeholder label={`${d.title}: ${c.photoSoon}`} class="aspect-[4/3] rounded-none! border-0!" />
+  <div class="flex flex-1 flex-col p-5">
+    <p class="text-sm text-muted">{d.code} · {durationLabel(locale, d.days, d.nights)}</p>
+    <h2 class="mt-1 text-xl font-semibold group-hover:underline">{d.title}</h2>
+    <p class="mt-2 text-muted">{d.summary}</p>
+    <p class="mt-auto pt-5">
+      <span class="text-sm text-muted">{c.from}</span>
+      <span class="ml-1 text-lg font-semibold">{formatIDR(locale, d.priceIDR)}</span>
+      <span class="text-sm text-muted"> {c.perPerson}</span>
+    </p>
+    <span class="mt-3 font-medium text-accent group-hover:text-accent-hover">{c.details}</span>
+  </div>
+</a>
