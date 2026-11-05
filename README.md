@@ -90,7 +90,7 @@ Item di bawah masih placeholder atau belum diputuskan. Checklist lengkap ada di 
 - [ ] Foto asli: `Placeholder.astro` masih menggantikan semua foto. Saat diganti, pakai `<img>` dengan `width`/`height` eksplisit dan `loading="lazy"` supaya CLS tetap nol
 - [ ] Harga final BAL-01, BAL-02, BAL-03, lalu set `priceIsDraft: false`
 - [ ] URL profil Instagram, TikTok, Threads di `src/site.ts`
-- [ ] Halaman About (`/en/about/`, `/id/tentang-kami/`): route sudah terdaftar di `i18n.ts`, halamannya belum dibuat
+- [x] Halaman About (`/en/about/`, `/id/tentang-kami/`)
 - [ ] Minimal 3 artikel blog sudah publish (sekarang 3 contoh, 2 EN dan 1 ID)
 - [ ] Kebijakan refund dan cancellation B2C
 - [ ] Test form end-to-end dan Doku test transaction
