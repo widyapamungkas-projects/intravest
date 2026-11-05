@@ -1,6 +1,6 @@
 import type { Locale } from './i18n';
 
-export const navKeys = ['destinations', 'tours', 'custom-trip', 'travel-stories', 'contact'] as const;
+export const navKeys = ['about', 'destinations', 'tours', 'custom-trip', 'travel-stories', 'contact'] as const;
 export type NavKey = (typeof navKeys)[number];
 
 interface UiStrings {
@@ -17,6 +17,7 @@ interface UiStrings {
 export const ui: Record<Locale, UiStrings> = {
   en: {
     nav: {
+      about: 'About',
       destinations: 'Destinations',
       tours: 'Tours',
       'custom-trip': 'Custom Trip',
@@ -38,6 +39,7 @@ export const ui: Record<Locale, UiStrings> = {
   },
   id: {
     nav: {
+      about: 'Tentang Kami',
       destinations: 'Destinasi',
       tours: 'Paket Wisata',
       'custom-trip': 'Custom Trip',
