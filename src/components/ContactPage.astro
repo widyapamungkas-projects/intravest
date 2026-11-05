@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { routePath, type Locale } from '../i18n';
+import { contactCopy } from '../contact-copy';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = contactCopy[locale];
+const wa = whatsappLink(c.waMessage);
+
+const btnPrimary =
+  'inline-flex min-h-14 items-center justify-center rounded-md bg-accent px-8 text-lg font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnForm =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const field =
+  'mt-1 block min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text placeholder:text-muted disabled:opacity-50';
+const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
+---
+
+<BaseLayout locale={locale} title={c.metaTitle} description={c.description}>
+  <header class={`${wrap} pb-12 pt-14 sm:pb-16 sm:pt-20`}>
+    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.title}</h1>
+    <p class="mt-4 max-w-[52ch] text-lg text-muted">{c.intro}</p>
+  </header>
+
+  <!-- WhatsApp (primary) + email -->
+  <section class="border-t border-border">
+    <div class={`${wrap} grid gap-10 py-12 sm:py-16 md:grid-cols-2 md:gap-16`}>
+      <div>
+        <h2 class="text-xl font-semibold">{c.waTitle}</h2>
+        <p class="mt-2 text-muted">{c.waText}</p>
+        <a href={wa} class={`${btnPrimary} mt-6`} rel="noopener">{c.waCta}</a>
+        <p class="mt-3 text-sm text-muted">{site.whatsapp.display}</p>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold">{c.emailTitle}</h2>
+        <p class="mt-2 text-muted">{c.emailText}</p>
+        <p class="mt-6">
+          <a
+            href={`mailto:${site.email}`}
+            class="inline-flex min-h-11 items-center rounded-md text-lg font-medium text-accent hover:text-accent-hover hover:underline"
+          >
+            {site.email}
+          </a>
+        </p>
+      </div>
+    </div>
+    <p class={`${wrap} pb-12 text-muted sm:pb-16`}>{c.responseNote}</p>
+  </section>
+
+  <!-- Message form -->
+  <section id="message" class="border-t border-border bg-surface-2">
+    <div class={`${wrap} grid gap-10 py-16 sm:py-20 md:grid-cols-[1fr_1.4fr] md:gap-16`}>
+      <div>
+        <h2 class="text-balance text-2xl font-semibold leading-tight sm:text-3xl">{c.formTitle}</h2>
+        <p class="mt-3 text-muted">{c.formIntro}</p>
+        <a
+          href={routePath(locale, 'custom-trip')}
+          class="mt-6 inline-flex min-h-11 items-center rounded-md font-medium text-accent hover:text-accent-hover hover:underline"
+        >
+          {c.planLink}
+        </a>
+      </div>
+
+      <form method="POST" action={site.forms.contact} class="space-y-5">
+        <input type="hidden" name="_subject" value="Contact message" />
+        <input type="hidden" name="locale" value={locale} />
+        <!-- Honeypot: real visitors never see or fill this -->
+        <div hidden>
+          <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="c-name" class="font-medium">{c.name}</label>
+            <input id="c-name" name="name" type="text" required autocomplete="name" class={field} />
+          </div>
+          <div>
+            <label for="c-email" class="font-medium">{c.email}</label>
+            <input id="c-email" name="email" type="email" required autocomplete="email" class={field} />
+          </div>
+        </div>
+        <div>
+          <label for="c-message" class="font-medium">{c.message}</label>
+          <textarea id="c-message" name="message" rows="6" required aria-describedby="c-message-hint" class={field}></textarea>
+          <p id="c-message-hint" class="mt-1 text-sm text-muted">{c.messageHint}</p>
+        </div>
+        <button type="submit" class={btnForm}>{c.submit}</button>
+        <p class="text-sm text-muted">{c.privacy}</p>
+      </form>
+    </div>
+  </section>
+</BaseLayout>

@@ -16,6 +16,7 @@ export const site = {
   },
   // Form endpoints. Set the PUBLIC_* variables in Netlify; the fallback is a PLACEHOLDER that will not deliver.
   forms: {
+    contact: import.meta.env.PUBLIC_FORMSPREE_CONTACT ?? 'https://formspree.io/f/xxxxxxxx',
     tour: import.meta.env.PUBLIC_FORMSPREE_TOUR ?? 'https://formspree.io/f/xxxxxxxx',
     customTrip: import.meta.env.PUBLIC_FORMSPREE_CUSTOM_TRIP ?? 'https://formspree.io/f/yyyyyyyy',
   },
