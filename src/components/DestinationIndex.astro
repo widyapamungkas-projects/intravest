@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from './Placeholder.astro';
+import { routePath, type Locale } from '../i18n';
+import { destCopy, destSlug } from '../dest-copy';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = destCopy[locale];
+
+const entries = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<BaseLayout locale={locale} title={c.index.metaTitle} description={c.index.description}>
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.index.title}</h1>
+    <p class="mt-4 text-lg text-muted">{c.index.intro}</p>
+
+    <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        entries.map((e) => (
+          <li>
+            <a href={routePath(locale, 'destinations', destSlug(e.id))} class="group block">
+              <Placeholder label={`${e.data.title}: ${c.page.photoSoon}`} class="aspect-[4/3]" />
+              <h2 class="mt-3 text-xl font-medium group-hover:underline">{e.data.title}</h2>
+              <p class="mt-1 text-muted">{e.data.tagline}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>

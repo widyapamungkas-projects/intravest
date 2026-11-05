@@ -1,0 +1,119 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from './Placeholder.astro';
+import { localizedPath, routePath, type Locale } from '../i18n';
+import { destCopy, destSlug } from '../dest-copy';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'destinations'>;
+}
+const { locale, entry } = Astro.props;
+const c = destCopy[locale].page;
+const d = entry.data;
+const slug = destSlug(entry.id);
+const { Content } = await render(entry);
+const wa = whatsappLink(c.waMessage(d.title));
+
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
+const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
+
+const sections = [
+  { title: c.see, items: d.see },
+  { title: c.activities, items: d.activities },
+  { title: c.shopping, items: d.shopping },
+];
+
+// LocalBusiness structured data, Bali page only (per brief)
+const ld =
+  slug === 'bali'
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'TravelAgency',
+        name: site.name,
+        url: new URL(localizedPath(locale, '/'), Astro.site).href,
+        email: site.email,
+        description: d.description,
+        areaServed: { '@type': 'Place', name: 'Bali, Indonesia' },
+        address: { '@type': 'PostalAddress', addressRegion: 'Bali', addressCountry: 'ID' },
+      }
+    : null;
+---
+
+<BaseLayout locale={locale} title={c.metaTitle(d.title)} description={d.description}>
+  {ld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+
+  <article>
+    <header class={`${wrap} pt-14 sm:pt-20`}>
+      <nav aria-label="Breadcrumb">
+        <a
+          href={routePath(locale, 'destinations')}
+          class="inline-flex min-h-11 items-center rounded-md text-muted hover:text-text hover:underline"
+        >
+          {c.crumb}
+        </a>
+      </nav>
+      <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{d.title}</h1>
+      <p class="mt-4 max-w-[48ch] text-lg text-muted">{d.tagline}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
+        <a href={routePath(locale, 'custom-trip')} class={btnSecondary}>{c.customTrip}</a>
+      </div>
+      <Placeholder label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8]" />
+    </header>
+
+    <!-- Overview (MDX body) -->
+    <section class={`${wrap} py-12 sm:py-16`}>
+      <div class="max-w-[68ch] space-y-4 text-lg">
+        <Content />
+      </div>
+    </section>
+
+    <!-- Something to See / Do / Buy -->
+    {
+      sections.map((s) => (
+        <section class="border-t border-border">
+          <div class={`${wrap} grid gap-4 py-10 md:grid-cols-[1fr_2fr] md:gap-12`}>
+            <h2 class="text-xl font-semibold">{s.title}</h2>
+            <ul class="space-y-2">
+              {s.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ))
+    }
+
+    <!-- Packages (filled in Step 5) -->
+    <section class="border-t border-border">
+      <div class={`${wrap} py-12 sm:py-16`}>
+        <h2 class="text-xl font-semibold">{c.packagesTitle}</h2>
+        <p class="mt-3 text-muted">{c.packagesEmpty(d.title)}</p>
+        <a
+          href={routePath(locale, 'tours')}
+          class="mt-3 inline-flex min-h-11 items-center rounded-md font-medium text-accent hover:text-accent-hover hover:underline"
+        >
+          {c.packagesLink}
+        </a>
+      </div>
+    </section>
+  </article>
+
+  <!-- Closing CTA -->
+  <section class="border-t border-border bg-surface-2">
+    <div class={`${wrap} py-16 sm:py-20`}>
+      <h2 class="max-w-[26ch] text-balance text-2xl font-semibold leading-tight sm:text-3xl">{c.ctaTitle(d.title)}</h2>
+      <p class="mt-3 text-muted">{c.ctaSub}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
+        <a href={`mailto:${site.email}`} class={btnSecondary}>{site.email}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

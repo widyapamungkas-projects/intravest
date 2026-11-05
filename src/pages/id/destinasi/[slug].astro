@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import DestinationPage from '../../../components/DestinationPage.astro';
+import { destSlug } from '../../../dest-copy';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('destinations', ({ id }) => id.startsWith('id/'));
+  return entries.map((entry) => ({ params: { slug: destSlug(entry.id) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<DestinationPage locale="id" entry={entry} />
