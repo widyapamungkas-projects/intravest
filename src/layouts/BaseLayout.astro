@@ -15,6 +15,7 @@ const { locale, title, description = site.description[locale] } = Astro.props;
 const pathname = Astro.url.pathname;
 const alt = alternatePath(pathname);
 const canonical = new URL(pathname, Astro.site);
+const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
 ---
 
 <!doctype html>
@@ -24,9 +25,19 @@ const canonical = new URL(pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang={htmlLang[locale]} href={canonical} />
-    {alt && <link rel="alternate" hreflang={htmlLang[alt.locale]} href={new URL(alt.path, Astro.site)} />}
+    <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" hreflang={htmlLang[locale]} href={canonical.href} />
+    {alt && <link rel="alternate" hreflang={htmlLang[alt.locale]} href={new URL(alt.path, Astro.site).href} />}
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={ogLocale(locale)} />
+    {alt && <meta property="og:locale:alternate" content={ogLocale(alt.locale)} />}
+    <!-- og:image is added once the default OG image exists (Step 9) -->
+
     <script is:inline>
       (function () {
         try {

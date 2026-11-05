@@ -1,0 +1,113 @@
+---
+import Placeholder from './Placeholder.astro';
+import { routePath, type Locale } from '../i18n';
+import { homeCopy } from '../home-copy';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = homeCopy[locale];
+const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
+
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
+const h2 = 'max-w-[26ch] text-balance text-2xl font-semibold leading-tight sm:text-3xl';
+const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
+---
+
+<!-- 1. Hero -->
+<section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+  <div>
+    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.hero.title}</h1>
+    <p class="mt-5 text-lg text-muted">{c.hero.sub}</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
+      <a href={routePath(locale, 'destinations')} class={btnSecondary}>{c.hero.ctaSecondary}</a>
+    </div>
+  </div>
+  <Placeholder label={c.hero.photo} class="aspect-[4/3]" />
+</section>
+
+<!-- 2. Why Intravest -->
+<section class="border-t border-border">
+  <div class={wrap}>
+    <h2 class={h2}>{c.why.title}</h2>
+    <ul class="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2">
+      {
+        c.why.items.map((item) => (
+          <li class="border-t border-border pt-5">
+            <h3 class="text-lg font-medium">{item.title}</h3>
+            <p class="mt-2 text-muted">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- 3. Featured destinations -->
+<section class="border-t border-border">
+  <div class={wrap}>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <h2 class={h2}>{c.destinations.title}</h2>
+      <a href={routePath(locale, 'destinations')} class="inline-flex min-h-11 items-center rounded-md font-medium text-accent hover:text-accent-hover hover:underline">
+        {c.destinations.all}
+      </a>
+    </div>
+    <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        c.destinations.items.map((d) => (
+          <li>
+            <a href={routePath(locale, 'destinations', d.slug)} class="group block">
+              <Placeholder label={`${d.name}: ${c.destinations.photoSoon}`} class="aspect-[4/5]" />
+              <h3 class="mt-3 text-lg font-medium group-hover:underline">{d.name}</h3>
+              <p class="mt-1 text-muted">{d.tagline}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- 4. How it works -->
+<section class="border-t border-border">
+  <div class={wrap}>
+    <h2 class={h2}>{c.how.title}</h2>
+    <ol class="mt-10 grid gap-8 md:grid-cols-3">
+      {
+        c.how.steps.map((s, i) => (
+          <li>
+            <span class="text-3xl font-semibold text-accent" aria-hidden="true">{i + 1}</span>
+            <h3 class="mt-2 text-lg font-medium">{s.title}</h3>
+            <p class="mt-2 text-muted">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- 5. Testimonials (placeholder until real, permitted feedback exists) -->
+<section class="border-t border-border">
+  <div class={wrap}>
+    <h2 class={h2}>{c.testimonials.title}</h2>
+    <p class="mt-8 rounded-md border border-dashed border-border p-8 text-muted">{c.testimonials.empty}</p>
+  </div>
+</section>
+
+<!-- 6. Closing CTA -->
+<section class="border-t border-border bg-surface-2">
+  <div class={wrap}>
+    <h2 class={h2}>{c.cta.title}</h2>
+    <p class="mt-3 text-muted">{c.cta.sub}</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={wa} class={btnPrimary} rel="noopener">{c.cta.whatsapp}</a>
+      <a href={`mailto:${site.email}`} class={btnSecondary}>{site.email}</a>
+    </div>
+  </div>
+</section>

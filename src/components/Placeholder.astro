@@ -1,0 +1,16 @@
+---
+// Stand-in for a real photo. Replace with <img> (explicit width/height, loading="lazy") when photos exist.
+interface Props {
+  label: string;
+  class?: string;
+}
+const { label, class: className = '' } = Astro.props;
+---
+
+<div
+  role="img"
+  aria-label={label}
+  class:list={['flex items-end rounded-md border border-border bg-surface-2 p-4 text-sm text-muted', className]}
+>
+  <span aria-hidden="true">{label}</span>
+</div>
