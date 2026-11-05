@@ -1,0 +1,42 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7 needs Node >= 22.23.4 (see engines in node_modules/astro/package.json)
+  NODE_VERSION = "22"
+
+# --- Default language -------------------------------------------------------
+# "/" has no content of its own. Visitors whose browser prefers Indonesian go to /id/,
+# everyone else (and crawlers, which send no Accept-Language) goes to /en/.
+# force = true is required: src/pages/index.astro also builds a /index.html fallback,
+# and Netlify only lets a redirect win over an existing file when it is forced.
+# 302 on purpose: the target depends on the visitor, so it must not be cached as permanent.
+# Visitors who are already on /id/... (or /en/...) are never touched, these rules only match "/".
+[[redirects]]
+  from = "/"
+  to = "/id/"
+  status = 302
+  force = true
+  conditions = { Language = ["id"] }
+
+[[redirects]]
+  from = "/"
+  to = "/en/"
+  status = 302
+  force = true
+
+# --- Headers ----------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Hashed build output never changes, so it can be cached for a year.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

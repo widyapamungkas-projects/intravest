@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { localizedPath } from '../i18n';
+import { site, whatsappLink } from '../site';
+
+// One bilingual 404: Netlify serves /404.html for any unknown URL, whatever the language of the visitor.
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
+const blocks = [
+  {
+    lang: 'en-US',
+    title: "We couldn't find that page",
+    body: 'The link may be old, or the page may have moved. Start from the homepage, or message us and we will point you the right way.',
+    home: 'Back to the homepage',
+    wa: 'WhatsApp us',
+    href: localizedPath('en', '/'),
+    message: site.whatsapp.defaultMessage.en,
+  },
+  {
+    lang: 'id-ID',
+    title: 'Halaman ini tidak ditemukan',
+    body: 'Link-nya mungkin sudah lama, atau halamannya sudah pindah. Mulai dari beranda, atau chat kami dan kami bantu arahkan.',
+    home: 'Kembali ke beranda',
+    wa: 'Chat WhatsApp',
+    href: localizedPath('id', '/'),
+    message: site.whatsapp.defaultMessage.id,
+  },
+];
+---
+
+<BaseLayout locale="en" title="Page not found | Intravest" description="This page does not exist." noindex>
+  <section class="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 sm:py-24 md:grid-cols-2">
+    {
+      blocks.map((b, i) => (
+        <div lang={b.lang}>
+          {i === 0 ? (
+            <h1 class="text-balance text-3xl font-semibold leading-tight sm:text-4xl">{b.title}</h1>
+          ) : (
+            <h2 class="text-balance text-3xl font-semibold leading-tight sm:text-4xl">{b.title}</h2>
+          )}
+          <p class="mt-4 text-lg text-muted">{b.body}</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href={b.href} class={btnPrimary}>{b.home}</a>
+            <a href={whatsappLink(b.message)} class={btnSecondary} rel="noopener">{b.wa}</a>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+</BaseLayout>
