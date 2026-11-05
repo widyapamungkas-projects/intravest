@@ -2,10 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Home from '../../components/Home.astro';
 import { homeCopy } from '../../home-copy';
+import { homeStructuredData } from '../../schema';
 
 const { meta } = homeCopy.en;
 ---
 
-<BaseLayout locale="en" title={meta.title} description={meta.description}>
+<BaseLayout locale="en" title={meta.title} description={meta.description} jsonLd={homeStructuredData("en", Astro.site)}>
   <Home locale="en" />
 </BaseLayout>

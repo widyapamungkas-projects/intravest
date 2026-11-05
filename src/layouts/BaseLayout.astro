@@ -13,13 +13,32 @@ interface Props {
   /** Page exists in this locale only: no hreflang alternate, and the language switcher goes to the other locale's stories index. */
   noAlternate?: boolean;
   ogType?: 'website' | 'article';
+  /** Path or absolute URL of the social share image. Defaults to /og/default.jpg (1200x630). */
+  ogImage?: string;
+  /** Structured data for this page, rendered in <head>. Pages may also render their own JSON-LD script in the body. */
+  jsonLd?: Record<string, unknown>;
+  /** Keep the page out of search results (used for the 404 page). */
+  noindex?: boolean;
 }
-const { locale, title, description = site.description[locale], noAlternate = false, ogType = 'website' } = Astro.props;
+const {
+  locale,
+  title,
+  description = site.description[locale],
+  noAlternate = false,
+  ogType = 'website',
+  ogImage = '/og/default.jpg',
+  jsonLd,
+  noindex = false,
+} = Astro.props;
 const pathname = Astro.url.pathname;
 const alt = noAlternate ? null : alternatePath(pathname);
 const switchHref = noAlternate ? routePath(locale === 'en' ? 'id' : 'en', 'travel-stories') : undefined;
 const canonical = new URL(pathname, Astro.site);
 const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
+const ogImageUrl = new URL(ogImage, Astro.site).href;
+// x-default points at the English version, same as the sitemap does.
+const xDefault = alt ? (locale === 'en' ? canonical.href : new URL(alt.path, Astro.site).href) : null;
+const ga4 = import.meta.env.PROD ? site.ga4 : undefined;
 ---
 
 <!doctype html>
@@ -29,9 +48,13 @@ const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="canonical" href={canonical.href} />
     <link rel="alternate" hreflang={htmlLang[locale]} href={canonical.href} />
     {alt && <link rel="alternate" hreflang={htmlLang[alt.locale]} href={new URL(alt.path, Astro.site).href} />}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -40,7 +63,16 @@ const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content={ogLocale(locale)} />
     {alt && <meta property="og:locale:alternate" content={ogLocale(alt.locale)} />}
-    <!-- og:image is added once the default OG image exists (Step 9) -->
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} - ${site.fullName}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     <script is:inline>
       (function () {
@@ -51,6 +83,27 @@ const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
         } catch (e) {}
       })();
     </script>
+
+    {
+      ga4 && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`} />
+          <script is:inline define:vars={{ ga4 }}>
+            {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', ga4);
+            // WhatsApp inquiries never reach the site, so count the click itself as the conversion.
+            document.addEventListener('click', function (e) {
+              var a = e.target instanceof Element ? e.target.closest('a[href^="https://wa.me/"]') : null;
+              if (a) gtag('event', 'whatsapp_click', { page_path: location.pathname });
+            });
+          `}
+          </script>
+        </>
+      )
+    }
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
