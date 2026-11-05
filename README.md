@@ -75,7 +75,7 @@ Nama folder = locale, nama file = slug URL. Schema lengkap ada di `src/content.c
 
 Yang sudah diatur oleh `netlify.toml`:
 
-- `/` redirect ke `/id/` untuk browser berbahasa Indonesia, ke `/en/` untuk lainnya (302, karena tujuannya tergantung pengunjung). Halaman yang sudah di `/id/...` atau `/en/...` tidak disentuh.
+- `/` redirect ke `/en/` sebagai bahasa default (302). Halaman yang sudah di `/id/...` atau `/en/...` tidak disentuh.
 - Header keamanan: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`.
 - Cache 1 tahun untuk aset ber-hash di `/_astro/`.
 
