@@ -1,0 +1,115 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Placeholder from './Placeholder.astro';
+import StoryCard from './StoryCard.astro';
+import { htmlLang, localizedPath, routePath, type Locale } from '../i18n';
+import { destSlug } from '../dest-copy';
+import { formatDate, storiesCopy, storySlug } from '../stories-copy';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'stories'>;
+}
+const { locale, entry } = Astro.props;
+const c = storiesCopy[locale].page;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const destinations = await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`));
+const labels: Record<string, string> = Object.fromEntries(destinations.map((x) => [destSlug(x.id), x.data.title]));
+labels.tips = storiesCopy[locale].tipsLabel;
+const labelOf = (cat: string) => labels[cat] ?? cat;
+
+// Related: same category first, then newest. Max 2.
+const related = (await getCollection('stories', ({ id }) => id.startsWith(`${locale}/`) && id !== entry.id))
+  .sort(
+    (a, b) =>
+      Number(b.data.category === d.category) - Number(a.data.category === d.category) ||
+      b.data.date.valueOf() - a.data.date.valueOf(),
+  )
+  .slice(0, 2);
+
+const pageUrl = new URL(routePath(locale, 'travel-stories', storySlug(entry.id)), Astro.site).href;
+const wa = whatsappLink(c.waMessage(d.title));
+
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
+const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.title,
+  description: d.description,
+  datePublished: d.date.toISOString(),
+  dateModified: d.date.toISOString(),
+  inLanguage: htmlLang[locale],
+  keywords: d.tags.join(', '),
+  mainEntityOfPage: pageUrl,
+  author: { '@type': 'Organization', name: site.name },
+  publisher: { '@type': 'Organization', name: site.name, url: new URL(localizedPath(locale, '/'), Astro.site).href },
+};
+---
+
+<!-- No translation exists for these articles yet, so no hreflang alternate is emitted. -->
+<BaseLayout locale={locale} title={c.metaTitle(d.title)} description={d.description} noAlternate ogType="article">
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+
+  <article>
+    <header class={`${wrap} pt-14 sm:pt-20`}>
+      <nav aria-label="Breadcrumb">
+        <a
+          href={routePath(locale, 'travel-stories')}
+          class="inline-flex min-h-11 items-center rounded-md text-muted hover:text-text hover:underline"
+        >
+          {c.crumb}
+        </a>
+      </nav>
+      <p class="text-muted">
+        {labelOf(d.category)} · <time datetime={d.date.toISOString().slice(0, 10)}>{formatDate(locale, d.date)}</time>
+      </p>
+      <h1 class="mt-1 max-w-[24ch] text-balance text-4xl font-semibold leading-tight sm:text-5xl">{d.title}</h1>
+      <p class="mt-4 max-w-[52ch] text-lg text-muted">{d.description}</p>
+      <Placeholder label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8]" />
+    </header>
+
+    <section class={`${wrap} py-12 sm:py-16`}>
+      <div class="story-body max-w-[68ch] text-lg">
+        <Content />
+      </div>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="border-t border-border">
+          <div class={`${wrap} py-12 sm:py-16`}>
+            <h2 class="text-xl font-semibold">{c.related}</h2>
+            <ul class="mt-6 grid gap-6 sm:grid-cols-2">
+              {related.map((r) => (
+                <li>
+                  <StoryCard locale={locale} entry={r} categoryLabel={labelOf(r.data.category)} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+  </article>
+
+  <!-- Closing CTA -->
+  <section class="border-t border-border bg-surface-2">
+    <div class={`${wrap} py-16 sm:py-20`}>
+      <h2 class="max-w-[26ch] text-balance text-2xl font-semibold leading-tight sm:text-3xl">{c.ctaTitle}</h2>
+      <p class="mt-3 text-muted">{c.ctaSub}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
+        <a href={routePath(locale, 'custom-trip')} class={btnSecondary}>{c.customTrip}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

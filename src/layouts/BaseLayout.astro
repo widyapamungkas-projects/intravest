@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { alternatePath, htmlLang, type Locale } from '../i18n';
+import { alternatePath, htmlLang, routePath, type Locale } from '../i18n';
 import { ui } from '../ui';
 import { site } from '../site';
 
@@ -10,10 +10,14 @@ interface Props {
   locale: Locale;
   title: string;
   description?: string;
+  /** Page exists in this locale only: no hreflang alternate, and the language switcher goes to the other locale's stories index. */
+  noAlternate?: boolean;
+  ogType?: 'website' | 'article';
 }
-const { locale, title, description = site.description[locale] } = Astro.props;
+const { locale, title, description = site.description[locale], noAlternate = false, ogType = 'website' } = Astro.props;
 const pathname = Astro.url.pathname;
-const alt = alternatePath(pathname);
+const alt = noAlternate ? null : alternatePath(pathname);
+const switchHref = noAlternate ? routePath(locale === 'en' ? 'id' : 'en', 'travel-stories') : undefined;
 const canonical = new URL(pathname, Astro.site);
 const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
 ---
@@ -31,7 +35,7 @@ const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content={ogLocale(locale)} />
@@ -55,7 +59,7 @@ const ogLocale = (l: Locale) => htmlLang[l].replace('-', '_');
     >
       {ui[locale].skip}
     </a>
-    <Header locale={locale} pathname={pathname} />
+    <Header locale={locale} pathname={pathname} switchHref={switchHref} />
     <main id="main" class="flex-1">
       <slot />
     </main>

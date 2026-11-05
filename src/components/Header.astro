@@ -7,13 +7,15 @@ import { site, whatsappLink } from '../site';
 interface Props {
   locale: Locale;
   pathname: string;
+  /** Where the language switcher goes when this page has no translation (e.g. a one-language article). */
+  switchHref?: string;
 }
-const { locale, pathname } = Astro.props;
+const { locale, pathname, switchHref } = Astro.props;
 const t = ui[locale];
 
 const alt = alternatePath(pathname);
 const other: Locale = alt?.locale ?? (locale === 'en' ? 'id' : 'en');
-const otherHref = alt?.path ?? localizedPath(other, '/');
+const otherHref = switchHref ?? alt?.path ?? localizedPath(other, '/');
 const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
 
 const linkClass =

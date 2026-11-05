@@ -52,4 +52,18 @@ const tours = defineCollection({
     }),
 });
 
-export const collections = { destinations, tours };
+// Travel Stories (blog). Unlike destinations and tours, an article may exist in one locale only,
+// so the EN and ID slugs do not have to match. Pages without a translation get no hreflang alternate.
+const stories = defineCollection({
+  loader: glob({ base: './src/content/stories', pattern: '**/*.mdx' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().max(160), // meta description + card excerpt
+    date: z.coerce.date(),
+    category: z.string(), // a destination slug (e.g. "bali") or "tips"
+    tags: z.array(z.string()).default([]),
+    ogImage: z.string().optional(), // placeholder until real photos exist (Step 9)
+  }),
+});
+
+export const collections = { destinations, tours, stories };

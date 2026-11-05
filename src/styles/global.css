@@ -123,3 +123,13 @@ table { font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+/* ---------- Article body (MDX in Travel Stories) ---------- */
+.story-body > * + * { margin-top: 1rem; }
+.story-body h2 { margin-top: 2.5rem; font-size: var(--text-2xl); font-weight: 600; }
+.story-body h3 { margin-top: 2rem; font-size: var(--text-xl); font-weight: 600; }
+.story-body ul { list-style: disc; padding-left: 1.25rem; }
+.story-body ol { list-style: decimal; padding-left: 1.25rem; }
+.story-body li + li { margin-top: 0.5rem; }
+.story-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.story-body a:hover { color: var(--accent-hover); }
+.story-body strong { font-weight: 600; }

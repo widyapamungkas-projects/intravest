@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StoryCard from './StoryCard.astro';
+import type { Locale } from '../i18n';
+import { destSlug } from '../dest-copy';
+import { storiesCopy } from '../stories-copy';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = storiesCopy[locale];
+
+const stories = (await getCollection('stories', ({ id }) => id.startsWith(`${locale}/`))).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const destinations = await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`));
+const labels: Record<string, string> = Object.fromEntries(destinations.map((d) => [destSlug(d.id), d.data.title]));
+labels.tips = c.tipsLabel;
+---
+
+<BaseLayout locale={locale} title={c.index.metaTitle} description={c.index.description}>
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.index.title}</h1>
+    <p class="mt-4 text-lg text-muted">{c.index.intro}</p>
+
+    {
+      stories.length > 0 ? (
+        <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {stories.map((s) => (
+            <li>
+              <StoryCard locale={locale} entry={s} categoryLabel={labels[s.data.category] ?? s.data.category} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-12 text-muted">{c.index.empty}</p>
+      )
+    }
+  </div>
+</BaseLayout>

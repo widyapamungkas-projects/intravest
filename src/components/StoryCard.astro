@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Placeholder from './Placeholder.astro';
+import { routePath, type Locale } from '../i18n';
+import { formatDate, storiesCopy, storySlug } from '../stories-copy';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'stories'>;
+  /** Resolved display name of the entry's category (destination title or the Tips label). */
+  categoryLabel: string;
+}
+const { locale, entry, categoryLabel } = Astro.props;
+const d = entry.data;
+---
+
+<a
+  href={routePath(locale, 'travel-stories', storySlug(entry.id))}
+  class="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-raised transition-shadow hover:shadow-floating"
+>
+  <Placeholder label={`${d.title}: ${storiesCopy[locale].card.photoSoon}`} class="aspect-[16/9] rounded-none! border-0!" />
+  <div class="flex flex-1 flex-col p-5">
+    <p class="text-sm text-muted">
+      {categoryLabel} · <time datetime={d.date.toISOString().slice(0, 10)}>{formatDate(locale, d.date)}</time>
+    </p>
+    <h2 class="mt-1 text-xl font-semibold group-hover:underline">{d.title}</h2>
+    <p class="mt-2 text-muted">{d.description}</p>
+  </div>
+</a>
