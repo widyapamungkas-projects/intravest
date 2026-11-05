@@ -23,11 +23,16 @@ export const localizedPath = (locale: Locale, path: string) => {
   return clean ? `/${locale}/${clean}/` : `/${locale}/`;
 };
 
-/**
- * Maps a localised path onto its equivalent in the other locale.
- * Both locales share the same path shape (e.g. /en/tours/ -> /id/paket-wisata/).
- */
-const pathSegments: Record<string, Record<Locale, string>> = {
+export type RouteKey =
+  | 'about'
+  | 'destinations'
+  | 'tours'
+  | 'custom-trip'
+  | 'travel-stories'
+  | 'contact';
+
+/** Top-level URL segment per route, per locale. */
+export const pathSegments: Record<RouteKey, Record<Locale, string>> = {
   about: { en: 'about', id: 'tentang-kami' },
   destinations: { en: 'destinations', id: 'destinasi' },
   tours: { en: 'tours', id: 'paket-wisata' },
@@ -35,6 +40,10 @@ const pathSegments: Record<string, Record<Locale, string>> = {
   'travel-stories': { en: 'travel-stories', id: 'cerita-perjalanan' },
   contact: { en: 'contact', id: 'kontak' },
 };
+
+/** Localised path for a named route, e.g. routePath('id', 'tours') -> /id/paket-wisata/ */
+export const routePath = (locale: Locale, key: RouteKey, rest = '') =>
+  localizedPath(locale, `/${pathSegments[key][locale]}/${rest}`);
 
 const localeOf = (value: string): Locale | null =>
   (locales as readonly string[]).includes(value) ? (value as Locale) : null;
@@ -47,18 +56,20 @@ export const alternatePath = (path: string): { locale: Locale; path: string } | 
   const current = localeOf(segments[0]);
   if (!current) return null;
 
+  const other: Locale = current === 'en' ? 'id' : 'en';
   const rest = segments.slice(1);
   if (rest.length === 0) {
-    const other: Locale = current === 'en' ? 'id' : 'en';
     return { locale: other, path: localizedPath(other, '/') };
   }
 
-  const mapping = pathSegments[rest[0]];
-  if (!mapping) return null;
+  // Look the segment up in the CURRENT locale so both EN->ID and ID->EN work.
+  const key = (Object.keys(pathSegments) as RouteKey[]).find(
+    (k) => pathSegments[k][current] === rest[0],
+  );
+  if (!key) return null;
 
-  const other: Locale = current === 'en' ? 'id' : 'en';
   return {
     locale: other,
-    path: localizedPath(other, `/${mapping[other]}/${rest.slice(1).join('/')}`),
+    path: localizedPath(other, `/${pathSegments[key][other]}/${rest.slice(1).join('/')}`),
   };
 };
