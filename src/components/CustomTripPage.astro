@@ -1,0 +1,180 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Locale } from '../i18n';
+import { destSlug } from '../dest-copy';
+import { customTripCopy } from '../custom-trip-copy';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = customTripCopy[locale];
+
+const destinations = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const wa = whatsappLink(c.waMessage);
+
+const btnPrimary =
+  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnSecondary =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
+const field =
+  'mt-1 block min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text placeholder:text-muted disabled:opacity-50';
+const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
+---
+
+<BaseLayout locale={locale} title={c.metaTitle} description={c.description}>
+  <!-- Intro -->
+  <header class={`${wrap} pb-12 pt-14 sm:pb-16 sm:pt-20`}>
+    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.title}</h1>
+    <div class="mt-6 max-w-[68ch] space-y-4 text-lg">
+      {c.intro.map((p) => <p>{p}</p>)}
+    </div>
+    <p class="mt-4 text-muted">{c.notOta}</p>
+  </header>
+
+  <!-- How it works -->
+  <section class="border-t border-border">
+    <div class={`${wrap} py-12 sm:py-16`}>
+      <h2 class="text-2xl font-semibold">{c.stepsTitle}</h2>
+      <ol class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          c.steps.map((s, i) => (
+            <li>
+              <p class="text-sm font-medium text-accent">{i + 1}</p>
+              <h3 class="mt-1 text-lg font-semibold">{s.title}</h3>
+              <p class="mt-2 text-muted">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Inquiry form -->
+  <section id="inquiry" class="border-t border-border bg-surface-2">
+    <div class={`${wrap} grid gap-10 py-16 sm:py-20 md:grid-cols-[1fr_1.4fr] md:gap-16`}>
+      <div>
+        <h2 class="text-balance text-2xl font-semibold leading-tight sm:text-3xl">{c.formTitle}</h2>
+        <p class="mt-3 text-muted">{c.formIntro}</p>
+
+        <!-- WhatsApp alternative -->
+        <div class="mt-10 rounded-lg bg-surface p-5 shadow-raised">
+          <h3 class="text-lg font-semibold">{c.waTitle}</h3>
+          <p class="mt-2 text-muted">{c.waText}</p>
+          <a href={wa} class={`${btnSecondary} mt-4`} rel="noopener">{c.waCta}</a>
+          <p class="mt-3 text-sm text-muted">
+            <a href={`mailto:${site.email}`} class="hover:text-text hover:underline">{site.email}</a>
+          </p>
+        </div>
+      </div>
+
+      <form method="POST" action={site.forms.customTrip} class="space-y-5">
+        <input type="hidden" name="_subject" value="Custom trip inquiry" />
+        <input type="hidden" name="locale" value={locale} />
+        <!-- Honeypot: real visitors never see or fill this -->
+        <div hidden>
+          <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="ct-name" class="font-medium">{c.name}</label>
+            <input id="ct-name" name="name" type="text" required autocomplete="name" class={field} />
+          </div>
+          <div>
+            <label for="ct-email" class="font-medium">{c.email}</label>
+            <input id="ct-email" name="email" type="email" required autocomplete="email" class={field} />
+          </div>
+        </div>
+
+        <div>
+          <label for="ct-wa" class="font-medium">{c.whatsapp}</label>
+          <input
+            id="ct-wa"
+            name="whatsapp"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            aria-describedby="ct-wa-hint"
+            class={field}
+          />
+          <p id="ct-wa-hint" class="mt-1 text-sm text-muted">{c.whatsappHint}</p>
+        </div>
+
+        <fieldset aria-describedby="ct-dest-hint">
+          <legend class="font-medium">{c.destinations}</legend>
+          <p id="ct-dest-hint" class="mt-1 text-sm text-muted">{c.destinationsHint}</p>
+          <div class="mt-2 grid gap-x-4 sm:grid-cols-2">
+            {
+              destinations.map((d) => (
+                <label class="flex min-h-11 cursor-pointer items-center gap-3">
+                  <input
+                    type="checkbox"
+                    name="destinations"
+                    value={d.data.title}
+                    data-slug={destSlug(d.id)}
+                    class="size-5 accent-accent"
+                  />
+                  <span>{d.data.title}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="ct-duration" class="font-medium">{c.duration}</label>
+            <select id="ct-duration" name="duration" class={field}>
+              <option value="">{c.select}</option>
+              {c.durationOptions.map((o) => <option value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label for="ct-pax" class="font-medium">{c.pax}</label>
+            <input
+              id="ct-pax"
+              name="pax"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="50"
+              value="2"
+              required
+              class={field}
+            />
+          </div>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="ct-date" class="font-medium">{c.date}</label>
+            <input id="ct-date" name="travel_date" type="date" aria-describedby="ct-date-hint" class={field} />
+            <p id="ct-date-hint" class="mt-1 text-sm text-muted">{c.dateHint}</p>
+          </div>
+          <div>
+            <label for="ct-budget" class="font-medium">{c.budget}</label>
+            <select id="ct-budget" name="budget" aria-describedby="ct-budget-hint" class={field}>
+              <option value="">{c.select}</option>
+              {c.budgetOptions.map((o) => <option value={o.value}>{o.label}</option>)}
+            </select>
+            <p id="ct-budget-hint" class="mt-1 text-sm text-muted">{c.budgetHint}</p>
+          </div>
+        </div>
+
+        <div>
+          <label for="ct-notes" class="font-medium">{c.notes}</label>
+          <textarea id="ct-notes" name="notes" rows="5" aria-describedby="ct-notes-hint" class={field}></textarea>
+          <p id="ct-notes-hint" class="mt-1 text-sm text-muted">{c.notesHint}</p>
+        </div>
+
+        <button type="submit" class={btnPrimary}>{c.submit}</button>
+        <p class="text-sm text-muted">{c.privacy}</p>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
