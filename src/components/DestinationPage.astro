@@ -51,7 +51,7 @@ const ld =
     : null;
 ---
 
-<BaseLayout locale={locale} title={c.metaTitle(d.title)} description={d.description}>
+<BaseLayout locale={locale} title={c.metaTitle(d.title)} description={d.description} waHref={wa}>
   {ld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
 
   <article>
