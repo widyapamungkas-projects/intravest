@@ -15,12 +15,13 @@ const year = new Date().getFullYear();
 const linkClass =
   'inline-flex min-h-11 items-center rounded-md text-muted transition-colors hover:text-text active:text-accent';
 
-// TODO: swap text links for icons once the final social accounts exist
+// TODO: swap text links for icons once the final social accounts exist.
+// An account whose URL is still the '#' placeholder is hidden, so there are no dead links on the live site.
 const socials = [
   { name: 'Instagram', href: site.social.instagram },
   { name: 'TikTok', href: site.social.tiktok },
   { name: 'Threads', href: site.social.threads },
-];
+].filter((s) => s.href && s.href !== '#');
 ---
 
 <footer class="border-t border-border bg-surface">
@@ -52,14 +53,18 @@ const socials = [
         <li><a href={wa} class={linkClass} rel="noopener">WhatsApp {site.whatsapp.display}</a></li>
         <li><a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a></li>
       </ul>
-      <h2 class="mb-2 mt-6 text-base font-medium">{t.footer.follow}</h2>
-      <ul class="flex flex-wrap gap-x-4">
-        {
-          socials.map((s) => (
-            <li><a href={s.href} class={linkClass} rel="noopener">{s.name}</a></li>
-          ))
-        }
-      </ul>
+      {
+        socials.length > 0 && (
+          <>
+            <h2 class="mb-2 mt-6 text-base font-medium">{t.footer.follow}</h2>
+            <ul class="flex flex-wrap gap-x-4">
+              {socials.map((s) => (
+                <li><a href={s.href} class={linkClass} rel="noopener">{s.name}</a></li>
+              ))}
+            </ul>
+          </>
+        )
+      }
     </div>
   </div>
 

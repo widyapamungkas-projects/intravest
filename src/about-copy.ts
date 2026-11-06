@@ -30,7 +30,7 @@ export const aboutCopy: Record<Locale, AboutCopy> = {
     eyebrow: 'Indonesia Travel Story',
     title: 'Travel should feel worth it, not just look good on paper.',
     intro:
-      'Intravest is a B2C travel brand built on the operating capability of an established Indonesian wholesale travel business. We created it for travelers who want a trip that makes sense in real life — not the cheapest option, not unnecessary luxury, and not an itinerary designed only to look impressive.',
+      'Intravest is a curated travel operator in Indonesia, run from Bali with our own teams on the ground. We created it for travelers who want a trip that makes sense in real life — not the cheapest option, not unnecessary luxury, and not an itinerary designed only to look impressive.',
     storyTitle: 'Why Intravest exists',
     storyBody: [
       'A good trip is rarely about fitting the most stops into a day. Timing matters. The right hotel matters. Meals matter. Having someone local who knows what actually works matters.',
@@ -61,7 +61,7 @@ export const aboutCopy: Record<Locale, AboutCopy> = {
       'Intravest uses an existing operating network for hotels, transport, restaurants, destination teams, and freelance local guides. Coordination is controlled from Bali, with on-ground support in the destinations we operate.',
     destinations: ['Bali', 'Lombok', 'Labuan Bajo', 'Yogyakarta', 'Surabaya', 'Jakarta–Bandung'],
     note:
-      'Intravest is a separate B2C brand and channel. The operating capability is shared with the existing wholesale business, while the consumer brand, positioning, and pricing policy remain separate.',
+      'Our own team plans and runs each trip on the ground, so what we describe on this site is what you get.',
     promiseTitle: 'Our promise',
     promiseBody:
       'A trip that is planned properly, supported locally, and clear about what you are paying for. Travel that is worth every rupiah.',
@@ -78,7 +78,7 @@ export const aboutCopy: Record<Locale, AboutCopy> = {
     eyebrow: 'Indonesia Travel Story',
     title: 'Liburan harus terasa worth it, bukan cuma terlihat bagus di itinerary.',
     intro:
-      'Intravest adalah brand travel B2C yang dibangun di atas kapabilitas operasional bisnis wholesale travel Indonesia yang sudah berjalan. Kami membuatnya untuk traveler yang ingin perjalanan yang masuk akal saat dijalani — bukan yang paling murah, bukan mewah tanpa perlu, dan bukan itinerary yang hanya bagus dilihat di atas kertas.',
+      'Intravest adalah curated travel operator di Indonesia, dijalankan dari Bali dengan tim kami sendiri di lapangan. Kami membuatnya untuk traveler yang ingin perjalanan yang masuk akal saat dijalani — bukan yang paling murah, bukan mewah tanpa perlu, dan bukan itinerary yang hanya bagus dilihat di atas kertas.',
     storyTitle: 'Kenapa Intravest ada',
     storyBody: [
       'Trip yang enak bukan soal memasukkan sebanyak mungkin tempat dalam satu hari. Timing penting. Hotel yang pas penting. Makan yang layak penting. Punya orang lokal yang tahu kondisi lapangan juga penting.',
@@ -109,7 +109,7 @@ export const aboutCopy: Record<Locale, AboutCopy> = {
       'Intravest menggunakan jaringan operasional existing untuk hotel, transportasi, restoran, tim destinasi, dan guide lokal freelance. Koordinasi dikontrol dari Bali dengan dukungan tim lapangan di destinasi yang kami operasikan.',
     destinations: ['Bali', 'Lombok', 'Labuan Bajo', 'Yogyakarta', 'Surabaya', 'Jakarta–Bandung'],
     note:
-      'Intravest adalah brand dan channel B2C yang terpisah. Kapabilitas operasional digunakan bersama bisnis wholesale existing, sementara brand konsumen, positioning, dan kebijakan harga tetap dipisahkan.',
+      'Tim kami sendiri yang merencanakan dan menjalankan setiap trip di lapangan, jadi yang kami gambarkan di website ini adalah yang kamu dapat.',
     promiseTitle: 'Janji kami',
     promiseBody:
       'Perjalanan yang direncanakan dengan benar, terdampingi secara lokal, dan jelas value dari setiap biaya yang kamu keluarkan. Liburan yang worth it.',
