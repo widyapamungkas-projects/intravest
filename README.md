@@ -81,7 +81,7 @@ Yang sudah diatur oleh `netlify.toml`:
 
 ## Sebelum launch
 
-Item di bawah masih placeholder atau belum diputuskan. Checklist lengkap ada di Lampiran C3 brief.
+Item di bawah masih placeholder atau belum diputuskan. Checklist lengkap dengan status verifikasi ada di [`docs/LAUNCH-CHECKLIST.md`](docs/LAUNCH-CHECKLIST.md) (berdasarkan Lampiran C3 di brief).
 
 - [ ] Nomor WhatsApp, email domain, GA4 ID, dan 3 endpoint Formspree (env vars di atas)
 - [ ] Domain final (`intravest.com` / `.id` / `.co.id`) dan cek trademark DJKI
