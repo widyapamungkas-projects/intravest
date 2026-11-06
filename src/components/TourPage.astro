@@ -83,7 +83,7 @@ const ld = {
           )
         }
       </p>
-      <h1 class="mt-1 text-balance text-4xl font-semibold leading-tight sm:text-5xl">{d.title}</h1>
+      <h1 class="mt-1 text-balance t-h1">{d.title}</h1>
       <p class="mt-4 max-w-[48ch] text-lg text-muted">{d.summary}</p>
 
       <p class="mt-6">
@@ -102,7 +102,7 @@ const ld = {
 
     <!-- Overview (MDX body) -->
     <section class={`${wrap} py-12 sm:py-16`}>
-      <div class="max-w-[68ch] space-y-4 text-lg">
+      <div class="max-w-[68ch] space-y-4 text-base">
         <Content />
       </div>
     </section>
@@ -110,14 +110,14 @@ const ld = {
     <!-- Itinerary -->
     <section class="border-t border-border">
       <div class={`${wrap} py-12 sm:py-16`}>
-        <h2 class="text-2xl font-semibold">{c.itinerary}</h2>
+        <h2 class="t-h2">{c.itinerary}</h2>
         <ol class="mt-8 space-y-10">
           {
             d.itinerary.map((day, i) => (
               <li class="grid gap-3 md:grid-cols-[1fr_2fr] md:gap-12">
                 <div>
                   <p class="text-sm font-medium text-accent">{c.day(i + 1)}</p>
-                  <h3 class="mt-1 text-xl font-semibold">{day.title}</h3>
+                  <h3 class="mt-1 t-h3">{day.title}</h3>
                 </div>
                 <div>
                   <ul class="list-disc space-y-1 pl-5">
@@ -147,13 +147,13 @@ const ld = {
     <section class="border-t border-border">
       <div class={`${wrap} grid gap-10 py-12 sm:py-16 md:grid-cols-2 md:gap-12`}>
         <div>
-          <h2 class="text-xl font-semibold">{c.inclusions}</h2>
+          <h2 class="t-h2">{c.inclusions}</h2>
           <ul class="mt-4 list-disc space-y-2 pl-5">
             {d.inclusions.map((item) => <li>{item}</li>)}
           </ul>
         </div>
         <div>
-          <h2 class="text-xl font-semibold">{c.exclusions}</h2>
+          <h2 class="t-h2">{c.exclusions}</h2>
           <ul class="mt-4 list-disc space-y-2 pl-5">
             {d.exclusions.map((item) => <li>{item}</li>)}
           </ul>
@@ -164,7 +164,7 @@ const ld = {
     <!-- Price -->
     <section class="border-t border-border">
       <div class={`${wrap} py-12 sm:py-16`}>
-        <h2 class="text-xl font-semibold">{c.price}</h2>
+        <h2 class="t-h2">{c.price}</h2>
         <p class="mt-3">
           <span class="text-2xl font-semibold">{formatIDR(locale, d.priceIDR)}</span>
           <span class="text-muted"> {c.perPerson}</span>
@@ -180,7 +180,7 @@ const ld = {
   <section id="inquiry" class="border-t border-border bg-surface-2">
     <div class={`${wrap} grid gap-10 py-16 sm:py-20 md:grid-cols-[1fr_1.2fr] md:gap-16`}>
       <div>
-        <h2 class="text-balance text-2xl font-semibold leading-tight sm:text-3xl">{f.title}</h2>
+        <h2 class="text-balance t-h2">{f.title}</h2>
         <p class="mt-3 text-muted">{f.intro}</p>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>

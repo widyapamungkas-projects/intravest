@@ -64,7 +64,7 @@ const ld =
           {c.crumb}
         </a>
       </nav>
-      <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{d.title}</h1>
+      <h1 class="text-balance t-h1">{d.title}</h1>
       <p class="mt-4 max-w-[48ch] text-lg text-muted">{d.tagline}</p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
@@ -75,7 +75,7 @@ const ld =
 
     <!-- Overview (MDX body) -->
     <section class={`${wrap} py-12 sm:py-16`}>
-      <div class="max-w-[68ch] space-y-4 text-lg">
+      <div class="max-w-[68ch] space-y-4 text-base">
         <Content />
       </div>
     </section>
@@ -85,7 +85,7 @@ const ld =
       sections.map((s) => (
         <section class="border-t border-border">
           <div class={`${wrap} grid gap-4 py-10 md:grid-cols-[1fr_2fr] md:gap-12`}>
-            <h2 class="text-xl font-semibold">{s.title}</h2>
+            <h2 class="t-h2">{s.title}</h2>
             <ul class="space-y-2">
               {s.items.map((item) => (
                 <li>{item}</li>
@@ -99,7 +99,7 @@ const ld =
     <!-- Packages -->
     <section class="border-t border-border">
       <div class={`${wrap} py-12 sm:py-16`}>
-        <h2 class="text-xl font-semibold">{c.packagesTitle}</h2>
+        <h2 class="t-h2">{c.packagesTitle}</h2>
         {
           tours.length > 0 ? (
             <ul class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -126,7 +126,7 @@ const ld =
   <!-- Closing CTA -->
   <section class="border-t border-border bg-surface-2">
     <div class={`${wrap} py-16 sm:py-20`}>
-      <h2 class="max-w-[26ch] text-balance text-2xl font-semibold leading-tight sm:text-3xl">{c.ctaTitle(d.title)}</h2>
+      <h2 class="max-w-[26ch] text-balance t-h2">{c.ctaTitle(d.title)}</h2>
       <p class="mt-3 text-muted">{c.ctaSub}</p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>

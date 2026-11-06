@@ -15,14 +15,14 @@ const btnPrimary =
   'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
 const btnSecondary =
   'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
-const h2 = 'max-w-[26ch] text-balance text-2xl font-semibold leading-tight sm:text-3xl';
+const h2 = 'max-w-[26ch] text-balance t-h2';
 const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
 ---
 
 <!-- 1. Hero -->
 <section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
   <div>
-    <h1 class="text-balance text-4xl font-semibold leading-tight sm:text-5xl">{c.hero.title}</h1>
+    <h1 class="text-balance t-h1">{c.hero.title}</h1>
     <p class="mt-5 text-lg text-muted">{c.hero.sub}</p>
     <div class="mt-8 flex flex-wrap gap-3">
       <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
@@ -40,7 +40,7 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
       {
         c.why.items.map((item) => (
           <li class="border-t border-border pt-5">
-            <h3 class="text-lg font-medium">{item.title}</h3>
+            <h3 class="t-h3">{item.title}</h3>
             <p class="mt-2 text-muted">{item.body}</p>
           </li>
         ))
@@ -64,7 +64,7 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
           <li>
             <a href={routePath(locale, 'destinations', d.slug)} class="group block">
               <Placeholder label={`${d.name}: ${c.destinations.photoSoon}`} class="aspect-[4/5]" />
-              <h3 class="mt-3 text-lg font-medium group-hover:underline">{d.name}</h3>
+              <h3 class="mt-3 t-h3 group-hover:underline">{d.name}</h3>
               <p class="mt-1 text-muted">{d.tagline}</p>
             </a>
           </li>
@@ -83,7 +83,7 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
         c.how.steps.map((s, i) => (
           <li>
             <span class="text-3xl font-semibold text-accent" aria-hidden="true">{i + 1}</span>
-            <h3 class="mt-2 text-lg font-medium">{s.title}</h3>
+            <h3 class="mt-2 t-h3">{s.title}</h3>
             <p class="mt-2 text-muted">{s.body}</p>
           </li>
         ))
