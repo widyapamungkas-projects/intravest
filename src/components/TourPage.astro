@@ -62,18 +62,21 @@ const ld = {
       <nav aria-label="Breadcrumb">
         <a
           href={routePath(locale, 'tours')}
-          class="inline-flex min-h-11 items-center rounded-md text-muted hover:text-text hover:underline"
+          class="inline-flex min-h-11 min-w-11 items-center rounded-md text-muted hover:text-text hover:underline"
         >
           {c.crumb}
         </a>
       </nav>
-      <p class="text-muted">
-        {d.code} · {duration}
+      <p class="flex flex-wrap items-center gap-x-2 text-muted">
+        <span>{d.code} · {duration}</span>
         {
           destination && (
             <>
-              {' · '}
-              <a href={routePath(locale, 'destinations', d.destination)} class="hover:text-text hover:underline">
+              <span aria-hidden="true">·</span>
+              <a
+                href={routePath(locale, 'destinations', d.destination)}
+                class="inline-flex min-h-11 min-w-11 items-center hover:text-text hover:underline"
+              >
                 {destination.data.title}
               </a>
             </>
