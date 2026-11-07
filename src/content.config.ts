@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 
 // Entry ids look like "en/bali" and "id/bali": the folder is the locale, the file name is the URL slug.
 const destinations = defineCollection({
-  loader: glob({ base: './src/content/destinations', pattern: '**/*.mdx' }),
+  loader: glob({ base: './src/content/destinations', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
     tagline: z.string(),
@@ -19,7 +19,7 @@ const destinations = defineCollection({
 // Tour packages. Same id scheme as destinations ("en/bali-essentials"), and the EN and ID files for one
 // package MUST share the same file name, because hreflang maps the slug 1:1 between locales.
 const tours = defineCollection({
-  loader: glob({ base: './src/content/tours', pattern: '**/*.mdx' }),
+  loader: glob({ base: './src/content/tours', pattern: '**/*.{md,mdx}' }),
   schema: z
     .object({
       code: z.string(), // e.g. BAL-01
@@ -55,7 +55,7 @@ const tours = defineCollection({
 // Travel Stories (blog). Unlike destinations and tours, an article may exist in one locale only,
 // so the EN and ID slugs do not have to match. Pages without a translation get no hreflang alternate.
 const stories = defineCollection({
-  loader: glob({ base: './src/content/stories', pattern: '**/*.mdx' }),
+  loader: glob({ base: './src/content/stories', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
     description: z.string().max(160), // meta description + card excerpt

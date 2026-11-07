@@ -26,6 +26,12 @@ Berdasarkan Lampiran C3 di `intravest-project-brief.md`, dicocokkan dengan kondi
 - [ ] **(setelah deploy)** Verifikasi domain di Google Search Console, submit `/sitemap-index.xml`
 - [ ] **(kamu)** Isi `PUBLIC_GA4_ID` di Netlify. Kodenya sudah siap dan hanya aktif di build production. **(setelah deploy)** Cek pageview masuk di GA4 Realtime
 
+## Dashboard konten
+
+- [x] Konfigurasi Pages CMS (`.pages.yml`) untuk Destinasi, Paket Wisata, dan Cerita Perjalanan, EN dan ID. Semua field dicocokkan dengan 21 file konten asli
+- [x] Pengaman build: pasangan EN/ID harus lengkap dan destinasi paket harus valid (diuji dengan merusak sengaja, lalu dipulihkan)
+- [ ] **(kamu)** Login ke app.pagescms.org dengan GitHub, pasang app untuk repo `intravest`, lalu coba ubah satu paket dan simpan. Ini satu-satunya bagian yang tidak bisa kutes dari sini
+
 ## Teknis
 
 - [x] Tidak ada tautan internal yang rusak (semua tautan dan aset di 35 halaman diperiksa terhadap hasil build)

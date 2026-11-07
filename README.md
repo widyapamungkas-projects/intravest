@@ -60,10 +60,33 @@ netlify.toml           Build, redirect bahasa, security headers
 
 Nama folder = locale, nama file = slug URL. Schema lengkap ada di `src/content.config.ts`; build gagal kalau frontmatter salah.
 
-- **Paket baru:** buat `src/content/tours/en/<slug>.mdx` **dan** `src/content/tours/id/<slug>.mdx` dengan nama file yang **sama** (hreflang memetakan slug 1:1). Isi dari template Lampiran C4 di brief. `itinerary` harus punya satu entry per hari.
+- **Paket baru:** buat `src/content/tours/en/<slug>.md` **dan** `src/content/tours/id/<slug>.md` dengan nama file yang **sama** (hreflang memetakan slug 1:1). Isi dari template Lampiran C4 di brief. `itinerary` harus punya satu entry per hari.
 - **Destinasi:** sama, di `src/content/destinations/`. `description` maksimal 160 karakter.
-- **Artikel (Travel Stories):** `src/content/stories/en|id/<slug>.mdx`. Boleh hanya satu bahasa; slug EN dan ID tidak harus sama. Artikel satu bahasa otomatis tidak dapat hreflang.
+- **Artikel (Travel Stories):** `src/content/stories/en|id/<slug>.md`. Boleh hanya satu bahasa; slug EN dan ID tidak harus sama. Artikel satu bahasa otomatis tidak dapat hreflang.
 - **Harga:** `priceIsDraft: true` menandai harga belum final di halaman. Ubah ke `false` setelah harga disetujui.
+
+## Mengelola konten lewat dashboard (tanpa coding)
+
+Situs ini tidak punya backend. Konten adalah file di repo GitHub, dan setiap perubahan yang tersimpan otomatis membangun ulang situs di Netlify. Untuk mengisi dan mengedit konten lewat tampilan form, pakai [Pages CMS](https://pagescms.org) (gratis, tidak perlu mengubah kode situs). Konfigurasinya sudah ada di `.pages.yml`.
+
+**Sekali saja:**
+
+1. Buka [app.pagescms.org](https://app.pagescms.org) dan masuk dengan akun GitHub yang punya akses ke repo ini.
+2. Pasang GitHub App Pages CMS dan beri akses ke repo `intravest`. Untuk repo di organisasi, ini perlu akun owner organisasi.
+3. Pilih repo `intravest`, branch `main`. Menu konten akan muncul: Destinasi, Paket Wisata, dan Cerita Perjalanan, masing-masing per bahasa (EN dan ID).
+
+**Sehari-hari:** buka entri, ubah isinya, klik simpan. Pages CMS menyimpan sebagai commit ke `main`, lalu Netlify membangun ulang (sekitar 1 menit).
+
+Aturan yang dijaga otomatis saat build:
+
+- **Destinasi dan Paket Wisata harus ada di EN dan ID dengan nama file yang sama.** Nama file dibuat dari kolom "Nama", jadi isi nama yang sama di kedua bahasa. Kalau ada yang kurang, build gagal dengan pesan jelas dan **situs yang sedang online tidak berubah** (Netlify tidak mempublikasikan build yang gagal).
+- Paket harus menunjuk destinasi yang ada, dan jumlah entri itinerary harus sama dengan jumlah hari.
+- Deskripsi SEO maksimal 160 karakter.
+- Artikel Travel Stories boleh hanya satu bahasa.
+
+Hal yang belum bisa lewat dashboard: foto di halaman. Semua foto masih placeholder di kode. Saat foto asli sudah ada, kolom gambar perlu ditambahkan ke konten dan komponen halaman (pekerjaan kecil, minta saja).
+
+Nomor WhatsApp, GA4, dan endpoint form bukan konten: diisi di dashboard Netlify (Environment variables), bukan di CMS.
 
 ## Deploy ke Netlify
 
