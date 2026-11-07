@@ -1,5 +1,6 @@
 ---
 import Photo from './Photo.astro';
+import DestinationTile from './DestinationTile.astro';
 import { routePath, type Locale } from '../i18n';
 import { homeCopy } from '../home-copy';
 import { getCollection } from 'astro:content';
@@ -24,17 +25,48 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
 ---
 
 <!-- 1. Hero -->
-<section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-  <div>
-    <h1 class="text-balance t-h1">{c.hero.title}</h1>
-    <p class="mt-5 text-lg text-muted">{c.hero.sub}</p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
-      <a href={routePath(locale, 'destinations')} class={btnSecondary}>{c.hero.ctaSecondary}</a>
-    </div>
-  </div>
-  <Photo src={homeData.heroImage} alt={homeData.heroAlt} label={c.hero.photo} class="aspect-[4/3] rounded-md" sizes="(min-width: 1024px) 560px, 100vw" priority />
-</section>
+{
+  homeData.heroImage ? (
+    <section class="relative isolate overflow-hidden bg-neutral-900">
+      <Photo
+        src={homeData.heroImage}
+        alt={homeData.heroAlt}
+        label={c.hero.photo}
+        class="absolute inset-0 -z-10"
+        sizes="100vw"
+        priority
+      />
+      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/45 to-black/10 max-sm:from-black/70 max-sm:via-black/55 max-sm:to-black/40" />
+      <div class="mx-auto flex min-h-[26rem] max-w-6xl items-end px-4 py-16 sm:min-h-[34rem] sm:px-6 sm:py-24 lg:min-h-[38rem]">
+        <div class="max-w-[34rem]">
+          <h1 class="text-balance t-h1 text-white">{c.hero.title}</h1>
+          <p class="mt-5 text-lg text-white/90">{c.hero.sub}</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
+            <a
+              href={routePath(locale, 'destinations')}
+              class="inline-flex min-h-11 items-center justify-center rounded-md border border-white/70 bg-white/10 px-5 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            >
+              {c.hero.ctaSecondary}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+      <div>
+        <h1 class="text-balance t-h1">{c.hero.title}</h1>
+        <p class="mt-5 text-lg text-muted">{c.hero.sub}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
+          <a href={routePath(locale, 'destinations')} class={btnSecondary}>{c.hero.ctaSecondary}</a>
+        </div>
+      </div>
+      <Photo label={c.hero.photo} class="aspect-[4/3] rounded-md" />
+    </section>
+  )
+}
 
 <!-- 2. Why Intravest -->
 <section class="border-t border-border">
@@ -66,11 +98,16 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
       {
         c.destinations.items.map((d) => (
           <li>
-            <a href={routePath(locale, 'destinations', d.slug)} class="group block">
-              <Photo src={destPhoto(d.slug)?.image} alt={destPhoto(d.slug)?.imageAlt} label={`${d.name}: ${c.destinations.photoSoon}`} class="aspect-[4/5] rounded-md" sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw" />
-              <h3 class="mt-3 t-h3 group-hover:underline">{d.name}</h3>
-              <p class="mt-1 text-muted">{d.tagline}</p>
-            </a>
+            <DestinationTile
+              href={routePath(locale, 'destinations', d.slug)}
+              name={d.name}
+              tagline={d.tagline}
+              image={destPhoto(d.slug)?.image}
+              imageAlt={destPhoto(d.slug)?.imageAlt}
+              soon={c.destinations.photoSoon}
+              class="aspect-[4/5]"
+              sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw"
+            />
           </li>
         ))
       }
