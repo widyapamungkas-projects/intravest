@@ -1,0 +1,50 @@
+slug: jakarta-bandung
+order: 6
+image: /src/assets/images/angklung-udjo-compressed.jpg
+en:
+  title: Jakarta-Bandung
+  tagline: Old Jakarta, then cool highlands, tea hills, and Bandung's food scene.
+  description: "Jakarta and Bandung trips with a local guide: Jakarta's old town, volcano craters, tea plantations, and Bandung's food and cafes, at a relaxed pace."
+  see:
+    - Kota Tua, Jakarta's old town
+    - Tangkuban Perahu crater near Lembang
+    - Tea plantations around Ciwidey
+    - Kawah Putih crater lake
+  activities:
+    - A Kota Tua heritage walk
+    - A tea plantation walk and tasting
+    - An angklung workshop in Bandung
+    - A Bandung food and cafe route
+  shopping:
+    - Bandung factory outlets
+    - Angklung and bamboo crafts
+    - Tea from Ciwidey or Lembang
+  imageAlt: Angklung Udjo Audience Interaction
+  body: |-
+    The drive between Jakarta and Bandung depends heavily on traffic, so we schedule it outside peak hours and keep that day light.
+
+    Bandung is cooler than Jakarta and good for slower mornings and long lunches.
+  needsReview: false
+id:
+  title: Jakarta-Bandung
+  tagline: Jakarta tua, lalu dataran tinggi yang sejuk, kebun teh, dan kuliner Bandung.
+  description: "Trip Jakarta dan Bandung dengan guide lokal: kota tua Jakarta, kawah gunung, kebun teh, serta kuliner dan kafe Bandung, dengan ritme santai."
+  see:
+    - Kota Tua Jakarta
+    - Kawah Tangkuban Perahu dekat Lembang
+    - Kebun teh di sekitar Ciwidey
+    - Danau kawah Kawah Putih
+  activities:
+    - Jalan kaki menyusuri Kota Tua
+    - Jalan di kebun teh dan mencicipi tehnya
+    - Workshop angklung di Bandung
+    - Rute kuliner dan kafe Bandung
+  shopping:
+    - Factory outlet Bandung
+    - Kerajinan angklung dan bambu
+    - Teh dari Ciwidey atau Lembang
+  body: |-
+    Perjalanan Jakarta-Bandung sangat bergantung pada lalu lintas, jadi kami jadwalkan di luar jam sibuk dan membuat hari itu tidak terlalu padat.
+
+    Bandung lebih sejuk dari Jakarta, cocok untuk pagi yang pelan dan makan siang yang lama.
+  needsReview: false

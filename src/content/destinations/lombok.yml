@@ -1,0 +1,50 @@
+slug: lombok
+order: 2
+image: /src/assets/images/billebante.jpg
+en:
+  title: Lombok
+  tagline: Beaches, waterfalls, and a slower pace.
+  description: "Lombok trips with a local guide: Sasak villages, quiet south-coast beaches, waterfalls, and Rinjani views, with time to enjoy each stop."
+  see:
+    - Sade, a traditional Sasak village
+    - Tanjung Aan and Selong Belanak beaches
+    - Benang Stokel and Benang Kelambu waterfalls
+    - Mount Rinjani views from the Sembalun valley
+  activities:
+    - Snorkeling day trip to the Gili islands
+    - A beginner surf lesson at Selong Belanak
+    - A Sembalun valley walk, no summit climb needed
+    - Sunset at a south-coast beach
+  shopping:
+    - Banyumulek pottery
+    - Songket weaving in Sukarara
+    - Pearls from Sekarbela
+  imageAlt: Billebante
+  body: |-
+    Lombok is more spread out than it looks. The south coast, the waterfalls, and the boats to the Gili islands are in different directions, so we group stops by area and keep drives short.
+
+    It suits travelers who prefer open beaches and slower days over a packed schedule.
+  needsReview: false
+id:
+  title: Lombok
+  tagline: Pantai, air terjun, dan ritme yang lebih santai.
+  description: "Trip Lombok dengan guide lokal: desa Sasak, pantai selatan yang tenang, air terjun, dan pemandangan Rinjani, dengan waktu cukup di tiap tempat."
+  see:
+    - Sade, desa tradisional suku Sasak
+    - Pantai Tanjung Aan dan Selong Belanak
+    - Air terjun Benang Stokel dan Benang Kelambu
+    - Pemandangan Gunung Rinjani dari lembah Sembalun
+  activities:
+    - Snorkeling sehari ke Gili
+    - Belajar surfing pemula di Selong Belanak
+    - Jalan santai di lembah Sembalun, tanpa mendaki puncak
+    - Sunset di pantai selatan
+  shopping:
+    - Gerabah Banyumulek
+    - Tenun songket di Sukarara
+    - Mutiara dari Sekarbela
+  body: |-
+    Lombok lebih tersebar dari kelihatannya. Pantai selatan, air terjun, dan kapal ke Gili ada di arah yang berbeda, jadi kami kelompokkan tempat berdasarkan area dan menjaga perjalanan darat tetap singkat.
+
+    Cocok untuk traveler yang lebih suka pantai lapang dan hari yang santai daripada jadwal padat.
+  needsReview: false

@@ -1,78 +1,68 @@
-// Runs before every build (npm "prebuild"). Fails with a plain-language message when content edited by hand
-// or through the CMS dashboard would produce broken links, which the schema alone cannot catch:
-//   1. Destinations and tours must exist in BOTH languages with the SAME file name (hreflang and the language
-//      switcher map the slug 1:1, so a one-language entry would link to a page that does not exist).
-//   2. Every tour must point at a destination that exists.
-//   3. Photos referenced in content must exist in src/assets/images and have alt text.
-// Travel Stories are exempt on purpose: an article may exist in one language only.
+// Runs before every build (npm "prebuild"). Catches content mistakes the schema cannot, in plain language.
+//   ERRORS (stop the build; the live site stays as it is):
+//     - a tour points at a destination that does not exist
+//     - a photo file named in the content is missing from src/assets/images
+//     - an item has no title in either language
+//   WARNINGS (build continues):
+//     - photo without description (page title is used instead)
+//     - a language still using the other language's text, or an unchecked machine translation
+// Destinations and tours are one yml file per item with both languages (src/loaders/bilingual.ts), so EN/ID
+// pairs and shared facts (price, days) cannot drift apart. Travel Stories stay one file per language.
 import fs from 'node:fs';
 import path from 'node:path';
+import YAML from 'yaml';
 
-const root = path.resolve(import.meta.dirname, '..', 'src', 'content');
-const slugs = (collection, locale) => {
-  const dir = path.join(root, collection, locale);
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter((f) => /\.(md|mdx)$/.test(f)).map((f) => f.replace(/\.(md|mdx)$/, ''));
-};
-
+const src = path.resolve(import.meta.dirname, '..', 'src');
 const errors = [];
-for (const [collection, label] of [['destinations', 'Destinasi'], ['tours', 'Paket wisata']]) {
-  const en = slugs(collection, 'en');
-  const id = slugs(collection, 'id');
-  for (const s of en) if (!id.includes(s)) errors.push(`${label} "${s}" ada di EN tapi belum ada di ID (src/content/${collection}/id/${s}.md).`);
-  for (const s of id) if (!en.includes(s)) errors.push(`${label} "${s}" ada di ID tapi belum ada di EN (src/content/${collection}/en/${s}.md).`);
-}
+const warn = (m) => console.warn(`PERINGATAN ${m}`);
 
-const destinations = new Set(slugs('destinations', 'en'));
-for (const locale of ['en', 'id']) {
-  for (const s of slugs('tours', locale)) {
-    const file = ['md', 'mdx'].map((e) => path.join(root, 'tours', locale, `${s}.${e}`)).find(fs.existsSync);
-    const m = fs.readFileSync(file, 'utf8').match(/^destination:\s*["']?([^"'\r\n]+?)["']?\s*$/m);
-    if (!m) errors.push(`Paket "${locale}/${s}" tidak punya field destination.`);
-    else if (!destinations.has(m[1])) errors.push(`Paket "${locale}/${s}" menunjuk destinasi "${m[1]}" yang tidak ada. Pilihan: ${[...destinations].join(', ')}.`);
+const readYml = (collection) => {
+  const dir = path.join(src, 'content', collection);
+  return fs.readdirSync(dir).filter((f) => f.endsWith('.yml')).map((f) => ({
+    slug: f.replace(/\.yml$/, ''),
+    data: YAML.parse(fs.readFileSync(path.join(dir, f), 'utf8')) ?? {},
+  }));
+};
+const destinations = readYml('destinations');
+const tours = readYml('tours');
+const destSlugs = new Set(destinations.map((d) => d.slug));
+
+for (const [label, items] of [['Destinasi', destinations], ['Paket', tours]]) {
+  for (const { slug, data } of items) {
+    const filled = ['en', 'id'].filter((l) => data[l]?.title?.trim());
+    if (!filled.length) errors.push(`${label} "${slug}": isi judul minimal di salah satu bahasa (EN atau ID).`);
+    for (const l of ['en', 'id']) {
+      if (!filled.includes(l) && filled.length) warn(`${label} "${slug}": teks ${l.toUpperCase()} masih kosong, sementara memakai teks ${filled[0].toUpperCase()}. Isi manual atau tunggu terjemah otomatis.`);
+      else if (data[l]?.needsReview) warn(`${label} "${slug}": teks ${l.toUpperCase()} hasil terjemah otomatis, belum dicek orang. Setelah dicek, matikan "Perlu dicek".`);
+    }
   }
 }
-
-// 3. Facts that must be identical in both languages (price, length, code...) are stored in two files, so a
-//    one-language edit would show two different prices. Compare them.
-const SAME_IN_BOTH = ['code', 'destination', 'days', 'nights', 'priceIDR', 'priceIsDraft', 'minPax', 'order'];
-const scalar = (text, key) => {
-  const m = text.match(new RegExp(`^${key}:\\s*["']?([^"'\\r\\n#]+?)["']?\\s*(?:#.*)?$`, 'm'));
-  return m ? m[1] : undefined;
-};
-const readTour = (locale, s) => {
-  const file = ['md', 'mdx'].map((e) => path.join(root, 'tours', locale, `${s}.${e}`)).find(fs.existsSync);
-  return file ? fs.readFileSync(file, 'utf8').split(/^---\s*$/m)[1] ?? '' : null;
-};
-for (const s of slugs('tours', 'en').filter((x) => slugs('tours', 'id').includes(x))) {
-  const en = readTour('en', s);
-  const id = readTour('id', s);
-  for (const key of SAME_IN_BOTH) {
-    const a = scalar(en, key);
-    const b = scalar(id, key);
-    if (a !== b) errors.push(`Paket "${s}": field "${key}" beda antara EN (${a ?? 'kosong'}) dan ID (${b ?? 'kosong'}). Ubah di kedua bahasa.`);
-  }
+for (const { slug, data } of tours) {
+  if (!destSlugs.has(data.destination)) errors.push(`Paket "${slug}" menunjuk destinasi "${data.destination}" yang tidak ada. Pilihan: ${[...destSlugs].join(', ')}.`);
 }
 
-// 4. Photos: a referenced file must exist in src/assets/images, and a missing description only warns (the page title is used), so a half-finished CMS edit never blocks a deploy.
-const imgDir = path.resolve(import.meta.dirname, '..', 'src', 'assets', 'images');
+// Photos: a referenced file must exist in src/assets/images; a missing description only warns.
+const imgDir = path.join(src, 'assets', 'images');
 const imgFiles = fs.existsSync(imgDir) ? fs.readdirSync(imgDir).map((f) => f.toLowerCase()) : [];
 const checkImage = (where, image, alt) => {
   if (!image) return;
   const name = image.split('/').pop().toLowerCase();
   if (!imgFiles.includes(name)) errors.push(`${where}: foto "${image}" tidak ditemukan di src/assets/images. Unggah fotonya atau kosongkan kolom foto.`);
-  if (!alt || !alt.trim()) console.warn(`PERINGATAN ${where}: foto "${image}" belum punya "Deskripsi foto". Situs memakai judul halaman sebagai pengganti. Sebaiknya diisi.`);
+  if (!alt || !alt.trim()) warn(`${where}: foto "${image}" belum punya "Deskripsi foto". Situs memakai judul halaman sebagai pengganti.`);
 };
-for (const collection of ['destinations', 'tours', 'stories']) {
-  for (const locale of ['en', 'id']) {
-    for (const s of slugs(collection, locale)) {
-      const file = ['md', 'mdx'].map((e) => path.join(root, collection, locale, `${s}.${e}`)).find(fs.existsSync);
-      const fm = fs.readFileSync(file, 'utf8').split(/^---\s*$/m)[1] ?? '';
-      checkImage(`${collection}/${locale}/${s}`, scalar(fm, 'image'), scalar(fm, 'imageAlt'));
-    }
+for (const [col, items] of [['destinations', destinations], ['tours', tours]]) {
+  for (const { slug, data } of items) for (const l of ['en', 'id']) checkImage(`${col}/${slug} (${l.toUpperCase()})`, data.image, data[l]?.imageAlt);
+}
+const storiesDir = path.join(src, 'content', 'stories');
+for (const l of ['en', 'id']) {
+  const d = path.join(storiesDir, l);
+  if (!fs.existsSync(d)) continue;
+  for (const f of fs.readdirSync(d).filter((x) => /\.(md|mdx)$/.test(x))) {
+    const fm = YAML.parse((fs.readFileSync(path.join(d, f), 'utf8').split(/^---\s*$/m)[1]) ?? '') ?? {};
+    checkImage(`stories/${l}/${f}`, fm.image, fm.imageAlt);
   }
 }
-const homeFile = path.resolve(import.meta.dirname, '..', 'src', 'data', 'home.json');
+const homeFile = path.join(src, 'data', 'home.json');
 if (fs.existsSync(homeFile)) {
   const h = JSON.parse(fs.readFileSync(homeFile, 'utf8'));
   checkImage('Halaman Depan (hero)', h.heroImage, h.heroAlt);
@@ -81,7 +71,7 @@ if (fs.existsSync(homeFile)) {
 }
 
 if (errors.length) {
-  console.error('\nKONTEN TIDAK KONSISTEN, build dihentikan:\n' + errors.map((e) => `  - ${e}`).join('\n') + '\n');
+  console.error('\nKONTEN BERMASALAH, build dihentikan:\n' + errors.map((e) => `  - ${e}`).join('\n') + '\n');
   process.exit(1);
 }
-console.log('check-content: OK (pasangan EN/ID lengkap, destinasi paket valid)');
+console.log('check-content: OK');

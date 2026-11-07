@@ -46,23 +46,26 @@ src/
   pages/en|id/...      Route per bahasa (slug ID diterjemahkan: /id/paket-wisata/, /id/destinasi/, ...)
   components/          Komponen halaman, Header, Footer, WhatsAppFloat
   layouts/BaseLayout   <head>: SEO, hreflang, OG, GA4, JSON-LD
-  content/             MDX: destinations, tours, stories (folder en/ dan id/)
+  content/             destinations/ dan tours/ (satu .yml per item, EN+ID), stories/ (md per bahasa)
+  loaders/             Pembaca konten dua bahasa
   *-copy.ts            Teks UI per halaman, per bahasa
   i18n.ts              Locale, tabel slug per bahasa, pasangan EN<->ID
   site.ts              Kontak, sosial media, deskripsi default (satu tempat untuk diedit)
   schema.ts            JSON-LD homepage
   styles/global.css    Design tokens (OKLCH, light + dark)
+scripts/               check-content (pengaman build), translate (terjemah AI)
+.github/workflows/     Terjemah otomatis
 public/                favicon, robots.txt, og/ (gambar share)
 netlify.toml           Build, redirect bahasa, security headers
 ```
 
 ## Menambah konten
 
-Nama folder = locale, nama file = slug URL. Schema lengkap ada di `src/content.config.ts`; build gagal kalau frontmatter salah.
+Destinasi dan paket wisata: **satu file per item**, `src/content/tours/<slug>.yml` atau `src/content/destinations/<slug>.yml`. Isinya data umum (kode, harga, hari, malam, foto, urutan) sekali saja, lalu bagian `en:` dan `id:` untuk teks. Schema ada di `src/content.config.ts` dan build gagal kalau salah.
 
-- **Paket baru:** buat `src/content/tours/en/<slug>.md` **dan** `src/content/tours/id/<slug>.md` dengan nama file yang **sama** (hreflang memetakan slug 1:1). Isi dari template Lampiran C4 di brief. `itinerary` harus punya satu entry per hari.
+- **Paket baru:** salin salah satu file di `src/content/tours/`, ganti isinya. `itinerary` harus punya satu entri per hari.
 - **Destinasi:** sama, di `src/content/destinations/`. `description` maksimal 160 karakter.
-- **Artikel (Travel Stories):** `src/content/stories/en|id/<slug>.md`. Boleh hanya satu bahasa; slug EN dan ID tidak harus sama. Artikel satu bahasa otomatis tidak dapat hreflang.
+- **Artikel (Travel Stories):** `src/content/stories/en|id/<slug>.md`, satu file per bahasa. Boleh hanya satu bahasa; artikel satu bahasa otomatis tidak dapat hreflang.
 - **Harga:** `priceIsDraft: true` menandai harga belum final di halaman. Ubah ke `false` setelah harga disetujui.
 
 ## Mengelola konten lewat dashboard (tanpa coding)
@@ -73,19 +76,36 @@ Situs ini tidak punya backend. Konten adalah file di repo GitHub, dan setiap per
 
 1. Buka [app.pagescms.org](https://app.pagescms.org) dan masuk dengan akun GitHub yang punya akses ke repo ini.
 2. Pasang GitHub App Pages CMS dan beri akses ke repo `intravest`. Untuk repo di organisasi, ini perlu akun owner organisasi.
-3. Pilih repo `intravest`, branch `main`. Menu konten akan muncul: Destinasi, Paket Wisata, dan Cerita Perjalanan, masing-masing per bahasa (EN dan ID).
+3. Pilih repo `intravest`, branch `main`. Menu konten akan muncul: Destinasi, Paket Wisata, Cerita Perjalanan (EN dan ID), dan Halaman Depan.
 
 **Sehari-hari:** buka entri, ubah isinya, klik simpan. Pages CMS menyimpan sebagai commit ke `main`, lalu Netlify membangun ulang (sekitar 1 menit).
 
+**Satu form untuk dua bahasa.** Di Destinasi dan Paket Wisata, bagian atas form berisi data umum yang berlaku untuk EN dan ID (harga, hari, foto, urutan), dan di bawahnya ada bagian "Teks Inggris (EN)" dan "Teks Indonesia (ID)". Harga atau foto cukup diisi sekali.
+
+**Terjemahan otomatis.** Tulis satu bahasa saja, kosongkan Nama/Judul bahasa lainnya, simpan. GitHub Action `translate.yml` memanggil gateway AI-mu dan mengisi bahasa yang kosong, ditandai "Terjemahan otomatis, perlu dicek". Baca hasilnya, perbaiki kalau perlu, lalu matikan "Perlu dicek". Selama masih menyala dan teks sumber berubah, terjemahannya dibuat ulang. Setelah dimatikan, tidak pernah ditimpa lagi. Selama menunggu terjemahan, halaman bahasa kosong memakai teks bahasa lain, jadi tombol ganti bahasa tidak pernah mengarah ke halaman yang tidak ada.
+
+Pasang sekali di GitHub: **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Isi |
+|---|---|
+| `AI_BASE_URL` | Alamat dasar gateway, mis. `https://gateway.contoh.com/v1` (dipanggil `POST {AI_BASE_URL}/chat/completions`, format OpenAI) |
+| `AI_API_KEY` | Kunci API gateway |
+| `AI_MODEL` | Nama model yang dipakai gateway |
+| `AI_API_STYLE` | Opsional. `anthropic` kalau gateway-mu memakai format Anthropic (`/v1/messages`). Kosong = format OpenAI |
+
+Tanpa secret ini Action tidak melakukan apa-apa. Bisa dijalankan manual di tab **Actions → Translate content → Run workflow**, atau di komputer: `AI_BASE_URL=... AI_API_KEY=... AI_MODEL=... node scripts/translate.mjs` (`--dry` untuk melihat apa yang akan diterjemahkan). Hasil terjemahan selalu draf: baca dulu sebelum menganggapnya final, terutama itinerary dan angka.
+
 Aturan yang dijaga otomatis saat build:
 
-- **Destinasi dan Paket Wisata harus ada di EN dan ID dengan nama file yang sama.** Nama file dibuat dari kolom "Nama", jadi isi nama yang sama di kedua bahasa. Kalau ada yang kurang, build gagal dengan pesan jelas dan **situs yang sedang online tidak berubah** (Netlify tidak mempublikasikan build yang gagal).
-- **Data inti paket harus sama di EN dan ID:** kode, destinasi, jumlah hari dan malam, harga, status draf harga, dasar peserta, dan urutan. Kalau kamu mengubah harga di satu bahasa saja, build gagal dan menyebut field mana yang beda. Teks (nama, ringkasan, itinerary, isi) boleh dan memang berbeda per bahasa.
 - Paket harus menunjuk destinasi yang ada, dan jumlah entri itinerary harus sama dengan jumlah hari.
+- Foto yang dipilih harus ada di `src/assets/images`. Kalau tidak, build gagal dengan pesan jelas dan **situs yang sedang online tidak berubah** (Netlify tidak mempublikasikan build yang gagal).
 - Deskripsi SEO maksimal 160 karakter.
+- Peringatan (build tetap jalan): foto tanpa deskripsi, bahasa yang masih memakai teks bahasa lain, terjemahan otomatis yang belum dicek.
 - Artikel Travel Stories boleh hanya satu bahasa.
 
-Hal yang belum bisa lewat dashboard: foto di halaman. Semua foto masih placeholder di kode. Saat foto asli sudah ada, kolom gambar perlu ditambahkan ke konten dan komponen halaman (pekerjaan kecil, minta saja).
+**Foto:** setiap destinasi, paket, dan artikel punya kolom **Foto utama** dan **Deskripsi foto**. Klik kolom foto, unggah dari komputer atau HP, isi deskripsi satu kalimat, simpan. Foto masuk ke `src/assets/images/`. Server Pages CMS menolak unggahan besar (error 413, sekitar di atas 4 MB), jadi kecilkan dulu atau unggah langsung lewat GitHub (Add file → Upload files). Saat build, situs membuat versi WebP berbagai ukuran otomatis dan memberi ukuran tetap supaya halaman tidak loncat. Foto besar di halaman depan diatur di menu **Halaman Depan**. Selama kolom foto kosong, tampil kotak placeholder.
+
+Foto artikel yang dipakai sebagai gambar share (OG) tetap kolom terpisah `ogImage` (path ke `public/og/`, 1200x630).
 
 Nomor WhatsApp, GA4, dan endpoint form bukan konten: diisi di dashboard Netlify (Environment variables), bukan di CMS.
 

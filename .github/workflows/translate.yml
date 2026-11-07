@@ -1,0 +1,45 @@
+# Draft translation of destinations/tours through your AI gateway (see scripts/translate.mjs).
+# Runs when a destination or tour file changes on main, and by hand (Actions tab > Run workflow).
+# Needs these repository secrets: AI_BASE_URL, AI_API_KEY, AI_MODEL (optional: AI_API_STYLE = openai | anthropic).
+# Without the secrets it does nothing.
+name: Translate content
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/content/destinations/*.yml'
+      - 'src/content/tours/*.yml'
+  workflow_dispatch:
+concurrency:
+  group: translate
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  translate:
+    # A translated file pushed by this job must not start another round.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --ignore-scripts
+      - name: Translate empty or outdated texts
+        env:
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+          AI_API_STYLE: ${{ secrets.AI_API_STYLE }}
+        run: node scripts/translate.mjs
+      - name: Commit translations
+        run: |
+          if [ -n "$(git status --porcelain src/content)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/content
+            git commit -m "Auto-translate content (draft, needs review)"
+            git pull --rebase origin main
+            git push
+          fi

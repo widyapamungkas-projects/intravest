@@ -29,7 +29,9 @@ Berdasarkan Lampiran C3 di `intravest-project-brief.md`, dicocokkan dengan kondi
 ## Dashboard konten
 
 - [x] Konfigurasi Pages CMS (`.pages.yml`) untuk Destinasi, Paket Wisata, dan Cerita Perjalanan, EN dan ID. Semua field dicocokkan dengan 21 file konten asli
-- [x] Pengaman build: pasangan EN/ID harus lengkap dan destinasi paket harus valid (diuji dengan merusak sengaja, lalu dipulihkan)
+- [x] Destinasi dan paket: satu file per item (data umum sekali, teks EN dan ID di form yang sama). Pengaman build: destinasi paket valid, foto harus ada
+- [x] Terjemah otomatis lewat gateway AI (`scripts/translate.mjs` + GitHub Action). Diuji dengan gateway tiruan: isi bahasa kosong, coba ulang kalau struktur salah, buat ulang kalau sumber berubah, tidak menimpa teks yang sudah dicek, gagal dengan aman kalau kunci salah
+- [ ] **(kamu)** Isi secret GitHub `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL` (lihat README), lalu tes dengan satu paket: kosongkan teks ID, simpan, tunggu Action. Kualitas terjemahan dengan modelmu belum teruji
 - [ ] **(kamu)** Login ke app.pagescms.org dengan GitHub, pasang app untuk repo `intravest`, lalu coba ubah satu paket dan simpan. Ini satu-satunya bagian yang tidak bisa kutes dari sini
 
 ## Teknis

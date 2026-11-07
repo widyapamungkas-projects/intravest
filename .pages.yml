@@ -1,6 +1,6 @@
 # Konfigurasi dashboard Pages CMS (https://pagescms.org).
 # Field di sini harus sama dengan schema di src/content.config.ts. Kalau schema berubah, ubah file ini juga.
-# Pasangan EN/ID untuk Destinasi dan Paket Wisata WAJIB punya nama file yang sama (dicek otomatis saat build).
+# Destinasi dan Paket Wisata: satu file per item berisi data umum + teks EN + teks ID (lihat src/loaders/bilingual.ts).
 settings:
   hide: true
 media:
@@ -16,118 +16,172 @@ media:
       - avif
     rename: safe
 content:
-  - name: destinations-en
-    label: Destinations (EN)
+  - name: destinations
+    label: Destinasi
     type: collection
-    path: src/content/destinations/en
-    format: yaml-frontmatter
-    filename: "{primary}.md"
+    path: src/content/destinations
+    format: yaml
+    filename: "{primary}.yml"
     view:
-      primary: title
+      primary: slug
       fields:
-        - title
-        - tagline
+        - slug
         - order
       sort:
         - order
       order: asc
     fields:
-      - name: title
-        label: Nama destinasi
+      - name: slug
+        label: Alamat (slug)
         type: string
         required: true
-        description: Nama yang sama di EN dan ID (nama file dibuat dari ini, dan harus kembar di kedua bahasa)
-      - name: tagline
-        label: Tagline
-        type: string
-        required: true
-      - name: description
-        label: Deskripsi SEO
-        type: text
-        required: true
-        description: Maksimal 160 karakter. Tampil di hasil Google.
-        options:
-          maxlength: 160
+        description: "Huruf kecil dan tanda hubung, contoh: labuan-bajo. Jadi alamat halaman dan tidak bisa diganti setelah dibuat."
       - name: order
         label: Urutan tampil
         type: number
         required: true
         options:
           min: 1
-      - name: see
-        label: Something to See
-        type: string
-        list: true
-        description: Satu baris per tempat
-      - name: activities
-        label: Something to Do
-        type: string
-        list: true
-      - name: shopping
-        label: Something to Buy
-        type: string
-        list: true
       - name: image
         label: Foto utama
         type: image
-        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
-      - name: imageAlt
-        label: Deskripsi foto
-        type: string
-        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
-      - name: body
-        label: Body
-        type: rich-text
-  - name: tours-en
-    label: Tours (EN)
+        description: Satu foto untuk EN dan ID. Unggah atau pilih foto. Ukuran asli tidak apa-apa.
+      - name: en
+        label: Teks Inggris (EN)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama destinasi
+            type: string
+          - name: tagline
+            label: Tagline
+            type: string
+          - name: description
+            label: Deskripsi SEO
+            type: text
+            description: Maksimal 160 karakter. Tampil di hasil Google.
+            options:
+              maxlength: 160
+          - name: see
+            label: Something to See
+            type: string
+            list: true
+            description: Satu baris per tempat
+          - name: activities
+            label: Something to Do
+            type: string
+            list: true
+          - name: shopping
+            label: Something to Buy
+            type: string
+            list: true
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+      - name: id
+        label: Teks Indonesia (ID)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama destinasi
+            type: string
+          - name: tagline
+            label: Tagline
+            type: string
+          - name: description
+            label: Deskripsi SEO
+            type: text
+            description: Maksimal 160 karakter. Tampil di hasil Google.
+            options:
+              maxlength: 160
+          - name: see
+            label: Something to See
+            type: string
+            list: true
+            description: Satu baris per tempat
+          - name: activities
+            label: Something to Do
+            type: string
+            list: true
+          - name: shopping
+            label: Something to Buy
+            type: string
+            list: true
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+  - name: tours
+    label: Paket Wisata
     type: collection
-    path: src/content/tours/en
-    format: yaml-frontmatter
-    filename: "{primary}.md"
+    path: src/content/tours
+    format: yaml
+    filename: "{primary}.yml"
     view:
-      primary: title
+      primary: slug
       fields:
         - code
-        - title
+        - slug
         - priceIDR
         - priceIsDraft
       sort:
         - order
       order: asc
     fields:
+      - name: slug
+        label: Alamat (slug)
+        type: string
+        required: true
+        description: "Huruf kecil dan tanda hubung, contoh: bali-essentials. Jadi alamat halaman dan tidak bisa diganti setelah dibuat."
       - name: code
         label: Kode paket
         type: string
         required: true
         description: "Contoh: BAL-01"
-      - name: title
-        label: Nama paket
-        type: string
-        required: true
-        description: "Harus sama persis di EN dan ID: nama file dibuat dari sini, dan pasangan bahasanya harus kembar"
       - name: destination
         label: Destinasi
         type: select
         required: true
         options:
-          values: &a7
-            - &a1
-              value: bali
+          values:
+            - value: bali
               label: Bali
-            - &a2
-              value: lombok
+            - value: lombok
               label: Lombok
-            - &a3
-              value: labuan-bajo
+            - value: labuan-bajo
               label: Labuan Bajo
-            - &a4
-              value: yogyakarta
+            - value: yogyakarta
               label: Yogyakarta
-            - &a5
-              value: surabaya
+            - value: surabaya
               label: Surabaya
-            - &a6
-              value: jakarta-bandung
+            - value: jakarta-bandung
               label: Jakarta-Bandung
       - name: days
         label: Jumlah hari
@@ -141,13 +195,6 @@ content:
         required: true
         options:
           min: 0
-      - name: summary
-        label: Ringkasan
-        type: text
-        required: true
-        description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
-        options:
-          maxlength: 160
       - name: order
         label: Urutan tampil
         type: number
@@ -172,51 +219,132 @@ content:
         default: 2
         options:
           min: 1
-      - name: priceNote
-        label: Catatan harga
-        type: string
-      - name: itinerary
-        label: Itinerary
-        type: object
-        list: true
-        required: true
-        description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
-        fields:
-          - name: title
-            label: Judul hari
-            type: string
-            required: true
-          - name: plan
-            label: Rencana hari ini
-            type: string
-            list: true
-            description: Satu baris per kegiatan
-          - name: meals
-            label: Makan
-            type: string
-            required: true
-          - name: stay
-            label: Menginap
-            type: string
-      - name: inclusions
-        label: Sudah termasuk
-        type: string
-        list: true
-      - name: exclusions
-        label: Belum termasuk
-        type: string
-        list: true
       - name: image
         label: Foto utama
         type: image
-        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
-      - name: imageAlt
-        label: Deskripsi foto
-        type: string
-        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
-      - name: body
-        label: Body
-        type: rich-text
+        description: Satu foto untuk EN dan ID. Unggah atau pilih foto. Ukuran asli tidak apa-apa.
+      - name: en
+        label: Teks Inggris (EN)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama paket
+            type: string
+          - name: summary
+            label: Ringkasan
+            type: text
+            description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
+            options:
+              maxlength: 160
+          - name: priceNote
+            label: Catatan harga
+            type: string
+          - name: itinerary
+            label: Itinerary
+            type: object
+            list: true
+            description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
+            fields:
+              - name: title
+                label: Judul hari
+                type: string
+              - name: plan
+                label: Rencana hari ini
+                type: string
+                list: true
+                description: Satu baris per kegiatan
+              - name: meals
+                label: Makan
+                type: string
+              - name: stay
+                label: Menginap
+                type: string
+          - name: inclusions
+            label: Sudah termasuk
+            type: string
+            list: true
+          - name: exclusions
+            label: Belum termasuk
+            type: string
+            list: true
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+      - name: id
+        label: Teks Indonesia (ID)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama paket
+            type: string
+          - name: summary
+            label: Ringkasan
+            type: text
+            description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
+            options:
+              maxlength: 160
+          - name: priceNote
+            label: Catatan harga
+            type: string
+          - name: itinerary
+            label: Itinerary
+            type: object
+            list: true
+            description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
+            fields:
+              - name: title
+                label: Judul hari
+                type: string
+              - name: plan
+                label: Rencana hari ini
+                type: string
+                list: true
+                description: Satu baris per kegiatan
+              - name: meals
+                label: Makan
+                type: string
+              - name: stay
+                label: Menginap
+                type: string
+          - name: inclusions
+            label: Sudah termasuk
+            type: string
+            list: true
+          - name: exclusions
+            label: Belum termasuk
+            type: string
+            list: true
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
   - name: stories-en
     label: Travel Stories (EN)
     type: collection
@@ -254,12 +382,18 @@ content:
         required: true
         options:
           values:
-            - *a1
-            - *a2
-            - *a3
-            - *a4
-            - *a5
-            - *a6
+            - value: bali
+              label: Bali
+            - value: lombok
+              label: Lombok
+            - value: labuan-bajo
+              label: Labuan Bajo
+            - value: yogyakarta
+              label: Yogyakarta
+            - value: surabaya
+              label: Surabaya
+            - value: jakarta-bandung
+              label: Jakarta-Bandung
             - value: tips
               label: Tips & Panduan
       - name: tags
@@ -280,189 +414,6 @@ content:
         description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Body
-        type: rich-text
-  - name: destinations-id
-    label: Destinasi (ID)
-    type: collection
-    path: src/content/destinations/id
-    format: yaml-frontmatter
-    filename: "{primary}.md"
-    view:
-      primary: title
-      fields:
-        - title
-        - tagline
-        - order
-      sort:
-        - order
-      order: asc
-    fields:
-      - name: title
-        label: Nama destinasi
-        type: string
-        required: true
-        description: Nama yang sama di EN dan ID (nama file dibuat dari ini, dan harus kembar di kedua bahasa)
-      - name: tagline
-        label: Tagline
-        type: string
-        required: true
-      - name: description
-        label: Deskripsi SEO
-        type: text
-        required: true
-        description: Maksimal 160 karakter. Tampil di hasil Google.
-        options:
-          maxlength: 160
-      - name: order
-        label: Urutan tampil
-        type: number
-        required: true
-        options:
-          min: 1
-      - name: see
-        label: Something to See
-        type: string
-        list: true
-        description: Satu baris per tempat
-      - name: activities
-        label: Something to Do
-        type: string
-        list: true
-      - name: shopping
-        label: Something to Buy
-        type: string
-        list: true
-      - name: image
-        label: Foto utama
-        type: image
-        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
-      - name: imageAlt
-        label: Deskripsi foto
-        type: string
-        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
-      - name: body
-        label: Isi
-        type: rich-text
-  - name: tours-id
-    label: Paket Wisata (ID)
-    type: collection
-    path: src/content/tours/id
-    format: yaml-frontmatter
-    filename: "{primary}.md"
-    view:
-      primary: title
-      fields:
-        - code
-        - title
-        - priceIDR
-        - priceIsDraft
-      sort:
-        - order
-      order: asc
-    fields:
-      - name: code
-        label: Kode paket
-        type: string
-        required: true
-        description: "Contoh: BAL-01"
-      - name: title
-        label: Nama paket
-        type: string
-        required: true
-        description: "Harus sama persis di EN dan ID: nama file dibuat dari sini, dan pasangan bahasanya harus kembar"
-      - name: destination
-        label: Destinasi
-        type: select
-        required: true
-        options:
-          values: *a7
-      - name: days
-        label: Jumlah hari
-        type: number
-        required: true
-        options:
-          min: 1
-      - name: nights
-        label: Jumlah malam
-        type: number
-        required: true
-        options:
-          min: 0
-      - name: summary
-        label: Ringkasan
-        type: text
-        required: true
-        description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
-        options:
-          maxlength: 160
-      - name: order
-        label: Urutan tampil
-        type: number
-        required: true
-        options:
-          min: 1
-      - name: priceIDR
-        label: Harga per orang (Rp)
-        type: number
-        required: true
-        description: "Angka saja, tanpa titik. Contoh: 4900000"
-        options:
-          min: 1
-      - name: priceIsDraft
-        label: Harga masih draf?
-        type: boolean
-        default: true
-        description: Matikan setelah harga final disetujui
-      - name: minPax
-        label: "Dasar harga: jumlah peserta"
-        type: number
-        default: 2
-        options:
-          min: 1
-      - name: priceNote
-        label: Catatan harga
-        type: string
-      - name: itinerary
-        label: Itinerary
-        type: object
-        list: true
-        required: true
-        description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
-        fields:
-          - name: title
-            label: Judul hari
-            type: string
-            required: true
-          - name: plan
-            label: Rencana hari ini
-            type: string
-            list: true
-            description: Satu baris per kegiatan
-          - name: meals
-            label: Makan
-            type: string
-            required: true
-          - name: stay
-            label: Menginap
-            type: string
-      - name: inclusions
-        label: Sudah termasuk
-        type: string
-        list: true
-      - name: exclusions
-        label: Belum termasuk
-        type: string
-        list: true
-      - name: image
-        label: Foto utama
-        type: image
-        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
-      - name: imageAlt
-        label: Deskripsi foto
-        type: string
-        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
-      - name: body
-        label: Isi
         type: rich-text
   - name: stories-id
     label: Cerita Perjalanan (ID)
@@ -501,12 +452,18 @@ content:
         required: true
         options:
           values:
-            - *a1
-            - *a2
-            - *a3
-            - *a4
-            - *a5
-            - *a6
+            - value: bali
+              label: Bali
+            - value: lombok
+              label: Lombok
+            - value: labuan-bajo
+              label: Labuan Bajo
+            - value: yogyakarta
+              label: Yogyakarta
+            - value: surabaya
+              label: Surabaya
+            - value: jakarta-bandung
+              label: Jakarta-Bandung
             - value: tips
               label: Tips & Panduan
       - name: tags

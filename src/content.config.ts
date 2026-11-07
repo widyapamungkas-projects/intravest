@@ -1,10 +1,12 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { bilingualLoader } from './loaders/bilingual';
 
+// Destinations and tours are ONE yml file per item holding both languages (see src/loaders/bilingual.ts).
 // Entry ids look like "en/bali" and "id/bali": the folder is the locale, the file name is the URL slug.
 const destinations = defineCollection({
-  loader: glob({ base: './src/content/destinations', pattern: '**/*.{md,mdx}' }),
+  loader: bilingualLoader('./src/content/destinations'),
   schema: z.object({
     title: z.string(),
     tagline: z.string(),
@@ -13,6 +15,7 @@ const destinations = defineCollection({
     see: z.array(z.string()).min(1),
     activities: z.array(z.string()).min(1),
     shopping: z.array(z.string()).min(1),
+    needsReview: z.boolean().optional(), // true = machine translation not yet checked by a person
     image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
     imageAlt: z.string().optional(),
   }),
@@ -21,7 +24,7 @@ const destinations = defineCollection({
 // Tour packages. Same id scheme as destinations ("en/bali-essentials"), and the EN and ID files for one
 // package MUST share the same file name, because hreflang maps the slug 1:1 between locales.
 const tours = defineCollection({
-  loader: glob({ base: './src/content/tours', pattern: '**/*.{md,mdx}' }),
+  loader: bilingualLoader('./src/content/tours'),
   schema: z
     .object({
       code: z.string(), // e.g. BAL-01
@@ -47,6 +50,7 @@ const tours = defineCollection({
         .min(1),
       inclusions: z.array(z.string()).min(1),
       exclusions: z.array(z.string()).min(1),
+      needsReview: z.boolean().optional(),
       image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
       imageAlt: z.string().optional(),
     })

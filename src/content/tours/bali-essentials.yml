@@ -1,0 +1,99 @@
+slug: bali-essentials
+code: BAL-01
+destination: bali
+days: 3
+nights: 2
+order: 1
+priceIDR: 3500000
+priceIsDraft: true
+minPax: 2
+en:
+  title: Bali Essentials
+  summary: "Three days in and around Ubud: rice terraces, a holy spring temple, a volcano view, and craft villages, at an easy pace."
+  priceNote: Per person, based on 2 travelers sharing a room.
+  itinerary:
+    - title: Arrival and Ubud
+      plan:
+        - Airport pickup by your driver and guide
+        - Tegalalang rice terraces
+        - Tirta Empul holy spring temple
+        - Check in at your Ubud hotel
+      meals: Lunch and dinner
+      stay: Ubud
+    - title: Kintamani and craft villages
+      plan:
+        - Mount Batur crater view from Kintamani
+        - Balinese coffee stop
+        - Silverwork in Celuk and wood carving in Mas
+        - Evening free in Ubud
+      meals: Breakfast and lunch
+      stay: Ubud
+    - title: Slow morning and departure
+      plan:
+        - Breakfast and a free morning in Ubud
+        - Transfer to the airport, timed to your flight
+      meals: Breakfast
+  inclusions:
+    - 2 nights in a boutique hotel in the Ubud area, twin or double room
+    - Private air-conditioned car with driver for the whole itinerary
+    - Local guide on Day 1 and Day 2
+    - Airport transfers
+    - Entrance tickets and donations for the places listed
+    - Meals as marked in the itinerary, at selected restaurants
+    - Bottled water in the car
+  exclusions:
+    - International and domestic flights
+    - Travel insurance
+    - Personal expenses and tips
+    - Activities not listed in the itinerary
+    - Meals not marked in the itinerary
+  body: |-
+    A first look at Bali without the rush. Each day has one main area and one main stop, so there is time to walk around, eat properly, and take photos without watching the clock.
+
+    Good for first-time visitors, couples, and families with older children who want culture and nature in a short trip.
+  needsReview: false
+id:
+  title: Bali Essentials
+  summary: "Tiga hari di Ubud dan sekitarnya: sawah terasering, pura mata air suci, pemandangan gunung, dan desa kerajinan, dengan ritme santai."
+  priceNote: Per orang, dengan asumsi 2 peserta sekamar.
+  itinerary:
+    - title: Tiba dan Ubud
+      plan:
+        - Dijemput driver dan guide di bandara
+        - Sawah terasering Tegalalang
+        - Pura mata air suci Tirta Empul
+        - Check-in di hotel area Ubud
+      meals: Makan siang dan makan malam
+      stay: Ubud
+    - title: Kintamani dan desa kerajinan
+      plan:
+        - Pemandangan kaldera Gunung Batur dari Kintamani
+        - Singgah minum kopi Bali
+        - Kerajinan perak di Celuk dan ukiran kayu di Mas
+        - Sore bebas di Ubud
+      meals: Sarapan dan makan siang
+      stay: Ubud
+    - title: Pagi santai dan pulang
+      plan:
+        - Sarapan dan pagi bebas di Ubud
+        - Antar ke bandara, disesuaikan dengan jam penerbangan
+      meals: Sarapan
+  inclusions:
+    - 2 malam di hotel butik area Ubud, kamar twin atau double
+    - Mobil pribadi ber-AC dengan driver selama itinerary
+    - Guide lokal di Hari 1 dan Hari 2
+    - Antar-jemput bandara
+    - Tiket masuk dan donasi untuk tempat yang tercantum
+    - Makan sesuai tanda di itinerary, di restoran pilihan kami
+    - Air mineral di mobil
+  exclusions:
+    - Tiket pesawat internasional dan domestik
+    - Asuransi perjalanan
+    - Pengeluaran pribadi dan tip
+    - Aktivitas yang tidak tercantum di itinerary
+    - Makan yang tidak ditandai di itinerary
+  body: |-
+    Kenalan pertama dengan Bali tanpa terburu-buru. Tiap hari punya satu area utama dan satu tujuan utama, jadi ada waktu untuk jalan-jalan, makan dengan layak, dan foto tanpa melirik jam.
+
+    Cocok untuk yang baru pertama ke Bali, pasangan, dan keluarga dengan anak yang sudah agak besar, yang mau budaya dan alam dalam trip singkat.
+  needsReview: false

@@ -1,0 +1,131 @@
+slug: bali-explorer
+code: BAL-03
+destination: bali
+days: 5
+nights: 4
+order: 3
+priceIDR: 6500000
+priceIsDraft: true
+minPax: 2
+en:
+  title: Bali Explorer
+  summary: "Five days across two areas: Ubud for culture and a volcano sunrise, then the south coast for sunset cliffs and an island day trip."
+  priceNote: Per person, based on 2 travelers sharing a room.
+  itinerary:
+    - title: Arrival and Ubud
+      plan:
+        - Airport pickup by your driver and guide
+        - Tegalalang rice terraces
+        - Tirta Empul holy spring temple
+        - Check in at your Ubud hotel
+      meals: Lunch and dinner
+      stay: Ubud
+    - title: Mount Batur sunrise and craft villages
+      plan:
+        - Early pickup for the Mount Batur sunrise trek
+        - Back at the hotel by late morning to rest
+        - Late afternoon in Celuk and Mas for silverwork and wood carving
+      meals: Breakfast and dinner
+      stay: Ubud
+    - title: Cooking class, then the south coast
+      plan:
+        - Market visit and Balinese cooking class, with lunch from what you cook
+        - Transfer to the Uluwatu or Jimbaran area
+        - Uluwatu cliffs and temple at sunset
+      meals: Breakfast, lunch, and dinner
+      stay: South coast
+    - title: Nusa Penida snorkeling day trip
+      plan:
+        - Early transfer to the harbor and a fast boat to Nusa Penida
+        - Snorkeling stops and a viewpoint, with lunch on the island
+        - Boat back and transfer to the hotel
+      meals: Breakfast and lunch
+      stay: South coast
+    - title: Free morning and departure
+      plan:
+        - Breakfast and a free morning by the coast
+        - Transfer to the airport, timed to your flight
+      meals: Breakfast
+  inclusions:
+    - 2 nights in a boutique hotel in the Ubud area and 2 nights in a hotel on the south coast, twin or double room
+    - Private air-conditioned car with driver for the whole itinerary
+    - Local guide on Day 1 to Day 4
+    - Mount Batur trek with a licensed trek guide
+    - Cooking class with market visit
+    - Nusa Penida fast boat and snorkeling equipment
+    - Airport transfers
+    - Entrance tickets and donations for the places listed
+    - Meals as marked in the itinerary, at selected restaurants
+    - Bottled water in the car
+  exclusions:
+    - International and domestic flights
+    - Travel insurance
+    - Personal expenses and tips
+    - Activities not listed in the itinerary
+    - Meals not marked in the itinerary
+  body: |-
+    For travelers with five days who want to see more than one side of Bali. Ubud gets two nights, the south coast gets two, and the move between them happens in the middle of Day 3 rather than costing a whole day.
+
+    The Nusa Penida trip depends on sea conditions. If the boats do not run, we swap it for a south coast day and tell you before you set out.
+  needsReview: false
+id:
+  title: Bali Explorer
+  summary: "Lima hari di dua area: Ubud untuk budaya dan sunrise gunung, lalu pesisir selatan untuk tebing sunset dan day trip pulau."
+  priceNote: Per orang, dengan asumsi 2 peserta sekamar.
+  itinerary:
+    - title: Tiba dan Ubud
+      plan:
+        - Dijemput driver dan guide di bandara
+        - Sawah terasering Tegalalang
+        - Pura mata air suci Tirta Empul
+        - Check-in di hotel area Ubud
+      meals: Makan siang dan makan malam
+      stay: Ubud
+    - title: Sunrise Gunung Batur dan desa kerajinan
+      plan:
+        - Dijemput dini hari untuk trekking sunrise Gunung Batur
+        - Kembali ke hotel menjelang siang untuk istirahat
+        - Sore di Celuk dan Mas untuk kerajinan perak dan ukiran kayu
+      meals: Sarapan dan makan malam
+      stay: Ubud
+    - title: Kelas masak, lalu pesisir selatan
+      plan:
+        - Kunjungan pasar dan kelas masak Bali, makan siang dari masakan sendiri
+        - Pindah ke area Uluwatu atau Jimbaran
+        - Tebing dan pura Uluwatu saat sunset
+      meals: Sarapan, makan siang, dan makan malam
+      stay: Pesisir selatan
+    - title: Day trip snorkeling Nusa Penida
+      plan:
+        - Berangkat pagi ke pelabuhan, lanjut fast boat ke Nusa Penida
+        - Snorkeling dan satu titik pemandangan, makan siang di pulau
+        - Kembali dengan boat dan diantar ke hotel
+      meals: Sarapan dan makan siang
+      stay: Pesisir selatan
+    - title: Pagi bebas dan pulang
+      plan:
+        - Sarapan dan pagi bebas di dekat pantai
+        - Antar ke bandara, disesuaikan dengan jam penerbangan
+      meals: Sarapan
+  inclusions:
+    - 2 malam di hotel butik area Ubud dan 2 malam di hotel pesisir selatan, kamar twin atau double
+    - Mobil pribadi ber-AC dengan driver selama itinerary
+    - Guide lokal di Hari 1 sampai Hari 4
+    - Trekking Gunung Batur dengan trek guide berlisensi
+    - Kelas masak dengan kunjungan pasar
+    - Fast boat Nusa Penida dan peralatan snorkeling
+    - Antar-jemput bandara
+    - Tiket masuk dan donasi untuk tempat yang tercantum
+    - Makan sesuai tanda di itinerary, di restoran pilihan kami
+    - Air mineral di mobil
+  exclusions:
+    - Tiket pesawat internasional dan domestik
+    - Asuransi perjalanan
+    - Pengeluaran pribadi dan tip
+    - Aktivitas yang tidak tercantum di itinerary
+    - Makan yang tidak ditandai di itinerary
+  body: |-
+    Untuk yang punya lima hari dan mau lihat lebih dari satu sisi Bali. Ubud dapat dua malam, pesisir selatan dua malam, dan perpindahannya dilakukan di tengah Hari 3, jadi tidak menghabiskan satu hari penuh.
+
+    Day trip Nusa Penida bergantung pada kondisi laut. Kalau boat tidak jalan, kami ganti dengan hari di pesisir selatan dan kabari sebelum kamu berangkat.
+  needsReview: false
