@@ -54,14 +54,14 @@ for (const s of slugs('tours', 'en').filter((x) => slugs('tours', 'id').includes
   }
 }
 
-// 4. Photos: a referenced file must exist in src/assets/images, and a photo needs a description (alt text).
+// 4. Photos: a referenced file must exist in src/assets/images, and a missing description only warns (the page title is used), so a half-finished CMS edit never blocks a deploy.
 const imgDir = path.resolve(import.meta.dirname, '..', 'src', 'assets', 'images');
 const imgFiles = fs.existsSync(imgDir) ? fs.readdirSync(imgDir).map((f) => f.toLowerCase()) : [];
 const checkImage = (where, image, alt) => {
   if (!image) return;
   const name = image.split('/').pop().toLowerCase();
   if (!imgFiles.includes(name)) errors.push(`${where}: foto "${image}" tidak ditemukan di src/assets/images. Unggah fotonya atau kosongkan kolom foto.`);
-  if (!alt || !alt.trim()) errors.push(`${where}: ada foto tapi "Deskripsi foto" kosong. Isi satu kalimat tentang isi foto.`);
+  if (!alt || !alt.trim()) console.warn(`PERINGATAN ${where}: foto "${image}" belum punya "Deskripsi foto". Situs memakai judul halaman sebagai pengganti. Sebaiknya diisi.`);
 };
 for (const collection of ['destinations', 'tours', 'stories']) {
   for (const locale of ['en', 'id']) {

@@ -14,7 +14,9 @@ interface Props {
 }
 const { locale, entry } = Astro.props;
 const c = destCopy[locale].page;
+import { photoOf } from '../photo';
 const d = entry.data;
+const photo = await photoOf('destinations', entry);
 const slug = destSlug(entry.id);
 const { Content } = await render(entry);
 const wa = whatsappLink(c.waMessage(d.title));
@@ -70,7 +72,7 @@ const ld =
         <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
         <a href={routePath(locale, 'custom-trip')} class={btnSecondary}>{c.customTrip}</a>
       </div>
-      <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8] rounded-md" sizes="(min-width: 1152px) 1100px, 100vw" priority />
+      <Photo src={photo.image} alt={photo.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8] rounded-md" sizes="(min-width: 1152px) 1100px, 100vw" priority />
     </header>
 
     <!-- Overview (MDX body) -->

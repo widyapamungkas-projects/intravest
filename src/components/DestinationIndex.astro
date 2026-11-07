@@ -11,9 +11,11 @@ interface Props {
 const { locale } = Astro.props;
 const c = destCopy[locale];
 
+import { photoOf } from '../photo';
 const entries = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort(
   (a, b) => a.data.order - b.data.order,
 );
+const photos = new Map(await Promise.all(entries.map(async (e) => [e.id, await photoOf('destinations', e)] as const)));
 ---
 
 <BaseLayout locale={locale} title={c.index.metaTitle} description={c.index.description}>
@@ -29,8 +31,8 @@ const entries = (await getCollection('destinations', ({ id }) => id.startsWith(`
               href={routePath(locale, 'destinations', destSlug(e.id))}
               name={e.data.title}
               tagline={e.data.tagline}
-              image={e.data.image}
-              imageAlt={e.data.imageAlt}
+              image={photos.get(e.id)?.image}
+              imageAlt={photos.get(e.id)?.imageAlt}
               soon={c.page.photoSoon}
               class="aspect-[4/3]"
               sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"

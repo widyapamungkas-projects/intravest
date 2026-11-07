@@ -13,7 +13,9 @@ interface Props {
 const { locale } = Astro.props;
 const c = homeCopy[locale];
 const destEntries = await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`));
-const destPhoto = (slug: string) => destEntries.find((e) => e.id === `${locale}/${slug}`)?.data;
+import { photoOf } from '../photo';
+const destPhotos = new Map(await Promise.all(destEntries.map(async (e) => [e.id, await photoOf('destinations', e)] as const)));
+const destPhoto = (slug: string) => destPhotos.get(`${locale}/${slug}`);
 const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
 
 const btnPrimary =
