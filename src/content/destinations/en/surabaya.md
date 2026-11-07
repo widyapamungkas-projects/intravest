@@ -17,7 +17,7 @@ activities:
 shopping:
   - Madura batik
   - Dates, spices, and snacks around Ampel
-image: /src/assets/images/bromo.png
+image: /src/assets/images/bromo-compressed.jpg
 ---
 Surabaya is a city to eat in and get to know, and a base for Mount Bromo, a few hours away by road. We suggest staying near the park the night before, so the sunrise start is not preceded by a long drive.
 
