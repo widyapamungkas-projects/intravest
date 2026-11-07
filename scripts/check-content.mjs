@@ -32,6 +32,27 @@ for (const locale of ['en', 'id']) {
   }
 }
 
+// 3. Facts that must be identical in both languages (price, length, code...) are stored in two files, so a
+//    one-language edit would show two different prices. Compare them.
+const SAME_IN_BOTH = ['code', 'destination', 'days', 'nights', 'priceIDR', 'priceIsDraft', 'minPax', 'order'];
+const scalar = (text, key) => {
+  const m = text.match(new RegExp(`^${key}:\\s*["']?([^"'\\r\\n#]+?)["']?\\s*(?:#.*)?$`, 'm'));
+  return m ? m[1] : undefined;
+};
+const readTour = (locale, s) => {
+  const file = ['md', 'mdx'].map((e) => path.join(root, 'tours', locale, `${s}.${e}`)).find(fs.existsSync);
+  return file ? fs.readFileSync(file, 'utf8').split(/^---\s*$/m)[1] ?? '' : null;
+};
+for (const s of slugs('tours', 'en').filter((x) => slugs('tours', 'id').includes(x))) {
+  const en = readTour('en', s);
+  const id = readTour('id', s);
+  for (const key of SAME_IN_BOTH) {
+    const a = scalar(en, key);
+    const b = scalar(id, key);
+    if (a !== b) errors.push(`Paket "${s}": field "${key}" beda antara EN (${a ?? 'kosong'}) dan ID (${b ?? 'kosong'}). Ubah di kedua bahasa.`);
+  }
+}
+
 if (errors.length) {
   console.error('\nKONTEN TIDAK KONSISTEN, build dihentikan:\n' + errors.map((e) => `  - ${e}`).join('\n') + '\n');
   process.exit(1);

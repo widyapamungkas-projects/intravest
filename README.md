@@ -80,6 +80,7 @@ Situs ini tidak punya backend. Konten adalah file di repo GitHub, dan setiap per
 Aturan yang dijaga otomatis saat build:
 
 - **Destinasi dan Paket Wisata harus ada di EN dan ID dengan nama file yang sama.** Nama file dibuat dari kolom "Nama", jadi isi nama yang sama di kedua bahasa. Kalau ada yang kurang, build gagal dengan pesan jelas dan **situs yang sedang online tidak berubah** (Netlify tidak mempublikasikan build yang gagal).
+- **Data inti paket harus sama di EN dan ID:** kode, destinasi, jumlah hari dan malam, harga, status draf harga, dasar peserta, dan urutan. Kalau kamu mengubah harga di satu bahasa saja, build gagal dan menyebut field mana yang beda. Teks (nama, ringkasan, itinerary, isi) boleh dan memang berbeda per bahasa.
 - Paket harus menunjuk destinasi yang ada, dan jumlah entri itinerary harus sama dengan jumlah hari.
 - Deskripsi SEO maksimal 160 karakter.
 - Artikel Travel Stories boleh hanya satu bahasa.
