@@ -70,6 +70,28 @@ if (fs.existsSync(homeFile)) {
   checkImage('Halaman Depan (penutup)', h.ctaImage, h.ctaAlt);
 }
 
+// Settings page: catch values that would silently break links.
+const settingsFile = path.join(src, 'data', 'settings.json');
+if (fs.existsSync(settingsFile)) {
+  const st = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+  const wa = (st.contact?.whatsapp ?? '').trim();
+  if (wa && !/^\d{8,15}$/.test(wa.replace(/\D/g, ''))) errors.push(`Pengaturan: nomor WhatsApp "${wa}" tidak valid. Tulis dengan kode negara, contoh 6281234567890.`);
+  const email = (st.contact?.email ?? '').trim();
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push(`Pengaturan: email "${email}" tidak valid.`);
+  for (const [k, v] of Object.entries(st.social ?? {})) {
+    if (v && v.trim() && !/^https?:\/\//.test(v.trim())) errors.push(`Pengaturan: alamat ${k} harus diawali https:// (sekarang: "${v}").`);
+  }
+}
+// Threads: caption length (the API allows 500 characters).
+for (const l of ['en', 'id']) {
+  const d = path.join(storiesDir, l);
+  if (!fs.existsSync(d)) continue;
+  for (const f of fs.readdirSync(d).filter((x) => /\.(md|mdx)$/.test(x))) {
+    const fm = YAML.parse((fs.readFileSync(path.join(d, f), 'utf8').split(/^---\s*$/m)[1]) ?? '') ?? {};
+    if (fm.postToThreads && !fm.threadsPostedAt) warn(`stories/${l}/${f}: akan diposting ke Threads setelah situs selesai diperbarui.`);
+  }
+}
+
 if (errors.length) {
   console.error('\nKONTEN BERMASALAH, build dihentikan:\n' + errors.map((e) => `  - ${e}`).join('\n') + '\n');
   process.exit(1);

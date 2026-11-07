@@ -33,6 +33,13 @@ const related = (await getCollection('stories', ({ id }) => id.startsWith(`${loc
 
 const pageUrl = new URL(routePath(locale, 'travel-stories', storySlug(entry.id)), Astro.site).href;
 const wa = whatsappLink(c.waMessage(d.title));
+const shareText = `${d.title}\n${pageUrl}`;
+const shareLinks = [
+  { name: c.share.threads, href: `https://www.threads.net/intent/post?text=${encodeURIComponent(shareText)}` },
+  { name: c.share.whatsapp, href: `https://wa.me/?text=${encodeURIComponent(shareText)}` },
+];
+const shareBtn =
+  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-4 text-sm font-medium text-text transition-colors hover:bg-surface-2 active:bg-border';
 
 const btnPrimary =
   'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
@@ -81,6 +88,22 @@ const ld = {
       <div class="story-body max-w-[68ch] text-base">
         <Content />
       </div>
+      <div class="mt-10 max-w-[68ch] border-t border-border pt-6">
+        <p class="text-sm font-medium">{c.share.label}</p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {
+            shareLinks.map((l) => (
+              <li>
+                <a href={l.href} class={shareBtn} target="_blank" rel="noopener noreferrer">{l.name}</a>
+              </li>
+            ))
+          }
+          <li>
+            <button type="button" class={shareBtn} data-copy={pageUrl} data-done={c.share.copied}>{c.share.copy}</button>
+          </li>
+        </ul>
+        <p class="sr-only" role="status" aria-live="polite" data-copy-status></p>
+      </div>
     </section>
 
     {
@@ -113,3 +136,20 @@ const ld = {
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => {
+    b.addEventListener('click', async () => {
+      const label = b.textContent;
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy ?? location.href);
+        b.textContent = b.dataset.done ?? 'OK';
+        const st = document.querySelector('[data-copy-status]');
+        if (st) st.textContent = b.dataset.done ?? 'OK';
+        setTimeout(() => (b.textContent = label), 2000);
+      } catch {
+        window.prompt('', b.dataset.copy);
+      }
+    });
+  });
+</script>

@@ -53,7 +53,7 @@ src/
   site.ts              Kontak, sosial media, deskripsi default (satu tempat untuk diedit)
   schema.ts            JSON-LD homepage
   styles/global.css    Design tokens (OKLCH, light + dark)
-scripts/               check-content (pengaman build), translate (terjemah AI)
+scripts/               check-content (pengaman build), translate (terjemah AI), post-threads
 .github/workflows/     Terjemah otomatis
 public/                favicon, robots.txt, og/ (gambar share)
 netlify.toml           Build, redirect bahasa, security headers
@@ -76,7 +76,7 @@ Situs ini tidak punya backend. Konten adalah file di repo GitHub, dan setiap per
 
 1. Buka [app.pagescms.org](https://app.pagescms.org) dan masuk dengan akun GitHub yang punya akses ke repo ini.
 2. Pasang GitHub App Pages CMS dan beri akses ke repo `intravest`. Untuk repo di organisasi, ini perlu akun owner organisasi.
-3. Pilih repo `intravest`, branch `main`. Menu konten akan muncul: Destinasi, Paket Wisata, Cerita Perjalanan (EN dan ID), dan Halaman Depan.
+3. Pilih repo `intravest`, branch `main`. Menu konten akan muncul: Destinasi, Paket Wisata, Cerita Perjalanan (EN dan ID), Halaman Depan, dan Pengaturan Situs.
 
 **Sehari-hari:** buka entri, ubah isinya, klik simpan. Pages CMS menyimpan sebagai commit ke `main`, lalu Netlify membangun ulang (sekitar 1 menit).
 
@@ -107,7 +107,19 @@ Aturan yang dijaga otomatis saat build:
 
 Foto artikel yang dipakai sebagai gambar share (OG) tetap kolom terpisah `ogImage` (path ke `public/og/`, 1200x630).
 
-Nomor WhatsApp, GA4, dan endpoint form bukan konten: diisi di dashboard Netlify (Environment variables), bukan di CMS.
+**Pengaturan Situs** (menu "Pengaturan Situs"): nama merek, tagline, deskripsi singkat, nomor WhatsApp, email, dan alamat profil Instagram, TikTok, Threads. Nilai yang diisi di sini menang atas Environment variable Netlify; kolom yang kosong memakai nilai Netlify, lalu nilai bawaan. Akun sosial yang kosong disembunyikan dari footer. Nomor WhatsApp ditulis dengan kode negara (`6281234567890`), spasi dan tanda plus dibersihkan otomatis. Build gagal kalau nomor, email, atau alamat sosial salah format.
+
+GA4 dan endpoint form (Formspree) bukan konten: tetap diisi di dashboard Netlify (Environment variables).
+
+**Tombol share dan auto-post Threads.** Setiap Travel Story punya tombol Share (Threads, WhatsApp, Salin tautan) untuk pembaca. Untuk memposting artikel ke akun Threads kamu sendiri secara otomatis, nyalakan "Posting ke Threads saat terbit" di form artikel (teks posting boleh dikosongkan: dipakai judul dan deskripsi, plus tautan artikel). Setelah situs selesai diperbarui dan artikelnya sudah bisa dibuka, GitHub Action `threads.yml` memposting satu kali lalu mengisi "Sudah diposting ke Threads". Pasang di GitHub (Settings → Secrets and variables → Actions):
+
+| Nama | Isi |
+|---|---|
+| `SITE_URL` | Alamat situs live, mis. `https://intravest.com` (boleh di tab Variables) |
+| `THREADS_USER_ID` | ID pengguna Threads akun yang memposting |
+| `THREADS_ACCESS_TOKEN` | Token Threads API dari app Meta for Developers (izin `threads_basic` dan `threads_content_publish`). Token jangka panjang berlaku 60 hari dan harus diperbarui; kalau kedaluwarsa, Action gagal dengan pesan jelas dan artikel dicoba lagi pada push berikutnya |
+
+Tanpa secret ini Action tidak melakukan apa-apa. Uji tanpa memposting: `node scripts/post-threads.mjs --dry`. Mau posting ulang artikel yang sudah terposting: kosongkan "Sudah diposting ke Threads" lalu simpan.
 
 ## Deploy ke Netlify
 

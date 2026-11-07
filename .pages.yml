@@ -412,6 +412,21 @@ content:
         label: Deskripsi foto
         type: string
         description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
+      - name: postToThreads
+        label: Posting ke Threads saat terbit
+        type: boolean
+        default: false
+        description: Nyalakan untuk memposting artikel ini ke akun Threads sekali, otomatis, setelah situs selesai diperbarui.
+      - name: threadsText
+        label: Teks posting Threads (opsional)
+        type: text
+        description: Maksimal 450 karakter. Kosong = judul dan deskripsi artikel. Tautan artikel ditambahkan otomatis.
+        options:
+          maxlength: 450
+      - name: threadsPostedAt
+        label: Sudah diposting ke Threads (otomatis)
+        type: string
+        description: Diisi otomatis setelah posting. Kosongkan hanya kalau mau memposting ulang.
       - name: body
         label: Body
         type: rich-text
@@ -482,6 +497,21 @@ content:
         label: Deskripsi foto
         type: string
         description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
+      - name: postToThreads
+        label: Posting ke Threads saat terbit
+        type: boolean
+        default: false
+        description: Nyalakan untuk memposting artikel ini ke akun Threads sekali, otomatis, setelah situs selesai diperbarui.
+      - name: threadsText
+        label: Teks posting Threads (opsional)
+        type: text
+        description: Maksimal 450 karakter. Kosong = judul dan deskripsi artikel. Tautan artikel ditambahkan otomatis.
+        options:
+          maxlength: 450
+      - name: threadsPostedAt
+        label: Sudah diposting ke Threads (otomatis)
+        type: string
+        description: Diisi otomatis setelah posting. Kosongkan hanya kalau mau memposting ulang.
       - name: body
         label: Isi
         type: rich-text
@@ -513,3 +543,61 @@ content:
       - name: ctaAlt
         label: Deskripsi foto (penutup)
         type: string
+  - name: pengaturan
+    label: Pengaturan Situs
+    type: file
+    path: src/data/settings.json
+    format: json
+    fields:
+      - name: company
+        label: Perusahaan
+        type: object
+        fields:
+          - name: name
+            label: Nama merek
+            type: string
+            description: Tampil di logo, footer, dan judul halaman.
+          - name: fullName
+            label: Nama lengkap
+            type: string
+          - name: tagline
+            label: Tagline
+            type: string
+            description: Tampil di footer.
+          - name: descriptionEn
+            label: Deskripsi singkat (EN)
+            type: text
+            description: Dipakai di Google dan saat tautan dibagikan, kalau halaman tidak punya deskripsi sendiri.
+          - name: descriptionId
+            label: Deskripsi singkat (ID)
+            type: text
+      - name: contact
+        label: Kontak
+        type: object
+        description: Kosongkan untuk memakai nilai bawaan dari Netlify.
+        fields:
+          - name: whatsapp
+            label: Nomor WhatsApp
+            type: string
+            description: "Dengan kode negara, tanpa tanda plus atau spasi. Contoh: 6281234567890"
+          - name: whatsappDisplay
+            label: Nomor WhatsApp (tampilan)
+            type: string
+            description: "Cara nomor ditulis di footer dan halaman Kontak. Contoh: +62 812-3456-7890"
+          - name: email
+            label: Email
+            type: string
+      - name: social
+        label: Media sosial
+        type: object
+        description: Alamat lengkap profil (https://...). Yang kosong disembunyikan dari footer.
+        fields:
+          - name: instagram
+            label: Instagram
+            type: string
+          - name: tiktok
+            label: TikTok
+            type: string
+          - name: threads
+            label: Threads
+            type: string

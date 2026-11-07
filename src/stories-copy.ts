@@ -20,6 +20,7 @@ interface StoriesCopy {
     cta: string;
     customTrip: string;
     waMessage: (title: string) => string;
+    share: { label: string; threads: string; whatsapp: string; copy: string; copied: string };
   };
 }
 
@@ -45,6 +46,7 @@ export const storiesCopy: Record<Locale, StoriesCopy> = {
       cta: 'Chat on WhatsApp',
       customTrip: 'Plan a custom trip',
       waMessage: (title) => `Hi Intravest, I read "${title}" and would like to ask about a trip.`,
+      share: { label: 'Share this story', threads: 'Threads', whatsapp: 'WhatsApp', copy: 'Copy link', copied: 'Link copied' },
     },
   },
   id: {
@@ -68,6 +70,7 @@ export const storiesCopy: Record<Locale, StoriesCopy> = {
       cta: 'Chat lewat WhatsApp',
       customTrip: 'Rencanakan trip custom',
       waMessage: (title) => `Halo Intravest, saya baca "${title}" dan ingin tanya soal trip.`,
+      share: { label: 'Bagikan cerita ini', threads: 'Threads', whatsapp: 'WhatsApp', copy: 'Salin tautan', copied: 'Tautan disalin' },
     },
   },
 };

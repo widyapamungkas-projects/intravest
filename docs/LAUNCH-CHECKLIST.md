@@ -32,6 +32,8 @@ Berdasarkan Lampiran C3 di `intravest-project-brief.md`, dicocokkan dengan kondi
 - [x] Destinasi dan paket: satu file per item (data umum sekali, teks EN dan ID di form yang sama). Pengaman build: destinasi paket valid, foto harus ada
 - [x] Terjemah otomatis lewat gateway AI (`scripts/translate.mjs` + GitHub Action). Diuji dengan gateway tiruan: isi bahasa kosong, coba ulang kalau struktur salah, buat ulang kalau sumber berubah, tidak menimpa teks yang sudah dicek, gagal dengan aman kalau kunci salah
 - [ ] **(kamu)** Isi secret GitHub `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL` (lihat README), lalu tes dengan satu paket: kosongkan teks ID, simpan, tunggu Action. Kualitas terjemahan dengan modelmu belum teruji
+- [x] Menu Pengaturan Situs (perusahaan, kontak, sosial) dan tombol share Travel Story. Auto-post Threads diuji dengan API tiruan
+- [ ] **(kamu)** Auto-post Threads: buat app di Meta for Developers, isi secret `THREADS_USER_ID`, `THREADS_ACCESS_TOKEN`, dan `SITE_URL` di GitHub, lalu tes dengan satu artikel. Belum teruji ke API Threads asli
 - [ ] **(kamu)** Login ke app.pagescms.org dengan GitHub, pasang app untuk repo `intravest`, lalu coba ubah satu paket dan simpan. Ini satu-satunya bagian yang tidak bisa kutes dari sini
 
 ## Teknis
@@ -43,7 +45,7 @@ Berdasarkan Lampiran C3 di `intravest-project-brief.md`, dicocokkan dengan kondi
 - [x] Font brand di-host sendiri (tidak ada permintaan ke Google), file utama di-preload
 - [x] Halaman 404 ada, on-brand, dua bahasa, dan `noindex`
 - [x] Tombol WhatsApp mengambang di semua halaman, pesan terisi sesuai paket atau destinasi (dites untuk BAL-02 dan Lombok)
-- [ ] **(kamu)** Isi nomor WhatsApp asli: `PUBLIC_WHATSAPP_NUMBER`. Selama belum diisi, semua tombol WhatsApp memakai nomor placeholder `628000000000`
+- [ ] **(kamu)** Isi nomor WhatsApp asli di menu Pengaturan Situs (atau `PUBLIC_WHATSAPP_NUMBER` di Netlify). Selama belum diisi, semua tombol WhatsApp memakai nomor placeholder `628000000000`
 - [ ] **(kamu)** Buat 3 form di Formspree dan isi `PUBLIC_FORMSPREE_CONTACT`, `PUBLIC_FORMSPREE_TOUR`, `PUBLIC_FORMSPREE_CUSTOM_TRIP`. **(setelah deploy)** Tes kirim tiap form dan pastikan email masuk ke inbox yang benar
 - [ ] **(setelah deploy)** HTTPS aktif, tidak ada peringatan mixed content
 - [ ] **(setelah deploy)** Core Web Vitals di PageSpeed Insights. Yang sudah dijaga di kode: tidak ada layout shift dari font (preload), tidak ada gambar tanpa dimensi
@@ -63,7 +65,7 @@ Berdasarkan Lampiran C3 di `intravest-project-brief.md`, dicocokkan dengan kondi
 - [ ] **(kamu)** Logo final: ganti `src/components/Logo.astro` dan `public/favicon.svg`. Sekarang masih placeholder
 - [x] Favicon ada (SVG dan ICO), masih placeholder dari logo sementara
 - [ ] **(kamu)** Gambar share (OG) final: ganti `public/og/default.jpg` (1200x630). Sekarang placeholder
-- [ ] **(kamu)** URL Instagram, TikTok, Threads di `src/site.ts`. Selama masih `#`, tautannya disembunyikan dari footer
+- [ ] **(kamu)** URL Instagram, TikTok, Threads di menu Pengaturan Situs. Selama kosong, tautannya disembunyikan dari footer
 - [ ] **(kamu)** Keputusan terbuka di brief: domain final, tagline final, cek trademark DJKI
 
 ## Soft launch (sebelum diumumkan)

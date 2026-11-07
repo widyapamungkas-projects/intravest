@@ -71,6 +71,9 @@ const stories = defineCollection({
     category: z.string(), // a destination slug (e.g. "bali") or "tips"
     tags: z.array(z.string()).default([]),
     ogImage: z.string().optional(), // placeholder until real photos exist (Step 9)
+    postToThreads: z.boolean().default(false), // dashboard toggle; scripts/post-threads.mjs posts it once after deploy
+    threadsText: z.string().optional(), // optional custom caption
+    threadsPostedAt: z.string().optional(), // set by the bot after posting
     image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
     imageAlt: z.string().optional(),
   }),
