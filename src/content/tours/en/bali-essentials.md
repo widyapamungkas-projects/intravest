@@ -2,6 +2,8 @@
 code: "BAL-01"
 title: "Bali Essentials"
 destination: "bali"
+image: test-bali.jpg
+imageAlt: Foto uji
 days: 3
 nights: 2
 summary: "Three days in and around Ubud: rice terraces, a holy spring temple, a volcano view, and craft villages, at an easy pace."

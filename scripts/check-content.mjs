@@ -3,6 +3,7 @@
 //   1. Destinations and tours must exist in BOTH languages with the SAME file name (hreflang and the language
 //      switcher map the slug 1:1, so a one-language entry would link to a page that does not exist).
 //   2. Every tour must point at a destination that exists.
+//   3. Photos referenced in content must exist in src/assets/images and have alt text.
 // Travel Stories are exempt on purpose: an article may exist in one language only.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -51,6 +52,30 @@ for (const s of slugs('tours', 'en').filter((x) => slugs('tours', 'id').includes
     const b = scalar(id, key);
     if (a !== b) errors.push(`Paket "${s}": field "${key}" beda antara EN (${a ?? 'kosong'}) dan ID (${b ?? 'kosong'}). Ubah di kedua bahasa.`);
   }
+}
+
+// 4. Photos: a referenced file must exist in src/assets/images, and a photo needs a description (alt text).
+const imgDir = path.resolve(import.meta.dirname, '..', 'src', 'assets', 'images');
+const imgFiles = fs.existsSync(imgDir) ? fs.readdirSync(imgDir).map((f) => f.toLowerCase()) : [];
+const checkImage = (where, image, alt) => {
+  if (!image) return;
+  const name = image.split('/').pop().toLowerCase();
+  if (!imgFiles.includes(name)) errors.push(`${where}: foto "${image}" tidak ditemukan di src/assets/images. Unggah fotonya atau kosongkan kolom foto.`);
+  if (!alt || !alt.trim()) errors.push(`${where}: ada foto tapi "Deskripsi foto" kosong. Isi satu kalimat tentang isi foto.`);
+};
+for (const collection of ['destinations', 'tours', 'stories']) {
+  for (const locale of ['en', 'id']) {
+    for (const s of slugs(collection, locale)) {
+      const file = ['md', 'mdx'].map((e) => path.join(root, collection, locale, `${s}.${e}`)).find(fs.existsSync);
+      const fm = fs.readFileSync(file, 'utf8').split(/^---\s*$/m)[1] ?? '';
+      checkImage(`${collection}/${locale}/${s}`, scalar(fm, 'image'), scalar(fm, 'imageAlt'));
+    }
+  }
+}
+const homeFile = path.resolve(import.meta.dirname, '..', 'src', 'data', 'home.json');
+if (fs.existsSync(homeFile)) {
+  const h = JSON.parse(fs.readFileSync(homeFile, 'utf8'));
+  checkImage('Halaman Depan', h.heroImage, h.heroAlt);
 }
 
 if (errors.length) {

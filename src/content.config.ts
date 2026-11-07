@@ -13,6 +13,8 @@ const destinations = defineCollection({
     see: z.array(z.string()).min(1),
     activities: z.array(z.string()).min(1),
     shopping: z.array(z.string()).min(1),
+    image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
+    imageAlt: z.string().optional(),
   }),
 });
 
@@ -45,6 +47,8 @@ const tours = defineCollection({
         .min(1),
       inclusions: z.array(z.string()).min(1),
       exclusions: z.array(z.string()).min(1),
+      image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
+      imageAlt: z.string().optional(),
     })
     .refine((t) => t.itinerary.length === t.days, {
       message: 'itinerary must have one entry per day',
@@ -63,6 +67,8 @@ const stories = defineCollection({
     category: z.string(), // a destination slug (e.g. "bali") or "tips"
     tags: z.array(z.string()).default([]),
     ogImage: z.string().optional(), // placeholder until real photos exist (Step 9)
+    image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
+    imageAlt: z.string().optional(),
   }),
 });
 

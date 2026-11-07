@@ -1,7 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
 import TourCard from './TourCard.astro';
 import { tourCopy } from '../tour-copy';
 import { localizedPath, routePath, type Locale } from '../i18n';
@@ -70,7 +70,7 @@ const ld =
         <a href={wa} class={btnPrimary} rel="noopener">{c.cta}</a>
         <a href={routePath(locale, 'custom-trip')} class={btnSecondary}>{c.customTrip}</a>
       </div>
-      <Placeholder label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8]" />
+      <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8] rounded-md" sizes="(min-width: 1152px) 1100px, 100vw" priority />
     </header>
 
     <!-- Overview (MDX body) -->

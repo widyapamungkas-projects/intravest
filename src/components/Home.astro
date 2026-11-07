@@ -1,7 +1,9 @@
 ---
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
 import { routePath, type Locale } from '../i18n';
 import { homeCopy } from '../home-copy';
+import { getCollection } from 'astro:content';
+import homeData from '../data/home.json';
 import { site, whatsappLink } from '../site';
 
 interface Props {
@@ -9,6 +11,8 @@ interface Props {
 }
 const { locale } = Astro.props;
 const c = homeCopy[locale];
+const destEntries = await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`));
+const destPhoto = (slug: string) => destEntries.find((e) => e.id === `${locale}/${slug}`)?.data;
 const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
 
 const btnPrimary =
@@ -29,7 +33,7 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
       <a href={routePath(locale, 'destinations')} class={btnSecondary}>{c.hero.ctaSecondary}</a>
     </div>
   </div>
-  <Placeholder label={c.hero.photo} class="aspect-[4/3]" />
+  <Photo src={homeData.heroImage} alt={homeData.heroAlt} label={c.hero.photo} class="aspect-[4/3] rounded-md" sizes="(min-width: 1024px) 560px, 100vw" priority />
 </section>
 
 <!-- 2. Why Intravest -->
@@ -63,7 +67,7 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
         c.destinations.items.map((d) => (
           <li>
             <a href={routePath(locale, 'destinations', d.slug)} class="group block">
-              <Placeholder label={`${d.name}: ${c.destinations.photoSoon}`} class="aspect-[4/5]" />
+              <Photo src={destPhoto(d.slug)?.image} alt={destPhoto(d.slug)?.imageAlt} label={`${d.name}: ${c.destinations.photoSoon}`} class="aspect-[4/5] rounded-md" sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw" />
               <h3 class="mt-3 t-h3 group-hover:underline">{d.name}</h3>
               <p class="mt-1 text-muted">{d.tagline}</p>
             </a>

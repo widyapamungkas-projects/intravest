@@ -1,0 +1,48 @@
+---
+// A photo from src/assets/images, picked by file name (frontmatter `image: bali-ubud.jpg`). The CMS may store
+// a path prefix, so only the base name counts. Build step: resized + converted to WebP + srcset + width/height
+// (no layout shift). With no file, or no `src`, it falls back to the labelled Placeholder.
+import { Image } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+
+interface Props {
+  src?: string;
+  alt?: string;
+  /** Text of the placeholder shown while there is no photo. */
+  label: string;
+  /** Wrapper classes: set the aspect ratio here (e.g. "aspect-[4/3]"). */
+  class?: string;
+  sizes?: string;
+  /** Above-the-fold photo: load eagerly. */
+  priority?: boolean;
+}
+const { src, alt, label, class: className = '', sizes = '(min-width: 1024px) 400px, 100vw', priority = false } = Astro.props;
+
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG}', {
+  eager: true,
+});
+const wanted = src?.split('/').pop()?.toLowerCase();
+const found = wanted
+  ? Object.entries(files).find(([p]) => p.split('/').pop()!.toLowerCase() === wanted)?.[1].default
+  : undefined;
+---
+
+{
+  found ? (
+    <div class:list={['overflow-hidden', className]}>
+      <Image
+        src={found}
+        alt={alt ?? ''}
+        widths={[480, 800, 1200, 1600]}
+        sizes={sizes}
+        format="webp"
+        quality={78}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
+        class="h-full w-full object-cover"
+      />
+    </div>
+  ) : (
+    <Placeholder label={label} class={className} />
+  )
+}

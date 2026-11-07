@@ -6,8 +6,8 @@ settings:
 media:
   - name: images
     label: Foto
-    input: public/images
-    output: /images
+    input: src/assets/images
+    output: /src/assets/images
     extensions:
       - jpg
       - jpeg
@@ -67,6 +67,14 @@ content:
         label: Something to Buy
         type: string
         list: true
+      - name: image
+        label: Foto utama
+        type: image
+        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
+      - name: imageAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Body
         type: rich-text
@@ -198,6 +206,14 @@ content:
         label: Belum termasuk
         type: string
         list: true
+      - name: image
+        label: Foto utama
+        type: image
+        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
+      - name: imageAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Body
         type: rich-text
@@ -254,6 +270,14 @@ content:
         label: Gambar share (opsional)
         type: string
         description: Path gambar, mis. /og/default.jpg. Biarkan kosong kalau belum ada.
+      - name: image
+        label: Foto utama
+        type: image
+        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
+      - name: imageAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Body
         type: rich-text
@@ -308,6 +332,14 @@ content:
         label: Something to Buy
         type: string
         list: true
+      - name: image
+        label: Foto utama
+        type: image
+        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
+      - name: imageAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Isi
         type: rich-text
@@ -421,6 +453,14 @@ content:
         label: Belum termasuk
         type: string
         list: true
+      - name: image
+        label: Foto utama
+        type: image
+        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
+      - name: imageAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Isi
         type: rich-text
@@ -477,6 +517,28 @@ content:
         label: Gambar share (opsional)
         type: string
         description: Path gambar, mis. /og/default.jpg. Biarkan kosong kalau belum ada.
+      - name: image
+        label: Foto utama
+        type: image
+        description: Unggah atau pilih foto. Ukuran asli tidak apa-apa, situs mengecilkannya otomatis. Kosongkan kalau belum ada.
+      - name: imageAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google). Wajib diisi kalau ada foto.
       - name: body
         label: Isi
         type: rich-text
+  - name: home
+    label: Halaman Depan
+    type: file
+    path: src/data/home.json
+    format: json
+    fields:
+      - name: heroImage
+        label: Foto utama halaman depan
+        type: image
+        description: Foto besar di atas halaman depan.
+      - name: heroAlt
+        label: Deskripsi foto
+        type: string
+        description: Satu kalimat tentang isi foto.

@@ -1,7 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
 import StoryCard from './StoryCard.astro';
 import { htmlLang, localizedPath, routePath, type Locale } from '../i18n';
 import { destSlug } from '../dest-copy';
@@ -74,7 +74,7 @@ const ld = {
       </p>
       <h1 class="mt-1 max-w-[24ch] text-balance t-h1">{d.title}</h1>
       <p class="mt-4 max-w-[52ch] text-lg text-muted">{d.description}</p>
-      <Placeholder label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8]" />
+      <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8] rounded-md" sizes="(min-width: 1152px) 1100px, 100vw" priority />
     </header>
 
     <section class={`${wrap} py-12 sm:py-16`}>
