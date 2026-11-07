@@ -1,8 +1,6 @@
 ---
 title: "Bali"
 tagline: "Culture, nature, and activities that fill each day without rushing it."
-image: test-bali.jpg
-imageAlt: Foto uji
 description: "Bali trips with a local guide: Ubud's rice terraces, waterfalls, volcano sunrise, and craft villages, planned with realistic timing for each day."
 order: 1
 see:
