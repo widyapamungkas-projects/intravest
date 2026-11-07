@@ -70,18 +70,31 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
 
 <!-- 2. Why Intravest -->
 <section class="border-t border-border">
-  <div class={wrap}>
-    <h2 class={h2}>{c.why.title}</h2>
-    <ul class="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2">
-      {
-        c.why.items.map((item) => (
-          <li class="border-t border-border pt-5">
-            <h3 class="t-h3">{item.title}</h3>
-            <p class="mt-2 text-muted">{item.body}</p>
-          </li>
-        ))
-      }
-    </ul>
+  <div class:list={[wrap, homeData.whyImage && 'grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16']}>
+    {
+      homeData.whyImage && (
+        <Photo
+          src={homeData.whyImage}
+          alt={homeData.whyAlt}
+          label=""
+          class="aspect-[4/3] rounded-lg lg:sticky lg:top-24 lg:aspect-[4/5]"
+          sizes="(min-width: 1024px) 480px, 100vw"
+        />
+      )
+    }
+    <div>
+      <h2 class={h2}>{c.why.title}</h2>
+      <ul class:list={['mt-10 grid gap-x-12 gap-y-8', !homeData.whyImage && 'sm:grid-cols-2']}>
+        {
+          c.why.items.map((item) => (
+            <li class="border-t border-border pt-5">
+              <h3 class="t-h3">{item.title}</h3>
+              <p class="mt-2 text-muted">{item.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -116,16 +129,18 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
 </section>
 
 <!-- 4. How it works -->
-<section class="border-t border-border">
+<section class="border-t border-border bg-surface-2">
   <div class={wrap}>
     <h2 class={h2}>{c.how.title}</h2>
-    <ol class="mt-10 grid gap-8 md:grid-cols-3">
+    <ol class="mt-10 grid gap-5 md:grid-cols-3">
       {
-        c.how.steps.map((s, i) => (
-          <li>
-            <span class="text-3xl font-semibold text-accent" aria-hidden="true">{i + 1}</span>
-            <h3 class="mt-2 t-h3">{s.title}</h3>
-            <p class="mt-2 text-muted">{s.body}</p>
+        c.how.steps.map((st, i) => (
+          <li class="rounded-lg bg-surface p-6 shadow-raised">
+            <span class="flex size-10 items-center justify-center rounded-full bg-accent text-lg font-semibold text-on-accent" aria-hidden="true">
+              {i + 1}
+            </span>
+            <h3 class="mt-4 t-h3">{st.title}</h3>
+            <p class="mt-2 text-muted">{st.body}</p>
           </li>
         ))
       }
@@ -142,13 +157,35 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
 </section>
 
 <!-- 6. Closing CTA -->
-<section class="border-t border-border bg-surface-2">
-  <div class={wrap}>
-    <h2 class={h2}>{c.cta.title}</h2>
-    <p class="mt-3 text-muted">{c.cta.sub}</p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a href={wa} class={btnPrimary} rel="noopener">{c.cta.whatsapp}</a>
-      <a href={`mailto:${site.email}`} class={btnSecondary}>{site.email}</a>
-    </div>
-  </div>
-</section>
+{
+  homeData.ctaImage ? (
+    <section class="relative isolate overflow-hidden bg-neutral-900">
+      <Photo src={homeData.ctaImage} alt={homeData.ctaAlt} label="" class="absolute inset-0 -z-10" sizes="100vw" />
+      <div class="absolute inset-0 -z-10 bg-black/60" />
+      <div class={wrap}>
+        <h2 class="max-w-[26ch] text-balance t-h2 text-white">{c.cta.title}</h2>
+        <p class="mt-3 max-w-[52ch] text-white/90">{c.cta.sub}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={wa} class={btnPrimary} rel="noopener">{c.cta.whatsapp}</a>
+          <a
+            href={`mailto:${site.email}`}
+            class="inline-flex min-h-11 items-center justify-center rounded-md border border-white/70 bg-white/10 px-5 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+          >
+            {site.email}
+          </a>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="border-t border-border bg-surface-2">
+      <div class={wrap}>
+        <h2 class={h2}>{c.cta.title}</h2>
+        <p class="mt-3 text-muted">{c.cta.sub}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={wa} class={btnPrimary} rel="noopener">{c.cta.whatsapp}</a>
+          <a href={`mailto:${site.email}`} class={btnSecondary}>{site.email}</a>
+        </div>
+      </div>
+    </section>
+  )
+}

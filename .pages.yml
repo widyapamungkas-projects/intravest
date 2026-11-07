@@ -542,3 +542,17 @@ content:
         label: Deskripsi foto
         type: string
         description: Satu kalimat tentang isi foto.
+      - name: whyImage
+        label: Foto bagian "Kenapa Intravest"
+        type: image
+        description: Opsional. Foto di samping daftar keunggulan. Cocok foto guide atau tim.
+      - name: whyAlt
+        label: Deskripsi foto (Kenapa Intravest)
+        type: string
+      - name: ctaImage
+        label: Foto bagian penutup (ajakan WhatsApp)
+        type: image
+        description: Opsional. Foto latar di bagian paling bawah halaman depan.
+      - name: ctaAlt
+        label: Deskripsi foto (penutup)
+        type: string

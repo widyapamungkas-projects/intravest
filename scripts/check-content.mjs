@@ -75,7 +75,9 @@ for (const collection of ['destinations', 'tours', 'stories']) {
 const homeFile = path.resolve(import.meta.dirname, '..', 'src', 'data', 'home.json');
 if (fs.existsSync(homeFile)) {
   const h = JSON.parse(fs.readFileSync(homeFile, 'utf8'));
-  checkImage('Halaman Depan', h.heroImage, h.heroAlt);
+  checkImage('Halaman Depan (hero)', h.heroImage, h.heroAlt);
+  checkImage('Halaman Depan (Kenapa Intravest)', h.whyImage, h.whyAlt);
+  checkImage('Halaman Depan (penutup)', h.ctaImage, h.ctaAlt);
 }
 
 if (errors.length) {
