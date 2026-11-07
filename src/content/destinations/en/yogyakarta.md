@@ -20,7 +20,8 @@ shopping:
   - Kotagede silverwork
   - Leather wayang puppets
   - Bakpia and other local snacks
-image: /src/assets/images/borobudur-stupas-in-golden-light.png
+image: /src/assets/images/borobudur-stupas-in-golden-light-1.png
+imageAlt: Borobudur Temple
 ---
 Yogyakarta is compact, which helps. The big temples are most comfortable at the start or end of the day, when it is cooler and quieter, so we sequence them around calmer city stops.
 
