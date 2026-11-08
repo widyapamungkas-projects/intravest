@@ -1,19 +1,19 @@
 ---
-// Inline SVG icons. Brand glyphs come from the simple-icons package (CC0); mail and pin are drawn here.
+// Inline SVG icons. Brand glyphs come from simple-icons (CC0), see src/icon-paths.ts; mail and pin are drawn here.
 // Decorative by default: put the text label next to it, or an aria-label on the link around it.
-import { siInstagram, siTiktok, siThreads, siWhatsapp } from 'simple-icons';
+import { brandPaths } from '../icon-paths';
 
 interface Props {
   name: 'whatsapp' | 'instagram' | 'tiktok' | 'threads' | 'mail' | 'pin';
   class?: string;
 }
 const { name, class: className = 'size-5' } = Astro.props;
-const brand = { whatsapp: siWhatsapp, instagram: siInstagram, tiktok: siTiktok, threads: siThreads }[name as 'whatsapp'];
+const brand = brandPaths[name as keyof typeof brandPaths];
 ---
 
 {
   brand ? (
-    <svg class={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d={brand.path} /></svg>
+    <svg class={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d={brand} /></svg>
   ) : name === 'mail' ? (
     <svg class={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
       <rect x="3" y="5" width="18" height="14" rx="2" />
