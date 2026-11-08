@@ -5,6 +5,14 @@ const env = import.meta.env;
 // Edited through the dashboard (src/data/settings.json). A filled value wins; an empty one falls back to the
 // PUBLIC_* env var, then to the built-in default.
 const filled = (v: unknown): string | undefined => (typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined);
+// Accepts a full URL, "@handle", or "instagram.com/handle" and returns a working https URL ('#' when not set).
+const profile = (v: unknown, base: string): string => {
+  const x = filled(v);
+  if (!x) return '#';
+  if (/^https?:\/\//i.test(x)) return x;
+  if (x.startsWith('@')) return `${base}${x}`;
+  return `https://${x.replace(/^\/+/, '')}`;
+};
 const waNumber: string = (filled(settings.contact.whatsapp)?.replace(/\D/g, '') || undefined) ?? env.PUBLIC_WHATSAPP_NUMBER ?? '628000000000'; // digits only, with country code. PLACEHOLDER fallback
 
 /** Single place to edit contact details, social links, and default copy. Contact values come from PUBLIC_* env vars (see .env.example). */
@@ -32,9 +40,9 @@ export const site = {
   ga4: env.PUBLIC_GA4_ID as string | undefined,
   // Profile URLs from the dashboard. '#' = not set yet: the footer hides that account.
   social: {
-    instagram: filled(settings.social.instagram) ?? '#',
-    tiktok: filled(settings.social.tiktok) ?? '#',
-    threads: filled(settings.social.threads) ?? '#',
+    instagram: profile(settings.social.instagram, 'https://instagram.com/').replace('/@', '/'),
+    tiktok: profile(settings.social.tiktok, 'https://www.tiktok.com/'),
+    threads: profile(settings.social.threads, 'https://www.threads.net/'),
   },
   description: {
     en: filled(settings.company.descriptionEn) ?? 'Curated trips across Indonesia with local guides and realistic itineraries, planned and run by our own team.',

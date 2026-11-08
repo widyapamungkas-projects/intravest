@@ -79,7 +79,7 @@ if (fs.existsSync(settingsFile)) {
   const email = (st.contact?.email ?? '').trim();
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push(`Pengaturan: email "${email}" tidak valid.`);
   for (const [k, v] of Object.entries(st.social ?? {})) {
-    if (v && v.trim() && !/^https?:\/\//.test(v.trim())) errors.push(`Pengaturan: alamat ${k} harus diawali https:// (sekarang: "${v}").`);
+    if (v && v.trim() && !/^(https?:\/\/\S+|@[\w.]+|[\w-]+(\.[\w-]+)+\/\S*)$/.test(v.trim())) warn(`Pengaturan: alamat ${k} "${v}" kurang jelas. Tulis alamat lengkap (https://...) atau @namaakun.`);
   }
 }
 // Threads: caption length (the API allows 500 characters).
