@@ -1,7 +1,15 @@
 import type { Locale } from './i18n';
-import settings from './data/settings.json';
+import settingsData from './data/settings.json';
 
 const env = import.meta.env;
+// The dashboard drops fields left empty, so every field is optional here (typing from the JSON file alone would
+// make a missing key a build error).
+interface Settings {
+  company?: { name?: string; fullName?: string; tagline?: string; address?: string; descriptionEn?: string; descriptionId?: string };
+  contact?: { whatsapp?: string; whatsappDisplay?: string; email?: string };
+  social?: { instagram?: string; tiktok?: string; threads?: string };
+}
+const settings = settingsData as Settings;
 // Edited through the dashboard (src/data/settings.json). A filled value wins; an empty one falls back to the
 // PUBLIC_* env var, then to the built-in default.
 const filled = (v: unknown): string | undefined => (typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined);
@@ -13,18 +21,18 @@ const profile = (v: unknown, base: string): string => {
   if (x.startsWith('@')) return `${base}${x}`;
   return `https://${x.replace(/^\/+/, '')}`;
 };
-const waNumber: string = (filled(settings.contact.whatsapp)?.replace(/\D/g, '') || undefined) ?? env.PUBLIC_WHATSAPP_NUMBER ?? '628000000000'; // digits only, with country code. PLACEHOLDER fallback
+const waNumber: string = (filled(settings.contact?.whatsapp)?.replace(/\D/g, '') || undefined) ?? env.PUBLIC_WHATSAPP_NUMBER ?? '628000000000'; // digits only, with country code. PLACEHOLDER fallback
 
 /** Single place to edit contact details, social links, and default copy. Contact values come from PUBLIC_* env vars (see .env.example). */
 export const site = {
-  name: filled(settings.company.name) ?? 'Intravest',
-  address: filled(settings.company.address),
-  fullName: filled(settings.company.fullName) ?? 'Indonesia Travel Story',
-  tagline: filled(settings.company.tagline) ?? 'Travel that is worth every rupiah',
-  email: filled(settings.contact.email) ?? (env.PUBLIC_EMAIL as string | undefined) ?? 'info@intravest.com',
+  name: filled(settings.company?.name) ?? 'Intravest',
+  address: filled(settings.company?.address),
+  fullName: filled(settings.company?.fullName) ?? 'Indonesia Travel Story',
+  tagline: filled(settings.company?.tagline) ?? 'Travel that is worth every rupiah',
+  email: filled(settings.contact?.email) ?? (env.PUBLIC_EMAIL as string | undefined) ?? 'info@intravest.com',
   whatsapp: {
     number: waNumber,
-    display: filled(settings.contact.whatsappDisplay) ?? (env.PUBLIC_WHATSAPP_DISPLAY as string | undefined) ?? `+${waNumber}`,
+    display: filled(settings.contact?.whatsappDisplay) ?? (env.PUBLIC_WHATSAPP_DISPLAY as string | undefined) ?? `+${waNumber}`,
     defaultMessage: {
       en: 'Hi Intravest, I found your website and would like to inquire about a trip.',
       id: 'Halo Intravest, saya menemukan website kalian dan ingin tanya soal trip.',
@@ -40,13 +48,13 @@ export const site = {
   ga4: env.PUBLIC_GA4_ID as string | undefined,
   // Profile URLs from the dashboard. '#' = not set yet: the footer hides that account.
   social: {
-    instagram: profile(settings.social.instagram, 'https://instagram.com/').replace('/@', '/'),
-    tiktok: profile(settings.social.tiktok, 'https://www.tiktok.com/'),
-    threads: profile(settings.social.threads, 'https://www.threads.net/'),
+    instagram: profile(settings.social?.instagram, 'https://instagram.com/').replace('/@', '/'),
+    tiktok: profile(settings.social?.tiktok, 'https://www.tiktok.com/'),
+    threads: profile(settings.social?.threads, 'https://www.threads.net/'),
   },
   description: {
-    en: filled(settings.company.descriptionEn) ?? 'Curated trips across Indonesia with local guides and realistic itineraries, planned and run by our own team.',
-    id: filled(settings.company.descriptionId) ?? 'Trip Indonesia yang dikurasi, dengan guide lokal dan itinerary realistis, diatur dan dijalankan tim kami sendiri.',
+    en: filled(settings.company?.descriptionEn) ?? 'Curated trips across Indonesia with local guides and realistic itineraries, planned and run by our own team.',
+    id: filled(settings.company?.descriptionId) ?? 'Trip Indonesia yang dikurasi, dengan guide lokal dan itinerary realistis, diatur dan dijalankan tim kami sendiri.',
   } satisfies Record<Locale, string>,
 };
 
