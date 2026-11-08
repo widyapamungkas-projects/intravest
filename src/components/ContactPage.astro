@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FormStatus from './FormStatus.astro';
 import Icon from '../components/Icon.astro';
 import { routePath, type Locale } from '../i18n';
 import { contactCopy } from '../contact-copy';
@@ -73,7 +74,7 @@ const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
         </a>
       </div>
 
-      <form method="POST" action={site.forms.contact} class="space-y-5">
+      <form method="POST" action={site.forms.contact} class="space-y-5" data-ajax>
         <input type="hidden" name="_subject" value="Contact message" />
         <input type="hidden" name="locale" value={locale} />
         <!-- Honeypot: real visitors never see or fill this -->
@@ -97,6 +98,7 @@ const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
           <p id="c-message-hint" class="mt-1 text-sm text-muted">{c.messageHint}</p>
         </div>
         <button type="submit" class={btnForm}>{c.submit}</button>
+        <FormStatus locale={locale} />
         <p class="text-sm text-muted">{c.privacy}</p>
       </form>
     </div>

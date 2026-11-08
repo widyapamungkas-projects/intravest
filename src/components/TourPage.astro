@@ -1,5 +1,6 @@
 ---
 import { getEntry, render, type CollectionEntry } from 'astro:content';
+import FormStatus from './FormStatus.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Photo from './Photo.astro';
 import { localizedPath, routePath, type Locale } from '../i18n';
@@ -190,7 +191,7 @@ const ld = {
         </div>
       </div>
 
-      <form method="POST" action={site.forms.tour} class="space-y-5">
+      <form method="POST" action={site.forms.tour} class="space-y-5" data-ajax>
         <input type="hidden" name="package" value={`${d.code} ${d.title}`} />
         <input type="hidden" name="_subject" value={`Tour inquiry: ${d.code} ${d.title}`} />
         <!-- Honeypot: real visitors never see or fill this -->
@@ -233,6 +234,7 @@ const ld = {
           <p id="tour-notes-hint" class="mt-1 text-sm text-muted">{f.notesHint}</p>
         </div>
         <button type="submit" class={btnPrimary}>{f.submit}</button>
+        <FormStatus locale={locale} />
         <p class="text-sm text-muted">{f.privacy}</p>
       </form>
     </div>

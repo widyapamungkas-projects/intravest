@@ -1,0 +1,77 @@
+---
+// Status line for a form that submits in the background (see the script below). The form needs `data-ajax`.
+// Staying on the page means a sent form is emptied and the Back button never brings the old answers back.
+import type { Locale } from '../i18n';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = {
+  en: {
+    sending: 'Sending...',
+    success: 'Thank you, your message is sent. We will reply by email soon.',
+    error: 'Sorry, the message did not go through. Please try again, or message us on WhatsApp.',
+    wa: 'Open WhatsApp',
+    waMsg: 'Hi Intravest, I tried to send a message through the website but it failed.',
+  },
+  id: {
+    sending: 'Mengirim...',
+    success: 'Terima kasih, pesanmu terkirim. Kami balas lewat email secepatnya.',
+    error: 'Maaf, pesan belum terkirim. Coba lagi, atau hubungi kami lewat WhatsApp.',
+    wa: 'Buka WhatsApp',
+    waMsg: 'Halo Intravest, saya sudah coba kirim pesan lewat website tapi gagal.',
+  },
+}[locale];
+---
+
+<div data-form-status data-sending={t.sending} data-success={t.success} data-error={t.error} data-wa-label={t.wa} data-wa-href={whatsappLink(t.waMsg)}>
+  <p role="status" aria-live="polite" class="min-h-6 text-sm font-medium" data-form-status-text></p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-ajax]').forEach((form) => {
+    const box = form.querySelector<HTMLElement>('[data-form-status]');
+    const text = box?.querySelector<HTMLElement>('[data-form-status-text]');
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!box || !text) return;
+
+    const say = (msg: string, tone: 'info' | 'ok' | 'error') => {
+      text.textContent = msg;
+      text.className = `min-h-6 text-sm font-medium ${tone === 'ok' ? 'text-text' : tone === 'error' ? 'text-danger' : 'text-muted'}`;
+      box.querySelector('[data-wa]')?.remove();
+      if (tone === 'error') {
+        const a = document.createElement('a');
+        a.href = box.dataset.waHref ?? '#';
+        a.textContent = box.dataset.waLabel ?? 'WhatsApp';
+        a.rel = 'noopener';
+        a.setAttribute('data-wa', '');
+        a.className = 'mt-2 inline-flex min-h-11 items-center rounded-md border border-border bg-surface px-4 font-medium text-text hover:bg-surface-2';
+        box.appendChild(a);
+      }
+    };
+
+    form.addEventListener('submit', async (e) => {
+      if (!form.checkValidity()) return; // let the browser show its own messages
+      e.preventDefault();
+      if (button) button.disabled = true;
+      say(box.dataset.sending ?? '', 'info');
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        say(box.dataset.success ?? 'OK', 'ok');
+      } catch {
+        say(box.dataset.error ?? 'Error', 'error');
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+  });
+
+  // Coming back to the page from history can restore old answers: start clean.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.querySelectorAll<HTMLFormElement>('form[data-ajax]').forEach((f) => f.reset());
+  });
+</script>
