@@ -1,19 +1,17 @@
 {
   "company": {
-    "name": "Intravest",
+    "name": "Intravest Vacation",
     "fullName": "Indonesia Travel Story",
     "tagline": "Travel that is worth every rupiah",
     "descriptionEn": "Curated trips across Indonesia with local guides and realistic itineraries, planned and run by our own team.",
     "descriptionId": "Trip Indonesia yang dikurasi, dengan guide lokal dan itinerary realistis, diatur dan dijalankan tim kami sendiri."
   },
   "contact": {
-    "whatsapp": "",
-    "whatsappDisplay": "",
-    "email": ""
+    "whatsapp": "628116011662",
+    "whatsappDisplay": "+6281-6011-662",
+    "email": "info@intravest.id"
   },
   "social": {
-    "instagram": "",
-    "tiktok": "",
-    "threads": ""
+    "instagram": "@intravest_vacation"
   }
 }
