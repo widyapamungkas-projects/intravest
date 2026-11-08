@@ -10,6 +10,7 @@ const waNumber: string = (filled(settings.contact.whatsapp)?.replace(/\D/g, '') 
 /** Single place to edit contact details, social links, and default copy. Contact values come from PUBLIC_* env vars (see .env.example). */
 export const site = {
   name: filled(settings.company.name) ?? 'Intravest',
+  address: filled(settings.company.address),
   fullName: filled(settings.company.fullName) ?? 'Indonesia Travel Story',
   tagline: filled(settings.company.tagline) ?? 'Travel that is worth every rupiah',
   email: filled(settings.contact.email) ?? (env.PUBLIC_EMAIL as string | undefined) ?? 'info@intravest.com',

@@ -107,7 +107,7 @@ Aturan yang dijaga otomatis saat build:
 
 Foto artikel yang dipakai sebagai gambar share (OG) tetap kolom terpisah `ogImage` (path ke `public/og/`, 1200x630).
 
-**Pengaturan Situs** (menu "Pengaturan Situs"): nama merek, tagline, deskripsi singkat, nomor WhatsApp, email, dan alamat profil Instagram, TikTok, Threads. Nilai yang diisi di sini menang atas Environment variable Netlify; kolom yang kosong memakai nilai Netlify, lalu nilai bawaan. Akun sosial yang kosong disembunyikan dari footer. Nomor WhatsApp ditulis dengan kode negara (`6281234567890`), spasi dan tanda plus dibersihkan otomatis. Build gagal kalau nomor, email, atau alamat sosial salah format.
+**Pengaturan Situs** (menu "Pengaturan Situs"): nama merek, tagline, alamat kantor (opsional, tampil di footer dan halaman Kontak; kosong = disembunyikan), deskripsi singkat, nomor WhatsApp, email, dan alamat profil Instagram, TikTok, Threads. Nilai yang diisi di sini menang atas Environment variable Netlify; kolom yang kosong memakai nilai Netlify, lalu nilai bawaan. Akun sosial yang kosong disembunyikan dari footer. Nomor WhatsApp ditulis dengan kode negara (`6281234567890`), spasi dan tanda plus dibersihkan otomatis. Build gagal kalau nomor, email, atau alamat sosial salah format.
 
 GA4 dan endpoint form (Formspree) bukan konten: tetap diisi di dashboard Netlify (Environment variables).
 

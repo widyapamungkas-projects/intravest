@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
 import { routePath, type Locale } from '../i18n';
 import { contactCopy } from '../contact-copy';
 import { site, whatsappLink } from '../site';
@@ -13,6 +14,8 @@ const wa = whatsappLink(c.waMessage);
 
 const btnPrimary =
   'inline-flex min-h-14 items-center justify-center rounded-md bg-accent px-8 text-lg font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
+const btnOutline =
+  'inline-flex min-h-14 items-center justify-center rounded-md border border-border bg-surface px-8 text-lg font-medium text-text transition-colors hover:bg-surface-2 active:bg-border';
 const btnForm =
   'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
 const field =
@@ -32,23 +35,28 @@ const wrap = 'mx-auto max-w-6xl px-4 sm:px-6';
       <div>
         <h2 class="t-h2">{c.waTitle}</h2>
         <p class="mt-2 text-muted">{c.waText}</p>
-        <a href={wa} class={`${btnPrimary} mt-6`} rel="noopener">{c.waCta}</a>
+        <a href={wa} class={`${btnPrimary} mt-6 gap-3`} rel="noopener"><Icon name="whatsapp" class="size-6" />{c.waCta}</a>
         <p class="mt-3 text-sm text-muted">{site.whatsapp.display}</p>
       </div>
       <div>
         <h2 class="t-h2">{c.emailTitle}</h2>
         <p class="mt-2 text-muted">{c.emailText}</p>
-        <p class="mt-6">
-          <a
-            href={`mailto:${site.email}`}
-            class="inline-flex min-h-11 items-center rounded-md text-lg font-medium text-accent hover:text-accent-hover hover:underline"
-          >
-            {site.email}
-          </a>
-        </p>
+        <a href={`mailto:${site.email}`} class={`${btnOutline} mt-6 gap-3`}><Icon name="mail" class="size-6" />{c.emailCta}</a>
+        <p class="mt-3 text-sm text-muted">{site.email}</p>
       </div>
     </div>
-    <p class={`${wrap} pb-12 text-muted sm:pb-16`}>{c.responseNote}</p>
+    {
+      site.address && (
+        <div class={`${wrap} flex gap-3 pb-6`}>
+          <Icon name="pin" class="mt-1 size-6 shrink-0 text-muted" />
+          <div>
+            <h2 class="t-h3">{c.addressTitle}</h2>
+            <address class="mt-1 whitespace-pre-line not-italic text-muted">{site.address}</address>
+          </div>
+        </div>
+      )
+    }
+    <div class={`${wrap} pb-12 sm:pb-16`}><p class="text-muted">{c.responseNote}</p></div>
   </section>
 
   <!-- Message form -->

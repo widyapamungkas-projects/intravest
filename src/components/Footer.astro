@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import Icon from './Icon.astro';
 import { routePath, type Locale } from '../i18n';
 import { navKeys, ui } from '../ui';
 import { site, whatsappLink } from '../site';
@@ -15,13 +16,13 @@ const year = new Date().getFullYear();
 const linkClass =
   'inline-flex min-h-11 min-w-11 items-center rounded-md text-muted transition-colors hover:text-text active:text-accent';
 
-// TODO: swap text links for icons once the final social accounts exist.
-// An account whose URL is still the '#' placeholder is hidden, so there are no dead links on the live site.
+// An account whose URL is not set is hidden, so there are no dead links on the live site.
 const socials = [
-  { name: 'Instagram', href: site.social.instagram },
-  { name: 'TikTok', href: site.social.tiktok },
-  { name: 'Threads', href: site.social.threads },
-].filter((s) => s.href && s.href !== '#');
+  { name: 'Instagram', icon: 'instagram', href: site.social.instagram },
+  { name: 'TikTok', icon: 'tiktok', href: site.social.tiktok },
+  { name: 'Threads', icon: 'threads', href: site.social.threads },
+].filter((s) => s.href && s.href !== '#') as { name: string; icon: 'instagram' | 'tiktok' | 'threads'; href: string }[];
+const iconLink = 'inline-flex min-h-11 items-center gap-2.5 rounded-md text-muted transition-colors hover:text-text active:text-accent';
 ---
 
 <footer class="border-t border-border bg-surface">
@@ -50,16 +51,28 @@ const socials = [
     <div>
       <h2 class="mb-2 text-base font-medium">{t.footer.contact}</h2>
       <ul>
-        <li><a href={wa} class={linkClass} rel="noopener">WhatsApp {site.whatsapp.display}</a></li>
-        <li><a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a></li>
+        <li><a href={wa} class={iconLink} rel="noopener"><Icon name="whatsapp" />{site.whatsapp.display}</a></li>
+        <li><a href={`mailto:${site.email}`} class={iconLink}><Icon name="mail" />{site.email}</a></li>
+        {
+          site.address && (
+            <li class="flex gap-2.5 py-2 text-muted">
+              <Icon name="pin" class="mt-0.5 size-5 shrink-0" />
+              <address class="whitespace-pre-line not-italic">{site.address}</address>
+            </li>
+          )
+        }
       </ul>
       {
         socials.length > 0 && (
           <>
             <h2 class="mb-2 mt-6 text-base font-medium">{t.footer.follow}</h2>
-            <ul class="flex flex-wrap gap-x-4">
+            <ul class="flex flex-wrap gap-1">
               {socials.map((s) => (
-                <li><a href={s.href} class={linkClass} rel="noopener">{s.name}</a></li>
+                <li>
+                  <a href={s.href} class="inline-flex size-11 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-text active:text-accent" rel="noopener" aria-label={s.name}>
+                    <Icon name={s.icon} class="size-5" />
+                  </a>
+                </li>
               ))}
             </ul>
           </>
@@ -69,8 +82,9 @@ const socials = [
   </div>
 
   <div class="border-t border-border">
-    <p class="mx-auto max-w-6xl px-4 py-5 text-sm text-muted sm:px-6">
+    <div class="mx-auto max-w-6xl px-4 py-5 sm:px-6"><p class="text-sm text-muted">
       &copy; {year} {site.name} ({site.fullName}). {t.footer.rights}
     </p>
+    </div>
   </div>
 </footer>

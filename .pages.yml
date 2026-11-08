@@ -564,6 +564,10 @@ content:
             label: Tagline
             type: string
             description: Tampil di footer.
+          - name: address
+            label: Alamat kantor (opsional)
+            type: text
+            description: Tampil di footer dan halaman Kontak. Kosong = tidak ditampilkan.
           - name: descriptionEn
             label: Deskripsi singkat (EN)
             type: text

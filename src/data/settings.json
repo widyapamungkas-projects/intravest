@@ -4,7 +4,8 @@
     "fullName": "Indonesia Travel Story",
     "tagline": "Travel that is worth every rupiah",
     "descriptionEn": "Curated trips across Indonesia with local guides and realistic itineraries, planned and run by our own team.",
-    "descriptionId": "Trip Indonesia yang dikurasi, dengan guide lokal dan itinerary realistis, diatur dan dijalankan tim kami sendiri."
+    "descriptionId": "Trip Indonesia yang dikurasi, dengan guide lokal dan itinerary realistis, diatur dan dijalankan tim kami sendiri.",
+    "address": ""
   },
   "contact": {
     "whatsapp": "628116011662",
@@ -12,7 +13,8 @@
     "email": "info@intravest.id"
   },
   "social": {
-    "instagram": "https://instagram.com/intravest_vacation",
-    "threads": "@intravest_vacation"
+    "instagram": "",
+    "tiktok": "",
+    "threads": ""
   }
 }

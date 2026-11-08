@@ -11,6 +11,8 @@ interface ContactCopy {
   waMessage: string;
   emailTitle: string;
   emailText: string;
+  emailCta: string;
+  addressTitle: string;
   responseNote: string;
   formTitle: string;
   formIntro: string;
@@ -36,6 +38,8 @@ export const contactCopy: Record<Locale, ContactCopy> = {
     waMessage: 'Hi Intravest, I would like to inquire about a trip to Indonesia.',
     emailTitle: 'Email',
     emailText: 'Better for longer questions or if you want to send details in one go.',
+    emailCta: 'Send an email',
+    addressTitle: 'Our office',
     responseNote: 'We respond within a few hours.',
     formTitle: 'Or send a message here',
     formIntro: 'Leave your email and we will reply there.',
@@ -59,6 +63,8 @@ export const contactCopy: Record<Locale, ContactCopy> = {
     waMessage: 'Halo Intravest, saya ingin tanya soal trip ke Indonesia.',
     emailTitle: 'Email',
     emailText: 'Lebih enak untuk pertanyaan yang panjang atau kalau mau kirim detail sekaligus.',
+    emailCta: 'Kirim email',
+    addressTitle: 'Kantor kami',
     responseNote: 'Kami balas dalam beberapa jam.',
     formTitle: 'Atau kirim pesan di sini',
     formIntro: 'Tinggalkan emailmu dan kami balas ke sana.',
