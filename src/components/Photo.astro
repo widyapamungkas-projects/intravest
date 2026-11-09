@@ -15,8 +15,12 @@ interface Props {
   sizes?: string;
   /** Above-the-fold photo: load eagerly. */
   priority?: boolean;
+  /** Render nothing when there is no photo (big hero photos on detail pages). */
+  hideIfMissing?: boolean;
+  /** Wrapper classes used instead of `class` while the photo is missing (e.g. a shorter block on cards). */
+  fallbackClass?: string;
 }
-const { src, alt, label, class: className = '', sizes = '(min-width: 1024px) 400px, 100vw', priority = false } = Astro.props;
+const { src, alt, label, class: className = '', sizes = '(min-width: 1024px) 400px, 100vw', priority = false, hideIfMissing = false, fallbackClass } = Astro.props;
 
 const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG}', {
   eager: true,
@@ -43,6 +47,6 @@ const found = wanted
       />
     </div>
   ) : (
-    <Placeholder label={label} class={className} />
+    !hideIfMissing && <Placeholder label={label} class={fallbackClass ?? className} />
   )
 }

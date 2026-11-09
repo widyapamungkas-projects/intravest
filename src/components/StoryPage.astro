@@ -81,7 +81,7 @@ const ld = {
       </p>
       <h1 class="mt-1 max-w-[24ch] text-balance t-h1">{d.title}</h1>
       <p class="mt-4 max-w-[52ch] text-lg text-muted">{d.description}</p>
-      <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8] rounded-md" sizes="(min-width: 1152px) 1100px, 100vw" priority />
+      <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="mt-10 aspect-[16/8] rounded-md" sizes="(min-width: 1152px) 1100px, 100vw" priority hideIfMissing />
     </header>
 
     <section class={`${wrap} py-12 sm:py-16`}>

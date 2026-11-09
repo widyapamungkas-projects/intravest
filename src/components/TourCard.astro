@@ -19,7 +19,7 @@ const photo = await photoOf('tours', entry);
   href={routePath(locale, 'tours', tourSlug(entry.id))}
   class="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-raised transition-shadow hover:shadow-floating"
 >
-  <Photo src={photo.image} alt={photo.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="aspect-[4/3] rounded-none! border-0!" sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" />
+  <Photo src={photo.image} alt={photo.imageAlt} label={`${d.title}: ${c.photoSoon}`} class="aspect-[4/3] rounded-none! border-0!" fallbackClass="aspect-[16/6] rounded-none!" sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" />
   <div class="flex flex-1 flex-col p-5">
     <p class="text-sm text-muted">{d.code} · {durationLabel(locale, d.days, d.nights)}</p>
     <h2 class="mt-1 t-h3 group-hover:underline">{d.title}</h2>

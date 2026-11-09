@@ -1,5 +1,5 @@
 ---
-// Stand-in for a real photo. Replace with <img> (explicit width/height, loading="lazy") when photos exist.
+// Stand-in for a missing photo: a calm tinted block with the brand leaf (the text is kept for screen readers).
 interface Props {
   label: string;
   class?: string;
@@ -10,7 +10,10 @@ const { label, class: className = '' } = Astro.props;
 <div
   role="img"
   aria-label={label}
-  class:list={['flex items-end rounded-md border border-border bg-surface-2 p-4 text-sm text-muted', className]}
+  class:list={['flex items-center justify-center rounded-md bg-gradient-to-br from-surface-2 to-border/60', className]}
 >
-  <span aria-hidden="true">{label}</span>
+  <svg width="44" height="44" viewBox="0 0 28 28" aria-hidden="true" class="opacity-25">
+    <circle cx="14" cy="14" r="13" fill="var(--accent)" />
+    <path d="M8 18c3-7 9-9 13-8-1 5-6 9-13 8z" fill="var(--on-accent)" />
+  </svg>
 </div>

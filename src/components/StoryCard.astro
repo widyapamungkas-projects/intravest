@@ -18,7 +18,7 @@ const d = entry.data;
   href={routePath(locale, 'travel-stories', storySlug(entry.id))}
   class="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-raised transition-shadow hover:shadow-floating"
 >
-  <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${storiesCopy[locale].card.photoSoon}`} class="aspect-[16/9] rounded-none! border-0!" sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" />
+  <Photo src={d.image} alt={d.imageAlt} label={`${d.title}: ${storiesCopy[locale].card.photoSoon}`} class="aspect-[16/9] rounded-none! border-0!" fallbackClass="aspect-[16/6] rounded-none!" sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" />
   <div class="flex flex-1 flex-col p-5">
     <p class="text-sm text-muted">
       {categoryLabel} · <time datetime={d.date.toISOString().slice(0, 10)}>{formatDate(locale, d.date)}</time>
