@@ -44,14 +44,13 @@ const btnSecondary =
   )}
 
   <section class="border-t border-border">
-    <div class={`${wrap} grid gap-10 py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20`}>
-      <div>
-        <h2 class="text-balance t-h2">{c.storyTitle}</h2>
-        {a.storyImage && (
-          <Photo src={a.storyImage} alt={a.storyAlt} label="" hideIfMissing class="mt-8 aspect-[4/3] rounded-lg" sizes="(min-width: 1024px) 400px, 100vw" />
-        )}
-      </div>
-      <div class="space-y-5 text-muted">
+    <div class={`${wrap} grid gap-x-20 gap-y-8 py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr]`}>
+      <h2 class="text-balance t-h2 lg:col-start-1 lg:row-start-1">{c.storyTitle}</h2>
+      {a.storyImage && (
+        <Photo src={a.storyImage} alt={a.storyAlt} label="" hideIfMissing class="aspect-[4/3] rounded-lg lg:col-start-1 lg:row-start-2" sizes="(min-width: 1024px) 400px, 100vw" />
+      )}
+      {/* With a photo, the text starts level with the photo's top; without one, level with the title. */}
+      <div class={`space-y-5 text-muted lg:col-start-2 ${a.storyImage ? 'lg:row-start-2' : 'lg:row-start-1'}`}>
         {c.storyBody.map((paragraph) => <p>{paragraph}</p>)}
       </div>
     </div>
@@ -72,12 +71,10 @@ const btnSecondary =
   </section>
 
   <section class="border-t border-border">
-    <div class={`${wrap} grid gap-6 pb-10 pt-16 sm:pt-20 lg:grid-cols-[1fr_1fr] lg:gap-20`}>
-      <div>
-        <h2 class="max-w-[22ch] text-balance t-h2">{c.operationsTitle}</h2>
-        <p class="mt-4 text-muted">{c.operationsIntro}</p>
-      </div>
-      <p class="text-muted lg:pt-2">{c.note}</p>
+    <div class={`${wrap} grid gap-x-20 gap-y-4 pb-10 pt-16 sm:pt-20 lg:grid-cols-2`}>
+      <h2 class="max-w-[22ch] text-balance t-h2 lg:col-start-1 lg:row-start-1">{c.operationsTitle}</h2>
+      <p class="text-muted lg:col-start-1 lg:row-start-2">{c.operationsIntro}</p>
+      <p class="text-muted lg:col-start-2 lg:row-start-2">{c.note}</p>
     </div>
     <div class={`${wrap} pb-16 sm:pb-20`}>
       <ul class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
