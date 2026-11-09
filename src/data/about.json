@@ -1,14 +1,4 @@
 {
-  "heroImage": "",
-  "heroAlt": "",
-  "storyImage": "",
-  "storyAlt": "",
-  "place1": "",
-  "place1Alt": "",
-  "place2": "",
-  "place2Alt": "",
-  "place3": "",
-  "place3Alt": "",
-  "place4": "",
-  "place4Alt": ""
+  "heroImage": "/src/assets/images/gili-compressed.jpg",
+  "heroAlt": "Gili Trawangan Village"
 }
