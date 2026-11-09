@@ -1,8 +1,8 @@
 {
   "heroImage": "/src/assets/images/indonesian-landmarks-by-the-lake.png",
   "heroAlt": "Indonesia Landmark",
-  "whyImage": "",
-  "whyAlt": "",
-  "ctaImage": "",
-  "ctaAlt": ""
+  "whyImage": "/src/assets/images/dsc3178.jpg",
+  "whyAlt": "Komodo Dragon",
+  "ctaImage": "/src/assets/images/gili-compressed.jpg",
+  "ctaAlt": "Gili Trawangan Village"
 }
