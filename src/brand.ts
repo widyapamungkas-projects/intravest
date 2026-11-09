@@ -13,7 +13,7 @@ export async function getLogo() {
   const src = find(site.logo);
   if (!src) return undefined;
   if (src.format === 'svg') return { src: src.src, width: src.width, height: src.height };
-  const img = await getImage({ src, height: 112, format: 'png' });
+  const img = await getImage({ src, height: 192, format: 'png' });
   return { src: img.src, width: img.attributes.width as number, height: img.attributes.height as number };
 }
 

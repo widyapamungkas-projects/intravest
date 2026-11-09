@@ -16,7 +16,7 @@ const logo = await getLogo();
   class="inline-flex min-h-11 items-center gap-2 rounded-md text-base font-semibold leading-tight tracking-tight text-text sm:text-lg"
 >
   {logo ? (
-    <img src={logo.src} alt="" width={logo.width} height={logo.height} class="h-7 w-auto" />
+    <img src={logo.src} alt="" width={logo.width} height={logo.height} class="h-10 w-auto sm:h-12" />
   ) : (
     <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
       <circle cx="14" cy="14" r="13" fill="var(--accent)" />
