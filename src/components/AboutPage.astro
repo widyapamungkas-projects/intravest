@@ -4,16 +4,20 @@ import { routePath, type Locale } from '../i18n';
 import { aboutCopy } from '../about-copy';
 import { site, whatsappLink } from '../site';
 import Photo from './Photo.astro';
+import { getCollection } from 'astro:content';
+import { photoOf } from '../photo';
 import aboutJson from '../data/about.json';
-// The dashboard drops fields left empty, so every field is optional. An empty slot renders nothing.
-const a = aboutJson as Record<string, string | undefined>;
-const places = [1, 2, 3, 4].map((n) => ({ src: a[`place${n}`], alt: a[`place${n}Alt`] })).filter((p) => p.src);
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+// The dashboard drops fields left empty, so every field is optional. An empty slot renders nothing.
+const a = aboutJson as Record<string, string | undefined>;
+// Operating-area photos come from the destination pages (first four that have a photo), so nothing to fill in here.
+const destEntries = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort((x, y) => x.data.order - y.data.order);
+const places = (await Promise.all(destEntries.map((e) => photoOf('destinations', e)))).filter((p) => p.image).slice(0, 4);
 const c = aboutCopy[locale];
 const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
 
@@ -83,7 +87,7 @@ const btnSecondary =
     {places.length > 0 && (
       <div class={`${wrap} grid grid-cols-2 gap-3 pb-16 sm:pb-20 lg:grid-cols-4`}>
         {places.map((p) => (
-          <Photo src={p.src} alt={p.alt} label="" hideIfMissing class="aspect-[4/5] rounded-lg" sizes="(min-width: 1024px) 280px, 50vw" />
+          <Photo src={p.image} alt={p.imageAlt} label="" hideIfMissing class="aspect-[4/5] rounded-lg" sizes="(min-width: 1024px) 280px, 50vw" />
         ))}
       </div>
     )}
