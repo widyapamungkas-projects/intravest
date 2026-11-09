@@ -544,6 +544,51 @@ content:
       - name: ctaAlt
         label: Deskripsi foto (penutup)
         type: string
+  - name: about
+    label: Halaman Tentang Kami
+    type: file
+    path: src/data/about.json
+    format: json
+    fields:
+      - name: heroImage
+        label: Foto lebar di bagian atas
+        type: image
+        description: Opsional. Foto suasana trip yang tenang. Kosong = tidak ditampilkan.
+      - name: heroAlt
+        label: Deskripsi foto (atas)
+        type: string
+      - name: storyImage
+        label: Foto bagian cerita kami
+        type: image
+        description: Opsional. Foto tim atau guide lokal saat bekerja.
+      - name: storyAlt
+        label: Deskripsi foto (cerita)
+        type: string
+      - name: place1
+        label: Foto tempat operasi 1
+        type: image
+        description: Opsional. Satu foto per destinasi.
+      - name: place1Alt
+        label: Deskripsi foto tempat 1
+        type: string
+      - name: place2
+        label: Foto tempat operasi 2
+        type: image
+      - name: place2Alt
+        label: Deskripsi foto tempat 2
+        type: string
+      - name: place3
+        label: Foto tempat operasi 3
+        type: image
+      - name: place3Alt
+        label: Deskripsi foto tempat 3
+        type: string
+      - name: place4
+        label: Foto tempat operasi 4
+        type: image
+      - name: place4Alt
+        label: Deskripsi foto tempat 4
+        type: string
   - name: pengaturan
     label: Pengaturan Situs
     type: file

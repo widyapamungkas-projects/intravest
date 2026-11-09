@@ -3,6 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { routePath, type Locale } from '../i18n';
 import { aboutCopy } from '../about-copy';
 import { site, whatsappLink } from '../site';
+import Photo from './Photo.astro';
+import aboutJson from '../data/about.json';
+// The dashboard drops fields left empty, so every field is optional. An empty slot renders nothing.
+const a = aboutJson as Record<string, string | undefined>;
+const places = [1, 2, 3, 4].map((n) => ({ src: a[`place${n}`], alt: a[`place${n}Alt`] })).filter((p) => p.src);
 
 interface Props {
   locale: Locale;
@@ -26,9 +31,20 @@ const btnSecondary =
     <p class="mt-6 max-w-[64ch] text-lg text-muted">{c.intro}</p>
   </header>
 
+  {a.heroImage && (
+    <div class={`${wrap} pb-14 sm:pb-20`}>
+      <Photo src={a.heroImage} alt={a.heroAlt} label="" hideIfMissing priority sizes="(min-width: 1152px) 1152px, 100vw" class="aspect-[16/9] rounded-lg sm:aspect-[21/9]" />
+    </div>
+  )}
+
   <section class="border-t border-border">
     <div class={`${wrap} grid gap-10 py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20`}>
-      <h2 class="text-balance t-h2">{c.storyTitle}</h2>
+      <div>
+        <h2 class="text-balance t-h2">{c.storyTitle}</h2>
+        {a.storyImage && (
+          <Photo src={a.storyImage} alt={a.storyAlt} label="" hideIfMissing class="mt-8 aspect-[4/5] rounded-lg" sizes="(min-width: 1024px) 400px, 100vw" />
+        )}
+      </div>
       <div class="space-y-5 text-muted">
         {c.storyBody.map((paragraph) => <p>{paragraph}</p>)}
       </div>
@@ -64,6 +80,13 @@ const btnSecondary =
         <p class="mt-6 text-sm text-muted">{c.note}</p>
       </div>
     </div>
+    {places.length > 0 && (
+      <div class={`${wrap} grid grid-cols-2 gap-3 pb-16 sm:pb-20 lg:grid-cols-4`}>
+        {places.map((p) => (
+          <Photo src={p.src} alt={p.alt} label="" hideIfMissing class="aspect-[4/5] rounded-lg" sizes="(min-width: 1024px) 280px, 50vw" />
+        ))}
+      </div>
+    )}
   </section>
 
   <section class="border-t border-border bg-accent-soft">

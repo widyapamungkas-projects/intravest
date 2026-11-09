@@ -70,6 +70,14 @@ if (fs.existsSync(homeFile)) {
   checkImage('Halaman Depan (penutup)', h.ctaImage, h.ctaAlt);
 }
 
+const aboutFile = path.join(src, 'data', 'about.json');
+if (fs.existsSync(aboutFile)) {
+  const h = JSON.parse(fs.readFileSync(aboutFile, 'utf8'));
+  checkImage('Tentang Kami (atas)', h.heroImage, h.heroAlt);
+  checkImage('Tentang Kami (cerita)', h.storyImage, h.storyAlt);
+  for (const n of [1, 2, 3, 4]) checkImage(`Tentang Kami (tempat ${n})`, h[`place${n}`], h[`place${n}Alt`]);
+}
+
 // Settings page: catch values that would silently break links.
 const settingsFile = path.join(src, 'data', 'settings.json');
 if (fs.existsSync(settingsFile)) {
