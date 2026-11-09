@@ -7,6 +7,7 @@ import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import { alternatePath, htmlLang, routePath, type Locale } from '../i18n';
 import { ui } from '../ui';
 import { site } from '../site';
+import { getFavicons } from '../brand';
 
 interface Props {
   locale: Locale;
@@ -44,6 +45,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 // x-default points at the English version, same as the sitemap does.
 const xDefault = alt ? (locale === 'en' ? canonical.href : new URL(alt.path, Astro.site).href) : null;
 const ga4 = import.meta.env.PROD ? site.ga4 : undefined;
+const fav = await getFavicons();
 ---
 
 <!doctype html>
@@ -55,8 +57,11 @@ const ga4 = import.meta.env.PROD ? site.ga4 : undefined;
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    {fav?.svg && <link rel="icon" href={fav.svg} type="image/svg+xml" />}
+    {fav?.png && <link rel="icon" href={fav.png} type="image/png" sizes="48x48" />}
+    {fav?.apple && <link rel="apple-touch-icon" href={fav.apple} />}
+    {!fav && <link rel="icon" href="/favicon.svg" type="image/svg+xml" />}
+    {!fav && <link rel="icon" href="/favicon.ico" sizes="32x32" />}
     <link rel="canonical" href={canonical.href} />
     <link rel="alternate" hreflang={htmlLang[locale]} href={canonical.href} />
     {alt && <link rel="alternate" hreflang={htmlLang[alt.locale]} href={new URL(alt.path, Astro.site).href} />}

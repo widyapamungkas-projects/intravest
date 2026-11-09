@@ -14,6 +14,7 @@ media:
       - png
       - webp
       - avif
+      - svg
     rename: safe
 content:
   - name: destinations
@@ -564,6 +565,14 @@ content:
             label: Tagline
             type: string
             description: Tampil di footer.
+          - name: logo
+            label: Logo
+            type: image
+            description: "Nama file di galeri Foto (PNG atau SVG, latar transparan, minimal 200 px tinggi). Kosong = logo daun bawaan."
+          - name: favicon
+            label: Favicon (ikon tab browser)
+            type: image
+            description: "Gambar persegi, minimal 256x256 px (PNG atau SVG). Kosong = ikon bawaan."
           - name: address
             label: Alamat kantor (opsional)
             type: text

@@ -5,7 +5,7 @@ const env = import.meta.env;
 // The dashboard drops fields left empty, so every field is optional here (typing from the JSON file alone would
 // make a missing key a build error).
 interface Settings {
-  company?: { name?: string; fullName?: string; tagline?: string; address?: string; descriptionEn?: string; descriptionId?: string };
+  company?: { logo?: string; favicon?: string; name?: string; fullName?: string; tagline?: string; address?: string; descriptionEn?: string; descriptionId?: string };
   contact?: { whatsapp?: string; whatsappDisplay?: string; email?: string };
   social?: { instagram?: string; tiktok?: string; threads?: string };
 }
@@ -27,6 +27,8 @@ const waNumber: string = (filled(settings.contact?.whatsapp)?.replace(/\D/g, '')
 export const site = {
   name: filled(settings.company?.name) ?? 'Intravest',
   address: filled(settings.company?.address),
+  logo: filled(settings.company?.logo),
+  favicon: filled(settings.company?.favicon),
   fullName: filled(settings.company?.fullName) ?? 'Indonesia Travel Story',
   tagline: filled(settings.company?.tagline) ?? 'Travel that is worth every rupiah',
   email: filled(settings.contact?.email) ?? (env.PUBLIC_EMAIL as string | undefined) ?? 'info@intravest.com',
