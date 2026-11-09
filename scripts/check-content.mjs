@@ -44,10 +44,28 @@ for (const { slug, data } of tours) {
 // Photos: a referenced file must exist in src/assets/images; a missing description only warns.
 const imgDir = path.join(src, 'assets', 'images');
 const imgFiles = fs.existsSync(imgDir) ? fs.readdirSync(imgDir).map((f) => f.toLowerCase()) : [];
+// Pixel width of a PNG/JPEG without extra packages (undefined for other formats).
+const widthOf = (file) => {
+  try {
+    const b = fs.readFileSync(file);
+    if (b.readUInt32BE(0) === 0x89504e47) return b.readUInt32BE(16);
+    if (b[0] === 0xff && b[1] === 0xd8) {
+      for (let i = 2; i < b.length - 9; ) {
+        if (b[i] !== 0xff) { i++; continue; }
+        const m = b[i + 1];
+        if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return b.readUInt16BE(i + 7);
+        i += 2 + b.readUInt16BE(i + 2);
+      }
+    }
+  } catch {}
+};
 const checkImage = (where, image, alt) => {
   if (!image) return;
   const name = image.split('/').pop().toLowerCase();
   if (!imgFiles.includes(name)) errors.push(`${where}: foto "${image}" tidak ditemukan di src/assets/images. Unggah fotonya atau kosongkan kolom foto.`);
+  const real = fs.existsSync(imgDir) && fs.readdirSync(imgDir).find((f) => f.toLowerCase() === name);
+  const w = real && widthOf(path.join(imgDir, real));
+  if (w && w < 1000) warn(`${where}: foto "${name}" hanya ${w} px lebar, akan terlihat pecah. Pakai foto minimal 1200 px.`);
   if (!alt || !alt.trim()) warn(`${where}: foto "${image}" belum punya "Deskripsi foto". Situs memakai judul halaman sebagai pengganti.`);
 };
 for (const [col, items] of [['destinations', destinations], ['tours', tours]]) {
