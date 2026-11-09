@@ -12,8 +12,10 @@ interface Props {
   soon: string;
   class?: string;
   sizes?: string;
+  /** Hide the tagline on phones (small 2-column tiles where it would crowd the photo). */
+  compactMobile?: boolean;
 }
-const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3]', sizes } = Astro.props;
+const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3]', sizes, compactMobile = false } = Astro.props;
 ---
 
 <a href={href} class="group relative block overflow-hidden rounded-lg">
@@ -28,9 +30,9 @@ const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3
           sizes={sizes}
         />
         <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+        <div class:list={['absolute inset-x-0 bottom-0 text-white', compactMobile ? 'p-3 sm:p-5' : 'p-5']}>
           <h3 class="t-h3 text-white group-hover:underline">{name}</h3>
-          <p class="mt-1 text-sm text-white/90">{tagline}</p>
+          <p class:list={['mt-1 text-sm text-white/90', compactMobile && 'hidden sm:block']}>{tagline}</p>
         </div>
       </>
     ) : (
