@@ -2,9 +2,10 @@ slug: yogyakarta
 order: 4
 image: /src/assets/images/borobudur-stupas-in-golden-light-compressed.jpg
 en:
-  title: Yogyakarta
+  title: Central Of Java
   tagline: Temples, craft villages, and Javanese food worth planning a day around.
-  description: "Yogyakarta trips with a local guide: Borobudur and Prambanan, the Sultan's palace, craft villages, and Javanese food, at a pace that works."
+  description: "Yogyakarta trips with a local guide: Borobudur and Prambanan, the
+    Sultan's palace, craft villages, and Javanese food, at a pace that works."
   see:
     - Borobudur and Prambanan temples
     - The Kraton, the Sultan's palace
@@ -22,15 +23,19 @@ en:
     - Leather wayang puppets
     - Bakpia and other local snacks
   imageAlt: Borobudur Temple
-  body: |-
-    Yogyakarta is compact, which helps. The big temples are most comfortable at the start or end of the day, when it is cooler and quieter, so we sequence them around calmer city stops.
+  body: >-
+    Yogyakarta is compact, which helps. The big temples are most comfortable at
+    the start or end of the day, when it is cooler and quieter, so we sequence
+    them around calmer city stops.
+
 
     Food is a reason to come here, not a side note, so meals are planned too.
   needsReview: false
 id:
-  title: Yogyakarta
+  title: Jogja Bagian Tengah
   tagline: Candi, desa kerajinan, dan kuliner Jawa yang layak disisihkan satu hari.
-  description: "Trip Yogyakarta dengan guide lokal: Borobudur dan Prambanan, keraton, desa kerajinan, dan kuliner Jawa, dengan ritme yang nyaman."
+  description: "Trip Yogyakarta dengan guide lokal: Borobudur dan Prambanan,
+    keraton, desa kerajinan, dan kuliner Jawa, dengan ritme yang nyaman."
   see:
     - Candi Borobudur dan Prambanan
     - Keraton Yogyakarta
@@ -47,8 +52,12 @@ id:
     - Kerajinan perak Kotagede
     - Wayang kulit
     - Bakpia dan oleh-oleh khas
-  body: |-
-    Yogyakarta ringkas, dan itu menguntungkan. Candi-candi besar paling nyaman dikunjungi di awal atau akhir hari, saat lebih sejuk dan sepi, jadi kami susun urutannya di sekitar tempat-tempat kota yang lebih tenang.
+  body: >-
+    Yogyakarta ringkas, dan itu menguntungkan. Candi-candi besar paling nyaman
+    dikunjungi di awal atau akhir hari, saat lebih sejuk dan sepi, jadi kami
+    susun urutannya di sekitar tempat-tempat kota yang lebih tenang.
 
-    Makanan adalah alasan datang ke sini, bukan pelengkap, jadi jadwal makannya juga kami rencanakan.
+
+    Makanan adalah alasan datang ke sini, bukan pelengkap, jadi jadwal makannya
+    juga kami rencanakan.
   needsReview: false
