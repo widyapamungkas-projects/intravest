@@ -25,10 +25,10 @@ const cols = [
 ---
 <DialogShell id={`dest-${slug}`} label={d.title} image={photo.image} imageAlt={photo.imageAlt} closeLabel={c.close}>
   <Fragment slot="head">
-    <h3 id={`dest-${slug}-title`} class="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">{d.title}</h3>
-    <p class="mt-1 text-sm text-white/90 sm:text-base">{d.tagline}</p>
+    <h3 id={`dest-${slug}-title`} class="text-xl font-extrabold tracking-tight text-white sm:text-2xl">{d.title}</h3>
+    <p class="mt-1 text-sm text-white/90 sm:text-sm">{d.tagline}</p>
   </Fragment>
-  <div class="grid gap-6 p-5 sm:px-7">
+  <div class="grid gap-6 p-4 sm:px-6">
     <p class="text-muted">{d.description}</p>
     <div class="grid gap-4 md:grid-cols-3">
       {cols.map((col) => (
@@ -52,9 +52,9 @@ const cols = [
       ) : <p class="mt-2 text-sm text-muted">{c.dest.none}</p>}
     </div>
   </div>
-  <div slot="foot" class="flex flex-wrap items-center justify-end gap-3 border-t border-border bg-surface-2 p-4 sm:px-7">
-    <a href={routePath(locale, 'destinations', slug)} class="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface px-4 text-sm font-bold hover:bg-surface-2">{c.fullPage}</a>
-    <a href={whatsappLink(dc.waMessage(d.title))} rel="noopener" class="inline-flex min-h-12 items-center rounded-xl bg-accent px-5 text-sm font-bold text-on-accent hover:bg-accent-hover">{c.dest.ask}</a>
+  <div slot="foot" class="flex flex-wrap items-center justify-end gap-3 border-t border-border bg-surface-2 p-3 sm:px-6">
+    <a href={routePath(locale, 'destinations', slug)} class="inline-flex min-h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-bold hover:bg-surface-2">{c.fullPage}</a>
+    <a href={whatsappLink(dc.waMessage(d.title))} rel="noopener" class="inline-flex min-h-10 items-center rounded-xl bg-accent px-5 text-sm font-bold text-on-accent hover:bg-accent-hover">{c.dest.ask}</a>
   </div>
 </DialogShell>
 <DialogScript />
