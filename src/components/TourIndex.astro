@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TourCard from './TourCard.astro';
+import TourDialog from './TourDialog.astro';
 import type { Locale } from '../i18n';
 import { destSlug } from '../dest-copy';
 import { tourCopy } from '../tour-copy';
@@ -46,7 +47,7 @@ const chip =
       {
         tours.map((t) => (
           <li data-destination={t.data.destination}>
-            <TourCard locale={locale} entry={t} />
+            <TourCard locale={locale} entry={t} popup />
           </li>
         ))
       }
@@ -54,6 +55,7 @@ const chip =
 
     <p class="mt-8 text-muted" data-tour-empty hidden></p>
   </div>
+  {tours.map((t) => <TourDialog locale={locale} entry={t} />)}
 </BaseLayout>
 
 <script define:vars={{ emptyMessages: Object.fromEntries(destinations.map((d) => [destSlug(d.id), c.empty(d.data.title)])) }}>

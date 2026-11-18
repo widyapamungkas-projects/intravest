@@ -1,0 +1,60 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import DialogShell from './DialogShell.astro';
+import DialogScript from './DialogScript.astro';
+import { photoOf } from '../photo';
+import { routePath, type Locale } from '../i18n';
+import { dialogCopy } from '../dialog-copy';
+import { destCopy, destSlug } from '../dest-copy';
+import { formatIDR, tourSlug } from '../tour-copy';
+import { whatsappLink } from '../site';
+
+interface Props { locale: Locale; entry: CollectionEntry<'destinations'> }
+const { locale, entry } = Astro.props;
+const d = entry.data;
+const c = dialogCopy[locale];
+const dc = destCopy[locale].page;
+const slug = destSlug(entry.id);
+const photo = await photoOf('destinations', entry);
+const tours = (await getCollection('tours', ({ id, data }) => id.startsWith(`${locale}/`) && data.destination === slug)).sort((a, b) => a.data.order - b.data.order);
+const cols = [
+  { t: dc.see, items: d.see, tone: 'text-navy dark:text-sun' },
+  { t: dc.activities, items: d.activities, tone: 'text-accent' },
+  { t: dc.shopping, items: d.shopping, tone: 'text-success' },
+];
+---
+<DialogShell id={`dest-${slug}`} label={d.title} image={photo.image} imageAlt={photo.imageAlt} closeLabel={c.close}>
+  <Fragment slot="head">
+    <h3 id={`dest-${slug}-title`} class="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">{d.title}</h3>
+    <p class="mt-1 text-sm text-white/90 sm:text-base">{d.tagline}</p>
+  </Fragment>
+  <div class="grid gap-6 p-5 sm:px-7">
+    <p class="text-muted">{d.description}</p>
+    <div class="grid gap-4 md:grid-cols-3">
+      {cols.map((col) => (
+        <div class="rounded-xl border border-border bg-surface-2 p-4">
+          <h4 class:list={['text-xs font-extrabold uppercase tracking-wider', col.tone]}>{col.t}</h4>
+          <ul class="mt-2 grid gap-1.5 text-sm text-muted">{col.items.map((x) => <li>{x}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+    <div class="rounded-xl border border-border bg-surface-2 p-4">
+      <h4 class="text-xs font-extrabold uppercase tracking-wider">{c.dest.departures}</h4>
+      {tours.length ? (
+        <ul class="mt-2 grid gap-1.5">
+          {tours.map((t) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
+              <a href={routePath(locale, 'tours', tourSlug(t.id))} data-dialog={`tour-${tourSlug(t.id)}`} class="font-bold text-accent hover:underline">{t.data.code} · {t.data.title}</a>
+              <span class="tabular-nums text-muted">{c.from} {formatIDR(locale, t.data.priceIDR)}</span>
+            </li>
+          ))}
+        </ul>
+      ) : <p class="mt-2 text-sm text-muted">{c.dest.none}</p>}
+    </div>
+  </div>
+  <div slot="foot" class="flex flex-wrap items-center justify-end gap-3 border-t border-border bg-surface-2 p-4 sm:px-7">
+    <a href={routePath(locale, 'destinations', slug)} class="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface px-4 text-sm font-bold hover:bg-surface-2">{c.fullPage}</a>
+    <a href={whatsappLink(dc.waMessage(d.title))} rel="noopener" class="inline-flex min-h-12 items-center rounded-xl bg-accent px-5 text-sm font-bold text-on-accent hover:bg-accent-hover">{c.dest.ask}</a>
+  </div>
+</DialogShell>
+<DialogScript />

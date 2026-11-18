@@ -19,11 +19,13 @@ interface Props {
   explore?: string;
   /** Small badge in the top-left corner, e.g. "Flagship". */
   badge?: string;
+  /** id of a <dialog> to open instead of navigating (the link stays as the no-JavaScript fallback). */
+  dialog?: string;
 }
-const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3]', sizes, compactMobile = false, explore, badge } = Astro.props;
+const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3]', sizes, compactMobile = false, explore, badge, dialog } = Astro.props;
 ---
 
-<a href={href} class="group relative block overflow-hidden rounded-2xl">
+<a href={href} data-dialog={dialog} class="group relative block overflow-hidden rounded-2xl">
   {
     image ? (
       <>

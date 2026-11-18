@@ -5,6 +5,7 @@ import HeroCarousel from './HeroCarousel.astro';
 import TripFinder from './TripFinder.astro';
 import PackagesSection from './PackagesSection.astro';
 import DestinationTile from './DestinationTile.astro';
+import DestinationDialog from './DestinationDialog.astro';
 import StoryCard from './StoryCard.astro';
 import { routePath, type Locale } from '../i18n';
 import { homeCopy } from '../home-copy';
@@ -63,6 +64,7 @@ const standardTint = ['bg-navy text-white', 'bg-accent-soft text-accent', 'bg-[#
               tagline={d.entry.data.tagline}
               image={d.photo.image}
               imageAlt={d.photo.imageAlt}
+              dialog={`dest-${d.slug}`}
               soon={c.destinations.photoSoon}
               explore={u.destinations.explore}
               badge={d.slug === 'bali' ? u.destinations.flagship : undefined}
@@ -77,6 +79,7 @@ const standardTint = ['bg-navy text-white', 'bg-accent-soft text-accent', 'bg-[#
 </section>
 
 <PackagesSection locale={locale} />
+{destEntries.map((e) => <DestinationDialog locale={locale} entry={e} />)}
 
 <!-- Travel Stories -->
 {

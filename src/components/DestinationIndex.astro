@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DestinationTile from './DestinationTile.astro';
+import DestinationDialog from './DestinationDialog.astro';
 import { routePath, type Locale } from '../i18n';
 import { destCopy, destSlug } from '../dest-copy';
 
@@ -33,6 +34,7 @@ const photos = new Map(await Promise.all(entries.map(async (e) => [e.id, await p
               tagline={e.data.tagline}
               image={photos.get(e.id)?.image}
               imageAlt={photos.get(e.id)?.imageAlt}
+              dialog={`dest-${destSlug(e.id)}`}
               soon={c.page.photoSoon}
               class="aspect-[4/3]"
               sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
@@ -42,4 +44,5 @@ const photos = new Map(await Promise.all(entries.map(async (e) => [e.id, await p
       }
     </ul>
   </div>
+  {entries.map((e) => <DestinationDialog locale={locale} entry={e} />)}
 </BaseLayout>

@@ -1,0 +1,35 @@
+<script>
+  // Any element with data-dialog="<id>" opens that <dialog>. The element is a normal link, so without
+  // JavaScript it still goes to the full page.
+  document.addEventListener('click', (e) => {
+    const t = e.target instanceof Element ? e.target : null;
+    const a = t?.closest<HTMLElement>('[data-dialog]');
+    if (a) {
+      const dlg = document.getElementById(a.dataset.dialog!) as HTMLDialogElement | null;
+      if (dlg && typeof dlg.showModal === 'function') {
+        e.preventDefault();
+        document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach((o) => o !== dlg && o.close());
+        dlg.showModal();
+        return;
+      }
+    }
+    if (t instanceof HTMLDialogElement && t.open) t.close(); // backdrop click
+  });
+  // Live WhatsApp / email message from the inquiry form.
+  const build = (f: HTMLFormElement) => {
+    const L = JSON.parse(f.dataset.labels || '{}');
+    const v = (n: string) => (f.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? '';
+    const lines = [f.dataset.base ?? ''];
+    for (const k of ['name', 'email', 'date', 'pax', 'notes']) if (v(k)) lines.push(`${L[k]}: ${v(k)}`);
+    const text = lines.join('\n');
+    const pre = f.querySelector('[data-preview]');
+    if (pre) pre.textContent = text;
+    f.querySelector<HTMLAnchorElement>('[data-wa]')?.setAttribute('href', `https://wa.me/${f.dataset.number}?text=${encodeURIComponent(text)}`);
+    f.querySelector<HTMLAnchorElement>('[data-mail]')?.setAttribute('href', `mailto:${f.dataset.email}?subject=${encodeURIComponent(f.dataset.subject ?? '')}&body=${encodeURIComponent(text)}`);
+  };
+  document.querySelectorAll<HTMLFormElement>('form[data-inquiry]').forEach((f) => {
+    f.addEventListener('input', () => build(f));
+    f.addEventListener('submit', (e) => e.preventDefault());
+    build(f);
+  });
+</script>

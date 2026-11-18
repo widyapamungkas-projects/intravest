@@ -3,6 +3,7 @@
 // The "View itinerary" link goes to the full tour page; with JavaScript it opens the same itinerary in a dialog.
 import { getCollection } from 'astro:content';
 import Photo from './Photo.astro';
+import TourDialog from './TourDialog.astro';
 import Icon from './Icon.astro';
 import { photoOf } from '../photo';
 import { routePath, type Locale } from '../i18n';
@@ -83,7 +84,7 @@ const check = 'inline-flex items-center gap-1.5 rounded-lg border border-border 
                     <span class="text-2xl font-extrabold tabular-nums">{formatIDR(locale, t.d.priceIDR)} <span class="text-sm font-semibold text-muted">{u.perPerson}</span></span>
                   </p>
                   <div class="mt-4 flex flex-wrap gap-2.5">
-                    <a href={t.href} data-open={t.id} class="inline-flex min-h-12 flex-1 basis-32 items-center justify-center rounded-xl border border-navy bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-2 dark:border-border">{u.view}</a>
+                    <a href={t.href} data-dialog={`tour-${t.id}`} class="inline-flex min-h-12 flex-1 basis-32 items-center justify-center rounded-xl border border-navy bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-2 dark:border-border">{u.view}</a>
                     <a href={t.wa} rel="noopener" class="inline-flex min-h-12 flex-1 basis-32 items-center justify-center rounded-xl bg-accent px-4 text-sm font-bold text-on-accent transition-colors hover:bg-accent-hover">{u.whatsapp}</a>
                   </div>
                 </div>
@@ -97,65 +98,7 @@ const check = 'inline-flex items-center gap-1.5 rounded-lg border border-border 
     {tours.some((t) => t.d.priceIsDraft) && <p class="mt-5 text-sm text-muted">{u.draft}</p>}
   </div>
 
-  {
-    tours.map((t) => (
-      <dialog id={`tour-${t.id}`} aria-labelledby={`tour-${t.id}-title`} class="m-auto max-h-[calc(100dvh-2rem)] w-[min(48rem,calc(100%-2rem))] overflow-hidden rounded-2xl border border-border bg-surface p-0 text-text shadow-floating backdrop:bg-navy/70">
-        <div class="flex max-h-[calc(100dvh-2rem)] flex-col">
-          <div class="flex items-start justify-between gap-4 border-b border-border p-5 sm:px-7">
-            <div>
-              <p class="flex items-center gap-2.5"><span class="rounded-md bg-navy px-2 py-1 font-mono text-xs font-semibold text-white">{t.d.code}</span><span class="text-sm font-bold text-muted">{t.code}</span></p>
-              <h3 id={`tour-${t.id}-title`} class="mt-2 text-2xl font-extrabold tracking-tight">{t.d.title}</h3>
-              <p class="mt-1 text-muted">{t.d.summary}</p>
-            </div>
-            <form method="dialog">
-              <button class="inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-text hover:bg-surface-2" aria-label={u.dialog.close}><Icon name="close" class="size-[18px]" /></button>
-            </form>
-          </div>
-          <div class="grid gap-6 overflow-y-auto p-5 sm:px-7">
-            {
-              t.d.itinerary.map((day, i) => (
-                <div class="flex gap-4">
-                  <span class="mt-0.5 inline-flex h-7 w-16 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-2 font-mono text-xs font-semibold">{u.dialog.day(i + 1)}</span>
-                  <div>
-                    <h4 class="text-[17px] font-extrabold">{day.title}</h4>
-                    <ul class="mt-2 grid gap-1.5">
-                      {day.plan.map((p) => (
-                        <li class="flex gap-2.5 text-muted"><span class="mt-[0.6rem] size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>{p}</li>
-                      ))}
-                    </ul>
-                    <p class="mt-2.5 text-sm font-semibold text-muted">
-                      {u.dialog.meals}: {day.meals}{day.stay ? ` | ${u.dialog.stay}: ${day.stay}` : ''}
-                    </p>
-                  </div>
-                </div>
-              ))
-            }
-            <div class="grid gap-6 border-t border-border pt-5 sm:grid-cols-2">
-              <div>
-                <h4 class="text-[13px] font-extrabold uppercase tracking-wider text-success">{u.dialog.included}</h4>
-                <ul class="mt-3 grid gap-2">{t.d.inclusions.map((x) => <li class="flex gap-2.5 text-muted"><Icon name="check" class="mt-1 size-4 shrink-0 text-success" />{x}</li>)}</ul>
-              </div>
-              <div>
-                <h4 class="text-[13px] font-extrabold uppercase tracking-wider text-accent">{u.dialog.notIncluded}</h4>
-                <ul class="mt-3 grid gap-2">{t.d.exclusions.map((x) => <li class="flex gap-2.5 text-muted"><Icon name="close" class="mt-1 size-4 shrink-0 text-accent" />{x}</li>)}</ul>
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-surface-2 p-4 sm:px-7">
-            <div>
-              <p class="text-xs font-semibold text-muted">{u.from} {u.perPerson}</p>
-              <p class="text-[22px] font-extrabold tabular-nums">{formatIDR(locale, t.d.priceIDR)}</p>
-              {t.d.priceNote && <p class="text-xs text-muted">{t.d.priceNote}</p>}
-            </div>
-            <div class="flex flex-wrap gap-2.5">
-              <a href={t.href} class="inline-flex min-h-12 items-center rounded-xl border border-border bg-surface px-4 text-sm font-bold hover:bg-surface-2">{u.dialog.fullPage}</a>
-              <a href={t.wa} rel="noopener" class="inline-flex min-h-12 items-center rounded-xl bg-accent px-5 text-sm font-bold text-on-accent hover:bg-accent-hover">{u.whatsapp}</a>
-            </div>
-          </div>
-        </div>
-      </dialog>
-    ))
-  }
+  {entries.map((e) => <TourDialog locale={locale} entry={e} />)}
 </section>
 
 <script>
@@ -177,21 +120,5 @@ const check = 'inline-flex items-center gap-1.5 rounded-lg border border-border 
     chips.forEach((c) => c.addEventListener('click', () => apply(c.dataset.filter ?? 'all')));
     // From the trip finder: pick a duration, then the page scrolls here.
     document.addEventListener('intravest:filter', (e) => apply(String((e as CustomEvent).detail || 'all')));
-
-    root.querySelectorAll<HTMLAnchorElement>('[data-open]').forEach((a) => {
-      a.addEventListener('click', (e) => {
-        const dlg = root.querySelector<HTMLDialogElement>(`#tour-${a.dataset.open}`);
-        if (dlg && typeof dlg.showModal === 'function') {
-          e.preventDefault();
-          dlg.showModal();
-        }
-      });
-    });
-    // Click on the backdrop closes the dialog.
-    root.querySelectorAll<HTMLDialogElement>('dialog').forEach((dlg) => {
-      dlg.addEventListener('click', (e) => {
-        if (e.target === dlg) dlg.close();
-      });
-    });
   }
 </script>
