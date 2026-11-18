@@ -7,8 +7,10 @@ order: 3
 priceIDR: 6500000
 priceIsDraft: true
 minPax: 2
+image: /src/assets/images/dsc0260.jpg
 en:
   title: Bali Explorer
+  imageAlt: A Barong dance performance in Bali
   summary: "Five days across two areas: Ubud for culture and a volcano sunrise, then the south coast for sunset cliffs and an island day trip."
   priceNote: Per person, based on 2 travelers sharing a room.
   itinerary:
@@ -70,6 +72,7 @@ en:
   needsReview: false
 id:
   title: Bali Explorer
+  imageAlt: Pertunjukan tari Barong di Bali
   summary: "Lima hari di dua area: Ubud untuk budaya dan sunrise gunung, lalu pesisir selatan untuk tebing sunset dan day trip pulau."
   priceNote: Per orang, dengan asumsi 2 peserta sekamar.
   itinerary:

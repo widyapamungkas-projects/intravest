@@ -1,0 +1,87 @@
+---
+// Full-width hero. Photos come from the Halaman Depan settings (up to three); one photo means no controls.
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { routePath, type Locale } from '../i18n';
+import { homeCopy } from '../home-copy';
+import { homeUiCopy } from '../home-ui-copy';
+import homeJson from '../data/home.json';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = homeCopy[locale];
+const u = homeUiCopy[locale].hero;
+// The dashboard drops fields left empty, so every field is optional.
+const h = homeJson as Record<string, string | undefined>;
+const slides = [
+  { src: h.heroImage, alt: h.heroAlt },
+  { src: h.heroImage2, alt: h.heroAlt2 },
+  { src: h.heroImage3, alt: h.heroAlt3 },
+].filter((s) => s.src) as { src: string; alt?: string }[];
+const many = slides.length > 1;
+---
+
+<section class="relative isolate overflow-hidden bg-navy" aria-roledescription={many ? 'carousel' : undefined} aria-label={u.label} data-hero>
+  {
+    slides.map((s, i) => (
+      <div class:list={['absolute inset-0 -z-10 transition-opacity duration-700 motion-reduce:transition-none', i === 0 ? 'opacity-100' : 'opacity-0']} data-slide aria-hidden={i === 0 ? undefined : 'true'}>
+        <Photo src={s.src} alt={i === 0 ? s.alt : s.alt} label="" class="size-full" sizes="100vw" priority={i === 0} />
+      </div>
+    ))
+  }
+  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-navy/90 via-navy/60 to-navy/10 max-sm:from-navy/85 max-sm:via-navy/70 max-sm:to-navy/50"></div>
+
+  <div class="mx-auto flex min-h-[32rem] max-w-7xl items-center px-4 pb-36 pt-14 sm:min-h-[36rem] sm:px-6 sm:pb-40 lg:min-h-[38rem]">
+    <div class="max-w-[36rem]">
+      <span class="inline-block rounded-full bg-accent px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.08em] text-on-accent">{u.badge}</span>
+      <h1 class="mt-5 text-balance t-h1 text-white">{c.hero.title}</h1>
+      <p class="mt-5 text-lg text-[#f7f6f2]">{c.hero.sub}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={routePath(locale, 'tours')} class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-accent px-6 font-bold text-on-accent transition-colors hover:bg-accent-hover">
+          {u.ctaPackages}<Icon name="arrow" class="size-[18px]" />
+        </a>
+        <a href={routePath(locale, 'custom-trip')} class="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/60 bg-white/15 px-6 font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/25">
+          {u.ctaCustom}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {
+    many && (
+      <div class="absolute bottom-28 right-4 flex items-center rounded-full bg-navy/70 px-1.5 py-0.5 backdrop-blur-sm sm:bottom-32 sm:right-6">
+        <button type="button" data-prev aria-label={u.prev} class="inline-flex size-11 items-center justify-center text-white"><Icon name="prev" class="size-[18px]" /></button>
+        {slides.map((_, i) => (
+          <button type="button" data-dot={i} aria-label={u.goTo(i + 1)} aria-current={i === 0 ? 'true' : undefined} class="group inline-flex h-11 w-7 items-center justify-center">
+            <span class="block h-2 w-2 rounded-full bg-white/50 transition-all group-aria-[current=true]:w-6 group-aria-[current=true]:bg-white"></span>
+          </button>
+        ))}
+        <button type="button" data-next aria-label={u.next} class="inline-flex size-11 items-center justify-center text-white"><Icon name="next" class="size-[18px]" /></button>
+      </div>
+    )
+  }
+</section>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...hero.querySelectorAll<HTMLElement>('[data-dot]')];
+    let i = 0;
+    const show = (n: number) => {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, k) => {
+        s.classList.toggle('opacity-100', k === i);
+        s.classList.toggle('opacity-0', k !== i);
+        if (k === i) s.removeAttribute('aria-hidden');
+        else s.setAttribute('aria-hidden', 'true');
+      });
+      dots.forEach((d, k) => (k === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+    };
+    hero.querySelector('[data-prev]')?.addEventListener('click', () => show(i - 1));
+    hero.querySelector('[data-next]')?.addEventListener('click', () => show(i + 1));
+    dots.forEach((d, k) => d.addEventListener('click', () => show(k)));
+  }
+</script>

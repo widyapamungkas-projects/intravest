@@ -7,8 +7,10 @@ order: 1
 priceIDR: 3500000
 priceIsDraft: true
 minPax: 2
+image: /src/assets/images/dsc07461-1.jpg
 en:
   title: Bali Essentials
+  imageAlt: A vintage VW safari car on a rice field road in Bali
   summary: "Three days in and around Ubud: rice terraces, a holy spring temple, a volcano view, and craft villages, at an easy pace."
   priceNote: Per person, based on 2 travelers sharing a room.
   itinerary:
@@ -54,6 +56,7 @@ en:
   needsReview: false
 id:
   title: Bali Essentials
+  imageAlt: Mobil safari VW klasik di jalan persawahan Bali
   summary: "Tiga hari di Ubud dan sekitarnya: sawah terasering, pura mata air suci, pemandangan gunung, dan desa kerajinan, dengan ritme santai."
   priceNote: Per orang, dengan asumsi 2 peserta sekamar.
   itinerary:

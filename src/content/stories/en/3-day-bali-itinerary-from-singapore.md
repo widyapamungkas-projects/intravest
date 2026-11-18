@@ -5,6 +5,8 @@ date: 2026-11-05
 category: "bali"
 tags: ["bali itinerary", "first time in bali", "ubud", "from singapore"]
 ogImage: "/og/placeholder.jpg"
+image: /src/assets/images/dsc07461-1.jpg
+imageAlt: "A white vintage VW car parked beside a rice field in Bali"
 ---
 
 Three days is enough to get a real feel for Bali, as long as you do not try to see the whole island. The mistake we see most often is a plan that jumps between Ubud, Uluwatu, and Seminyak in 72 hours. On paper it works. On the road, it means most of your trip is spent in a car.

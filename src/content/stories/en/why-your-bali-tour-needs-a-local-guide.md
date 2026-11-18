@@ -5,6 +5,8 @@ date: 2026-11-05
 category: "tips"
 tags: ["local guide", "bali tour", "travel tips", "private tour"]
 ogImage: "/og/placeholder.jpg"
+image: /src/assets/images/cam-b-430-1.jpg
+imageAlt: "A convoy of jeeps on a Bali volcano trail led by a local guide"
 ---
 
 You can see Bali without a guide. Plenty of people do, with a rented scooter or a driver and a phone full of saved pins. The question is not whether it is possible. It is what you lose, and whether you would notice.

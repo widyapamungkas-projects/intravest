@@ -1,0 +1,147 @@
+---
+// The card that overlaps the hero. Fixed packages filters the package list below (or opens another destination),
+// the other two tabs open WhatsApp with the choices filled in. Nothing is stored or sent from this page.
+import { getCollection } from 'astro:content';
+import { routePath, type Locale } from '../i18n';
+import { homeUiCopy } from '../home-ui-copy';
+import { whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const u = homeUiCopy[locale].finder;
+const destinations = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort((a, b) => a.data.order - b.data.order);
+const tours = (await getCollection('tours', ({ id }) => id.startsWith(`${locale}/`))).filter((t) => t.data.destination === 'bali');
+const durations = [...new Map(tours.map((t) => [t.data.days, `${t.data.days}D${t.data.nights}N`])).entries()].sort((a, b) => a[0] - b[0]);
+const waBase = (() => {
+  const url = new URL(whatsappLink('x'));
+  return url.origin + url.pathname;
+})();
+const customTpl = u.waCustom('{0}', '{1}', '{2}', '{3}');
+const groupTpl = u.waGroup('{0}', '{1}', '{2}', '{3}');
+
+const label = 'mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-muted';
+const select = 'min-h-12 w-full rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-text';
+const btn = 'inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-5 font-bold text-on-accent transition-colors hover:bg-accent-hover';
+const tabs = [
+  { id: 'fixed', label: u.tabs.fixed },
+  { id: 'custom', label: u.tabs.custom },
+  { id: 'group', label: u.tabs.group },
+];
+const field = 'min-w-0 flex-1 basis-40';
+---
+
+<section class="relative z-10 -mt-24 px-4 sm:-mt-28 sm:px-6" data-finder data-wa-base={waBase} data-custom-tpl={customTpl} data-group-tpl={groupTpl}>
+  <div class="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border bg-surface shadow-floating">
+    <div role="tablist" aria-label={u.label} class="flex flex-wrap border-b border-border bg-surface-2">
+      {
+        tabs.map((t, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${t.id}`}
+            aria-controls={`panel-${t.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? undefined : -1}
+            class="min-h-14 flex-1 border-t-[3px] border-transparent px-4 text-sm font-bold text-muted transition-colors aria-selected:border-accent aria-selected:bg-surface aria-selected:text-text sm:flex-none sm:px-6"
+          >
+            {t.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <div role="tabpanel" id="panel-fixed" aria-labelledby="tab-fixed" class="flex flex-wrap items-end gap-4 p-5 sm:p-7 sm:pb-3">
+      <div class={field}>
+        <label class={label} for="f-dest">{u.destination}</label>
+        <select id="f-dest" class={select}>
+          {destinations.map((d) => <option value={d.id.split('/')[1]} data-href={routePath(locale, 'destinations', d.id.split('/')[1])}>{d.data.title}</option>)}
+        </select>
+      </div>
+      <div class={field}>
+        <label class={label} for="f-dur">{u.duration}</label>
+        <select id="f-dur" class={select}>
+          <option value="all">{u.durationAll}</option>
+          {durations.map(([days, text]) => <option value={String(days)}>{text}</option>)}
+        </select>
+      </div>
+      <div class={field}>
+        <label class={label} for="f-pax">{u.travelers}</label>
+        <select id="f-pax" class={select}>{u.travelerOptions.map((o) => <option>{o}</option>)}</select>
+      </div>
+      <div class="min-w-0 flex-1 basis-44"><button type="button" class={btn} data-find>{u.findPackages}</button></div>
+    </div>
+
+    <div role="tabpanel" id="panel-custom" aria-labelledby="tab-custom" hidden class="flex flex-wrap items-end gap-4 p-5 sm:p-7 sm:pb-3">
+      <div class={field}><label class={label} for="c-dest">{u.customDest}</label><select id="c-dest" class={select}>{u.customDestOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class={field}><label class={label} for="c-dur">{u.customDuration}</label><select id="c-dur" class={select}>{u.customDurationOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class={field}><label class={label} for="c-pax">{u.customPax}</label><select id="c-pax" class={select}>{u.customPaxOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class={field}><label class={label} for="c-style">{u.style}</label><select id="c-style" class={select}>{u.styleOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class="min-w-0 flex-1 basis-44"><a class={btn} href={waBase} rel="noopener" data-wa="custom">{u.requestQuote}</a></div>
+    </div>
+
+    <div role="tabpanel" id="panel-group" aria-labelledby="tab-group" hidden class="flex flex-wrap items-end gap-4 p-5 sm:p-7 sm:pb-3">
+      <div class={field}>
+        <label class={label} for="g-dest">{u.destination}</label>
+        <select id="g-dest" class={select}>{destinations.map((d) => <option>{d.data.title}</option>)}</select>
+      </div>
+      <div class={field}><label class={label} for="g-type">{u.groupType}</label><select id="g-type" class={select}>{u.groupTypeOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class={field}><label class={label} for="g-size">{u.groupSize}</label><select id="g-size" class={select}>{u.groupSizeOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class={field}><label class={label} for="g-dates">{u.dates}</label><select id="g-dates" class={select}>{u.dateOptions.map((o) => <option>{o}</option>)}</select></div>
+      <div class="min-w-0 flex-1 basis-44"><a class={btn} href={waBase} rel="noopener" data-wa="group">{u.sendGroup}</a></div>
+    </div>
+
+    <p class="px-5 pb-5 pt-2 text-sm text-muted sm:px-7">{u.note}</p>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-finder]');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const panels = tabs.map((t) => root.querySelector<HTMLElement>('#' + t.getAttribute('aria-controls'))!);
+    const select = (n: number) => {
+      tabs.forEach((t, i) => {
+        t.setAttribute('aria-selected', String(i === n));
+        t.tabIndex = i === n ? 0 : -1;
+        panels[i].hidden = i !== n;
+      });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const next = (i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+        select(next);
+        tabs[next].focus();
+      });
+    });
+
+    const val = (id: string) => (root.querySelector<HTMLSelectElement>('#' + id)?.value ?? '');
+    const fill = (tpl: string, parts: string[]) => parts.reduce((s, p, i) => s.replace(`{${i}}`, p), tpl);
+    const link = (kind: 'custom' | 'group') => {
+      const a = root.querySelector<HTMLAnchorElement>(`[data-wa=${kind}]`)!;
+      const parts = kind === 'custom' ? ['c-dest', 'c-dur', 'c-pax', 'c-style'].map(val) : ['g-dest', 'g-type', 'g-size', 'g-dates'].map(val);
+      const tpl = root.dataset[kind === 'custom' ? 'customTpl' : 'groupTpl'] ?? '';
+      a.href = `${root.dataset.waBase}?text=${encodeURIComponent(fill(tpl, parts))}`;
+    };
+    (['custom', 'group'] as const).forEach((k) => {
+      const a = root.querySelector<HTMLAnchorElement>(`[data-wa=${k}]`)!;
+      a.addEventListener('click', () => link(k));
+      a.addEventListener('focus', () => link(k));
+      a.addEventListener('pointerenter', () => link(k));
+    });
+
+    root.querySelector('[data-find]')?.addEventListener('click', () => {
+      const opt = root.querySelector<HTMLSelectElement>('#f-dest')!.selectedOptions[0];
+      // Packages are listed for Bali on this page; other destinations open their own page.
+      if (opt.value !== 'bali' && opt.dataset.href) {
+        location.href = opt.dataset.href;
+        return;
+      }
+      document.dispatchEvent(new CustomEvent('intravest:filter', { detail: val('f-dur') }));
+      document.getElementById('packages')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+  }
+</script>

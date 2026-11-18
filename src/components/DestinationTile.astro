@@ -2,6 +2,7 @@
 // Destination card: with a photo, the name sits on the photo (dark gradient keeps it readable);
 // without one, the placeholder box with the name underneath.
 import Photo from './Photo.astro';
+import Icon from './Icon.astro';
 
 interface Props {
   href: string;
@@ -14,11 +15,15 @@ interface Props {
   sizes?: string;
   /** Hide the tagline on phones (small 2-column tiles where it would crowd the photo). */
   compactMobile?: boolean;
+  /** Label for the yellow "Explore" line on photo tiles. Omit to hide it. */
+  explore?: string;
+  /** Small badge in the top-left corner, e.g. "Flagship". */
+  badge?: string;
 }
-const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3]', sizes, compactMobile = false } = Astro.props;
+const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3]', sizes, compactMobile = false, explore, badge } = Astro.props;
 ---
 
-<a href={href} class="group relative block overflow-hidden rounded-lg">
+<a href={href} class="group relative block overflow-hidden rounded-2xl">
   {
     image ? (
       <>
@@ -29,11 +34,19 @@ const { href, name, tagline, image, imageAlt, soon, class: aspect = 'aspect-[4/3
           class={`${aspect} transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100`}
           sizes={sizes}
         />
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/25 to-transparent" />
         <div class:list={['absolute inset-x-0 bottom-0 text-white', compactMobile ? 'p-3 sm:p-5' : 'p-5']}>
           <h3 class="t-h3 text-white group-hover:underline">{name}</h3>
           <p class:list={['mt-1 text-sm text-white/90', compactMobile && 'hidden sm:block']}>{tagline}</p>
+          {explore && (
+            <span class="mt-3 inline-flex items-center gap-1.5 text-sm font-extrabold text-sun">
+              {explore}<Icon name="arrow" class="size-4" />
+            </span>
+          )}
         </div>
+        {badge && (
+          <span class="absolute left-4 top-4 rounded-lg bg-accent px-2.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-on-accent">{badge}</span>
+        )}
       </>
     ) : (
       <>

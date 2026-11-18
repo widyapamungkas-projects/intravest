@@ -24,18 +24,25 @@
   --a-600: oklch(0.53 0.13 45);
   --a-700: oklch(0.45 0.11 45);
 
-  /* ---------- Role tokens: light ---------- */
-  --bg:          var(--n-50);
-  --surface:     oklch(0.99 0.004 80);
-  --surface-2:   var(--n-100);
-  --border:      var(--n-200);
-  --text:        var(--n-900);
-  --text-muted:  var(--n-600);
-  --accent:      var(--a-600);
-  --accent-hover:var(--a-700);
-  --accent-soft: var(--a-100);
-  --on-accent:   oklch(0.98 0.004 80);
-  --focus:       var(--a-500);
+  /* ---------- Role tokens: light ----------
+     Palette: deep teal-navy text, warm off-white surface, coral accent.
+     Brand coral is #ED6A5A, but white text on it is only ~3:1, so buttons and small labels use the deeper
+     coral below (4.9:1). The bright coral is for decoration (dots, icons on dark). */
+  --bg:          #ffffff;
+  --surface:     #ffffff;
+  --surface-2:   #f7f6f2;
+  --border:      #e3e1da;
+  --text:        #073e52;
+  --text-muted:  #475569;
+  --accent:      #c9402f;
+  --accent-hover:#a93323;
+  --accent-soft: #fbe3df;
+  --brand-coral: #ed6a5a;
+  --navy:        #073e52;
+  --navy-deep:   #05303f;
+  --sun:         #ffd166; /* accent for links on photos */
+  --on-accent:   #ffffff;
+  --focus:       #073e52;
 
   --success: oklch(0.52 0.10 150);
   --warning: oklch(0.58 0.12 75);
@@ -48,17 +55,21 @@
 
 /* ---------- Role tokens: dark (set terpisah, bukan invert) ---------- */
 :root[data-theme="dark"] {
-  --bg:          oklch(0.17 0.008 80);
-  --surface:     oklch(0.21 0.009 80);
-  --surface-2:   oklch(0.25 0.010 80);
-  --border:      oklch(0.33 0.011 80);
-  --text:        oklch(0.95 0.006 80);
-  --text-muted:  oklch(0.74 0.012 80);
-  --accent:      oklch(0.72 0.12 45);
-  --accent-hover:oklch(0.78 0.11 45);
-  --accent-soft: oklch(0.30 0.05 45);
-  --on-accent:   oklch(0.17 0.008 80);
-  --focus:       oklch(0.78 0.11 45);
+  --bg:          #062b39;
+  --surface:     #083746;
+  --surface-2:   #0a4254;
+  --border:      #1c5568;
+  --text:        #f7f6f2;
+  --text-muted:  #b7c5cc;
+  --accent:      #f08a7c;
+  --accent-hover:#f5a094;
+  --accent-soft: #3d2c30;
+  --brand-coral: #ed6a5a;
+  --navy:        #073e52;
+  --navy-deep:   #05303f;
+  --sun:         #ffd166;
+  --on-accent:   #05303f;
+  --focus:       #ffd166;
 
   --success: oklch(0.74 0.11 150);
   --warning: oklch(0.80 0.12 80);
@@ -80,6 +91,10 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-coral: var(--brand-coral);
+  --color-sun: var(--sun);
   --color-on-accent: var(--on-accent);
   --color-success: var(--success);
   --color-warning: var(--warning);
@@ -122,21 +137,28 @@ h1, h2, h3 { line-height: 1.2; letter-spacing: -0.01em; }
 /* ---------- Type roles ----------
    One place to tune the heading scale. Use the role, not a size, so the hierarchy stays consistent:
      t-h1  page title            ~31px phone -> 48px desktop
-     t-h2  section title         ~21px phone -> 28px desktop
+     t-h2  section title         24px phone -> 36px desktop
      t-h3  item / card title     17px phone -> 18px desktop (distinguished by weight, not size)
    Body copy is 16px (text-base). Lead paragraphs use text-lg (17-18px). Meta uses text-sm (14px). */
 @layer components {
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
   .t-h1 {
     font-size: clamp(1.875rem, 1.45rem + 2.1vw, 3rem);
     line-height: 1.12;
     letter-spacing: -0.025em;
-    font-weight: 600;
+    font-weight: 800;
   }
   .t-h2 {
-    font-size: clamp(1.25rem, 1.1rem + 0.8vw, 1.75rem);
+    font-size: clamp(1.5rem, 1.25rem + 1.1vw, 2.25rem);
     line-height: 1.2;
     letter-spacing: -0.02em;
-    font-weight: 600;
+    font-weight: 800;
   }
   .t-h3 {
     font-size: clamp(1.0625rem, 1.04rem + 0.1vw, 1.125rem);

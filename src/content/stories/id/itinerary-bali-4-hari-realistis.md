@@ -5,6 +5,8 @@ date: 2026-11-05
 category: "bali"
 tags: ["itinerary bali 4 hari", "liburan bali", "ubud", "tips liburan bali"]
 ogImage: "/og/placeholder.jpg"
+image: /src/assets/images/dsc07461-1.jpg
+imageAlt: "Mobil VW putih di samping sawah di Bali"
 ---
 
 Banyak itinerary Bali terlihat rapi di kertas, tapi bubar di hari kedua. Biasanya penyebabnya sama: jarak di peta kelihatan dekat, padahal lalu lintasnya pelan, dan tidak ada yang menyisakan waktu untuk istirahat.

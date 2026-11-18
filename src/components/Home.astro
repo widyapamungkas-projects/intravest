@@ -1,8 +1,17 @@
 ---
 import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import HeroCarousel from './HeroCarousel.astro';
+import TripFinder from './TripFinder.astro';
+import PackagesSection from './PackagesSection.astro';
 import DestinationTile from './DestinationTile.astro';
+import StoryCard from './StoryCard.astro';
 import { routePath, type Locale } from '../i18n';
 import { homeCopy } from '../home-copy';
+import { homeUiCopy } from '../home-ui-copy';
+import { destSlug } from '../dest-copy';
+import { storiesCopy } from '../stories-copy';
+import { photoOf } from '../photo';
 import { getCollection } from 'astro:content';
 import homeJson from '../data/home.json';
 import { site, whatsappLink } from '../site';
@@ -12,118 +21,53 @@ interface Props {
 }
 const { locale } = Astro.props;
 const c = homeCopy[locale];
+const u = homeUiCopy[locale];
 // The dashboard drops fields left empty, so every field is optional.
-const homeData = homeJson as { heroImage?: string; heroAlt?: string; whyImage?: string; whyAlt?: string; ctaImage?: string; ctaAlt?: string };
-const destEntries = await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`));
-import { photoOf } from '../photo';
-const destPhotos = new Map(await Promise.all(destEntries.map(async (e) => [e.id, await photoOf('destinations', e)] as const)));
-const destPhoto = (slug: string) => destPhotos.get(`${locale}/${slug}`);
+const homeData = homeJson as { ctaImage?: string; ctaAlt?: string };
+const destEntries = (await getCollection('destinations', ({ id }) => id.startsWith(`${locale}/`))).sort((a, b) => a.data.order - b.data.order);
+const destinations = await Promise.all(destEntries.map(async (e) => ({ slug: destSlug(e.id), entry: e, photo: await photoOf('destinations', e) })));
+const stories = (await getCollection('stories', ({ id }) => id.startsWith(`${locale}/`)))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+const labels: Record<string, string> = Object.fromEntries(destinations.map((d) => [d.slug, d.entry.data.title]));
+labels.tips = storiesCopy[locale].tipsLabel;
 const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
 
-const btnPrimary =
-  'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 font-medium text-on-accent transition-colors hover:bg-accent-hover active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
-const btnSecondary =
-  'inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-5 font-medium text-text transition-colors hover:bg-surface-2 active:bg-border disabled:pointer-events-none disabled:opacity-50';
-const h2 = 'max-w-[26ch] text-balance t-h2';
-const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
+const outline = 'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-navy px-5 font-bold text-text transition-colors hover:bg-surface-2 dark:border-border';
+const sectionWrap = 'mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20';
+const standardIcons = ['home', 'clock', 'check'] as const;
+const standardTint = ['bg-navy text-white', 'bg-accent-soft text-accent', 'bg-[#e1f0e8] text-[#2f7a55] dark:bg-success/20 dark:text-success'];
 ---
 
-<!-- 1. Hero -->
-{
-  homeData.heroImage ? (
-    <section class="relative isolate overflow-hidden bg-neutral-900">
-      <Photo
-        src={homeData.heroImage}
-        alt={homeData.heroAlt}
-        label={c.hero.photo}
-        class="absolute inset-0 -z-10"
-        sizes="100vw"
-        priority
-      />
-      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/45 to-black/10 max-sm:from-black/70 max-sm:via-black/55 max-sm:to-black/40" />
-      <div class="mx-auto flex min-h-[26rem] max-w-6xl items-end px-4 py-16 sm:min-h-[34rem] sm:px-6 sm:py-24 lg:min-h-[38rem]">
-        <div class="max-w-[34rem]">
-          <h1 class="text-balance t-h1 text-white">{c.hero.title}</h1>
-          <p class="mt-5 text-lg text-white/90">{c.hero.sub}</p>
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
-            <a
-              href={routePath(locale, 'destinations')}
-              class="inline-flex min-h-11 items-center justify-center rounded-md border border-white/70 bg-white/10 px-5 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-            >
-              {c.hero.ctaSecondary}
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  ) : (
-    <section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+<HeroCarousel locale={locale} />
+<TripFinder locale={locale} />
+
+<!-- Destinations -->
+<section id="destinations">
+  <div class={`${sectionWrap} pt-20 sm:pt-24`}>
+    <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div>
-        <h1 class="text-balance t-h1">{c.hero.title}</h1>
-        <p class="mt-5 text-lg text-muted">{c.hero.sub}</p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a href={wa} class={btnPrimary} rel="noopener">{c.hero.ctaPrimary}</a>
-          <a href={routePath(locale, 'destinations')} class={btnSecondary}>{c.hero.ctaSecondary}</a>
-        </div>
+        <p class="eyebrow">{u.destinations.eyebrow}</p>
+        <h2 class="mt-2 text-balance t-h2">{c.destinations.title}</h2>
+        <p class="mt-3 max-w-[60ch] text-lg text-muted">{u.destinations.sub}</p>
       </div>
-      <Photo label={c.hero.photo} class="aspect-[4/3] rounded-md" />
-    </section>
-  )
-}
-
-<!-- 2. Why Intravest -->
-<section class="border-t border-border">
-  <div class:list={[wrap, homeData.whyImage && 'grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16']}>
-    {
-      homeData.whyImage && (
-        <Photo
-          src={homeData.whyImage}
-          alt={homeData.whyAlt}
-          label=""
-          class="aspect-[4/3] rounded-lg lg:sticky lg:top-24 lg:aspect-[4/5]"
-          sizes="(min-width: 1024px) 480px, 100vw"
-        />
-      )
-    }
-    <div>
-      <h2 class={h2}>{c.why.title}</h2>
-      <ul class:list={['mt-10 grid gap-x-12 gap-y-8', !homeData.whyImage && 'sm:grid-cols-2']}>
-        {
-          c.why.items.map((item) => (
-            <li class="border-t border-border pt-5">
-              <h3 class="t-h3">{item.title}</h3>
-              <p class="mt-2 text-muted">{item.body}</p>
-            </li>
-          ))
-        }
-      </ul>
+      <a href={routePath(locale, 'destinations')} class={outline}>{u.destinations.seeAll(destinations.length)}<Icon name="arrow" class="size-4" /></a>
     </div>
-  </div>
-</section>
-
-<!-- 3. Featured destinations -->
-<section class="border-t border-border">
-  <div class={wrap}>
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <h2 class={h2}>{c.destinations.title}</h2>
-      <a href={routePath(locale, 'destinations')} class="inline-flex min-h-11 items-center rounded-md font-medium text-accent hover:text-accent-hover hover:underline">
-        {c.destinations.all}
-      </a>
-    </div>
-    <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <ul class="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
-        c.destinations.items.map((d) => (
+        destinations.map((d) => (
           <li>
             <DestinationTile
               href={routePath(locale, 'destinations', d.slug)}
-              name={d.name}
-              tagline={d.tagline}
-              image={destPhoto(d.slug)?.image}
-              imageAlt={destPhoto(d.slug)?.imageAlt}
+              name={d.entry.data.title}
+              tagline={d.entry.data.tagline}
+              image={d.photo.image}
+              imageAlt={d.photo.imageAlt}
               soon={c.destinations.photoSoon}
-              class="aspect-[16/10] sm:aspect-[4/5]"
-              sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw"
+              explore={u.destinations.explore}
+              badge={d.slug === 'bali' ? u.destinations.flagship : undefined}
+              class="aspect-[4/3]"
+              sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
             />
           </li>
         ))
@@ -132,58 +76,76 @@ const wrap = 'mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20';
   </div>
 </section>
 
-<!-- 4. How it works -->
-<section class="border-t border-border bg-surface-2">
-  <div class={wrap}>
-    <h2 class={h2}>{c.how.title}</h2>
-    <ol class="mt-10 grid gap-5 md:grid-cols-3">
-      {
-        c.how.steps.map((st, i) => (
-          <li class="rounded-lg bg-surface p-6 shadow-raised">
-            <span class="flex size-10 items-center justify-center rounded-full bg-accent text-lg font-semibold text-on-accent" aria-hidden="true">
-              {i + 1}
-            </span>
-            <h3 class="mt-4 t-h3">{st.title}</h3>
-            <p class="mt-2 text-muted">{st.body}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </div>
-</section>
+<PackagesSection locale={locale} />
 
-<!-- 5. Testimonials: hidden until real, permitted feedback exists (brief: no invented reviews). Re-enable by restoring the section with c.testimonials. -->
-
-<!-- 6. Closing CTA -->
+<!-- Travel Stories -->
 {
-  homeData.ctaImage ? (
-    <section class="relative isolate overflow-hidden bg-neutral-900">
-      <Photo src={homeData.ctaImage} alt={homeData.ctaAlt} label="" class="absolute inset-0 -z-10" sizes="100vw" />
-      <div class="absolute inset-0 -z-10 bg-black/60" />
-      <div class={`${wrap} text-center`}>
-        <h2 class="mx-auto max-w-[26ch] text-balance t-h2 text-white">{c.cta.title}</h2>
-        <p class="mx-auto mt-3 max-w-[52ch] text-white/90">{c.cta.sub}</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a href={wa} class={btnPrimary} rel="noopener">{c.cta.whatsapp}</a>
-          <a
-            href={`mailto:${site.email}`}
-            class="inline-flex min-h-11 items-center justify-center rounded-md border border-white/70 bg-white/10 px-5 font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-          >
-            {site.email}
-          </a>
+  stories.length > 0 && (
+    <section id="stories">
+      <div class={sectionWrap}>
+        <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+          <div>
+            <p class="eyebrow">{u.stories.eyebrow}</p>
+            <h2 class="mt-2 text-balance t-h2">{u.stories.title}</h2>
+            <p class="mt-3 max-w-[60ch] text-lg text-muted">{u.stories.sub}</p>
+          </div>
+          <a href={routePath(locale, 'travel-stories')} class={outline}>{u.stories.all}<Icon name="arrow" class="size-4" /></a>
         </div>
-      </div>
-    </section>
-  ) : (
-    <section class="border-t border-border bg-surface-2">
-      <div class={`${wrap} text-center`}>
-        <h2 class={`${h2} mx-auto max-w-[26ch] text-balance`}>{c.cta.title}</h2>
-        <p class="mx-auto mt-3 max-w-[52ch] text-muted">{c.cta.sub}</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a href={wa} class={btnPrimary} rel="noopener">{c.cta.whatsapp}</a>
-          <a href={`mailto:${site.email}`} class={btnSecondary}>{site.email}</a>
-        </div>
+        <ul class="mt-9 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {stories.map((s) => (
+            <li>
+              <StoryCard locale={locale} entry={s} categoryLabel={labels[s.data.category] ?? s.data.category} />
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )
 }
+
+<!-- The Intravest standard -->
+<section class="border-y border-border bg-surface-2">
+  <div class={sectionWrap}>
+    <div class="text-center">
+      <p class="eyebrow mx-auto">{u.standard.eyebrow}</p>
+      <h2 class="mt-2 text-balance t-h2">{u.standard.title}</h2>
+    </div>
+    <ul class="mt-10 grid gap-5 md:grid-cols-3">
+      {
+        u.standard.items.map((item, i) => (
+          <li class="flex items-start gap-4 rounded-2xl border border-border bg-surface p-6">
+            <span class:list={['flex size-12 shrink-0 items-center justify-center rounded-xl', standardTint[i]]}>
+              <Icon name={standardIcons[i]} class="size-6" />
+            </span>
+            <div>
+              <h3 class="text-lg font-extrabold tracking-tight">{item.title}</h3>
+              <p class="mt-2 text-muted">{item.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- Closing CTA -->
+<section id="custom" class="relative isolate overflow-hidden bg-navy text-[#f7f6f2]">
+  {
+    homeData.ctaImage && (
+      <>
+        <Photo src={homeData.ctaImage} alt="" label="" class="absolute inset-0 -z-10" sizes="100vw" />
+        <div class="absolute inset-0 -z-10 bg-navy/85"></div>
+      </>
+    )
+  }
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-10 gap-y-6 px-4 py-16 sm:px-6">
+    <div class="min-w-0 flex-1 basis-[26rem]">
+      <h2 class="text-balance t-h2 text-white">{c.cta.title}</h2>
+      <p class="mt-3 max-w-[54ch] text-lg text-[#e6e9ec]">{c.cta.sub}</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href={routePath(locale, 'custom-trip')} class="inline-flex min-h-12 items-center justify-center rounded-xl bg-accent px-6 font-bold text-on-accent transition-colors hover:bg-accent-hover">{u.cta.custom}</a>
+      <a href={wa} rel="noopener" class="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/60 px-6 font-bold text-white transition-colors hover:bg-white/10">{c.cta.whatsapp}</a>
+    </div>
+  </div>
+</section>

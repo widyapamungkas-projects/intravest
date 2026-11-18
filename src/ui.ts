@@ -9,9 +9,10 @@ interface UiStrings {
   whatsapp: string;
   menu: string;
   language: string;
+  replyBadge: string;
   theme: string;
   skip: string;
-  footer: { explore: string; contact: string; follow: string; rights: string };
+  footer: { explore: string; contact: string; follow: string; rights: string; destinations: string; payTitle: string; payBody: string };
 }
 
 export const ui: Record<Locale, UiStrings> = {
@@ -28,6 +29,7 @@ export const ui: Record<Locale, UiStrings> = {
     whatsapp: 'WhatsApp us',
     menu: 'Menu',
     language: 'Language',
+    replyBadge: 'Replies within a few hours',
     theme: 'Switch light or dark mode',
     skip: 'Skip to content',
     footer: {
@@ -35,6 +37,9 @@ export const ui: Record<Locale, UiStrings> = {
       contact: 'Get in touch',
       follow: 'Follow us',
       rights: 'All rights reserved.',
+      destinations: 'Destinations and packages',
+      payTitle: 'Inquiry and payment',
+      payBody: 'Inquiry first, then a custom quote. 30-50% down payment through Doku (bank transfer, QRIS, or e-wallet). The balance is due 7 days before departure.',
     },
   },
   id: {
@@ -50,6 +55,7 @@ export const ui: Record<Locale, UiStrings> = {
     whatsapp: 'Chat WhatsApp',
     menu: 'Menu',
     language: 'Bahasa',
+    replyBadge: 'Dibalas dalam hitungan jam',
     theme: 'Ganti mode terang atau gelap',
     skip: 'Langsung ke konten',
     footer: {
@@ -57,6 +63,9 @@ export const ui: Record<Locale, UiStrings> = {
       contact: 'Hubungi kami',
       follow: 'Ikuti kami',
       rights: 'Hak cipta dilindungi.',
+      destinations: 'Destinasi dan paket',
+      payTitle: 'Inquiry dan pembayaran',
+      payBody: 'Inquiry dulu, lalu penawaran custom. DP 30-50% lewat Doku (transfer bank, QRIS, atau e-wallet). Pelunasan paling lambat 7 hari sebelum berangkat.',
     },
   },
 };

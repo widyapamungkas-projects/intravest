@@ -530,6 +530,19 @@ content:
         label: Deskripsi foto
         type: string
         description: Satu kalimat tentang isi foto.
+      - name: heroImage2
+        label: Foto utama ke-2 (opsional)
+        type: image
+        description: Jika diisi, hero menjadi carousel. Foto 1600 px lebar atau lebih.
+      - name: heroAlt2
+        label: Deskripsi foto ke-2
+        type: string
+      - name: heroImage3
+        label: Foto utama ke-3 (opsional)
+        type: image
+      - name: heroAlt3
+        label: Deskripsi foto ke-3
+        type: string
       - name: whyImage
         label: Foto bagian "Kenapa Intravest"
         type: image

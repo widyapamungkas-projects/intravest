@@ -7,8 +7,10 @@ order: 2
 priceIDR: 4900000
 priceIsDraft: true
 minPax: 2
+image: /src/assets/images/lava-jeep-tour.png
 en:
   title: Bali Active
+  imageAlt: Jeeps driving across a volcanic landscape in Bali
   summary: Four days of sunrise trekking, river rafting, and waterfalls around Ubud, with a rest block after each big activity.
   priceNote: Per person, based on 2 travelers sharing a room.
   itinerary:
@@ -63,6 +65,7 @@ en:
   needsReview: false
 id:
   title: Bali Active
+  imageAlt: Konvoi jip melintasi lanskap vulkanik di Bali
   summary: Empat hari trekking sunrise, rafting, dan air terjun di sekitar Ubud, dengan waktu istirahat setelah tiap aktivitas besar.
   priceNote: Per orang, dengan asumsi 2 peserta sekamar.
   itinerary:

@@ -1,0 +1,43 @@
+---
+// Thin bar above the header: direct WhatsApp and email, the reply-time promise, and the language switch.
+import Icon from './Icon.astro';
+import { alternatePath, htmlLang, localeNames, localizedPath, type Locale } from '../i18n';
+import { ui } from '../ui';
+import { site, whatsappLink } from '../site';
+
+interface Props {
+  locale: Locale;
+  pathname: string;
+  /** Where the language switch goes when this page has no translation (e.g. a one-language article). */
+  switchHref?: string;
+}
+const { locale, pathname, switchHref } = Astro.props;
+const t = ui[locale];
+const alt = alternatePath(pathname);
+const other: Locale = alt?.locale ?? (locale === 'en' ? 'id' : 'en');
+const otherHref = switchHref ?? alt?.path ?? localizedPath(other, '/');
+const wa = whatsappLink(site.whatsapp.defaultMessage[locale]);
+const link = 'inline-flex min-h-11 items-center gap-2 transition-colors hover:text-white';
+---
+
+<div class="bg-navy text-[#f7f6f2]">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-x-6 px-4 text-[13px] sm:px-6">
+    <div class="flex items-center gap-x-5">
+      <a href={wa} class={`${link} font-semibold`} rel="noopener">
+        <Icon name="whatsapp" class="size-4" /><span class="tabular-nums">{site.whatsapp.display}</span>
+      </a>
+      <a href={`mailto:${site.email}`} class={`${link} max-md:hidden`}>
+        <Icon name="mail" class="size-4" />{site.email}
+      </a>
+    </div>
+    <div class="flex items-center gap-x-4">
+      <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold max-lg:hidden">
+        <span class="size-1.5 rounded-full bg-[#7fd6a0]" aria-hidden="true"></span>{t.replyBadge}
+      </span>
+      <div class="inline-flex rounded-[10px] border border-white/20 bg-navy-deep p-0.5 text-xs font-extrabold" role="group" aria-label={t.language}>
+        <span class="inline-flex min-h-9 min-w-11 items-center justify-center rounded-lg bg-white text-navy" lang={htmlLang[locale]} aria-current="true">{locale.toUpperCase()}</span>
+        <a href={otherHref} hreflang={htmlLang[other]} lang={htmlLang[other]} aria-label={localeNames[other]} class="inline-flex min-h-9 min-w-11 items-center justify-center rounded-lg transition-colors hover:bg-white/10">{other.toUpperCase()}</a>
+      </div>
+    </div>
+  </div>
+</div>
