@@ -1,4 +1,5 @@
 ---
+import { fromAmount } from '../pricing';
 import type { CollectionEntry } from 'astro:content';
 import DialogShell from './DialogShell.astro';
 import DialogScript from './DialogScript.astro';
@@ -24,7 +25,7 @@ const lbl = 'block text-xs font-extrabold uppercase tracking-wider text-muted';
   <Fragment slot="head">
     <p class="flex items-center gap-2"><span class="rounded-md bg-accent px-2 py-1 font-mono text-xs font-semibold text-on-accent">{d.code}</span><span class="rounded-md bg-white/20 px-2 py-1 text-xs font-bold">{code}</span></p>
     <h3 id={`tour-${slug}-title`} class="mt-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl">{d.title}</h3>
-    <p class="mt-1 text-sm text-white/90 sm:text-sm">{c.from} <span class="font-extrabold text-sun tabular-nums">{formatIDR(locale, d.priceIDR)}</span> {c.perPerson}</p>
+    <p class="mt-1 text-sm text-white/90 sm:text-sm">{c.from} <span class="font-extrabold text-sun tabular-nums">{formatIDR(locale, fromAmount(slug, d).amount)}</span> {c.perPerson}</p>
   </Fragment>
   <div class="grid gap-6 p-4 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
     <div class="grid content-start gap-6">
@@ -67,7 +68,7 @@ const lbl = 'block text-xs font-extrabold uppercase tracking-wider text-muted';
     </form>
   </div>
   <div slot="foot" class="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-surface-2 p-3 sm:px-6">
-    <p class="text-sm text-muted">{c.from} <strong class="text-base tabular-nums text-text">{formatIDR(locale, d.priceIDR)}</strong> {c.perPerson}</p>
+    <p class="text-sm text-muted">{c.from} <strong class="text-base tabular-nums text-text">{formatIDR(locale, fromAmount(slug, d).amount)}</strong> {c.perPerson}</p>
     <a href={routePath(locale, 'tours', slug)} class="inline-flex min-h-10 items-center rounded-xl border border-border bg-surface px-4 text-sm font-bold hover:bg-surface-2">{c.fullPage}</a>
   </div>
 </DialogShell>

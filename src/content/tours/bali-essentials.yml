@@ -6,6 +6,26 @@ nights: 2
 order: 1
 priceIDR: 3500000
 priceIsDraft: true
+pricing:
+  validUntil: 2027-03-31
+  leadHotel: hotel-a
+  leadTier: 4-5
+  hotels:
+    - id: hotel-a
+      name: Hotel A (contoh)
+      stars: 3
+      area: Ubud
+      highSeason: 250000
+    - id: hotel-b
+      name: Hotel B (contoh)
+      stars: 4
+      area: Ubud
+      highSeason: 350000
+    - id: hotel-c
+      name: Hotel C (contoh)
+      stars: 4
+      area: Ubud
+      highSeason: 500000
 minPax: 2
 image: /src/assets/images/dsc07461-1.jpg
 en:

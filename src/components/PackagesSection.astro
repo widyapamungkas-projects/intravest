@@ -1,4 +1,5 @@
 ---
+import { fromAmount } from '../pricing';
 // Featured Bali packages: duration filter, cards, and an itinerary dialog per package.
 // The "View itinerary" link goes to the full tour page; with JavaScript it opens the same itinerary in a dialog.
 import { getCollection } from 'astro:content';
@@ -81,7 +82,7 @@ const check = 'inline-flex items-center gap-1.5 rounded-lg border border-border 
                 <div class="mt-auto border-t border-border pt-4">
                   <p class="flex items-baseline justify-between gap-3">
                     <span class="text-sm font-semibold text-muted">{u.from}</span>
-                    <span class="text-2xl font-extrabold tabular-nums">{formatIDR(locale, t.d.priceIDR)} <span class="text-sm font-semibold text-muted">{u.perPerson}</span></span>
+                    <span class="text-2xl font-extrabold tabular-nums">{formatIDR(locale, fromAmount(t.id.split('/').slice(1).join('/'), t.d).amount)} <span class="text-sm font-semibold text-muted">{u.perPerson}</span></span>
                   </p>
                   <div class="mt-4 flex flex-wrap gap-2.5">
                     <a href={t.href} data-dialog={`tour-${t.id}`} class="inline-flex min-h-12 flex-1 basis-32 items-center justify-center rounded-xl border border-navy bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-2 dark:border-border">{u.view}</a>

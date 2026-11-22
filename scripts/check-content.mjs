@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
+import { parsePricingCsv, validatePricing } from '../src/pricing-core.mjs';
 
 const src = path.resolve(import.meta.dirname, '..', 'src');
 const errors = [];
@@ -39,6 +40,25 @@ for (const [label, items] of [['Destinasi', destinations], ['Paket', tours]]) {
 }
 for (const { slug, data } of tours) {
   if (!destSlugs.has(data.destination)) errors.push(`Paket "${slug}" menunjuk destinasi "${data.destination}" yang tidak ada. Pilihan: ${[...destSlugs].join(', ')}.`);
+}
+
+// Price tables: src/data/pricing/<package>.csv next to the hotel settings in the package file.
+const pricingDir = path.join(src, 'data', 'pricing');
+for (const { slug, data } of tours) {
+  const where = `Harga paket "${slug}"`;
+  const file = path.join(pricingDir, `${slug}.csv`);
+  if (!data.pricing) {
+    if (!data.priceIDR) errors.push(`${where}: isi "Harga per orang" atau pengaturan tabel harga (pricing).`);
+    if (fs.existsSync(file)) warn(`${where}: ada file harga (${slug}.csv) tapi paketnya belum punya pengaturan "pricing" (hotel, lead-in), jadi file itu belum dipakai.`);
+    continue;
+  }
+  if (!fs.existsSync(file)) { errors.push(`${where}: file src/data/pricing/${slug}.csv tidak ditemukan.`); continue; }
+  const parsed = parsePricingCsv(fs.readFileSync(file, 'utf8'));
+  parsed.errors.forEach((e) => errors.push(`${where}: ${e}`));
+  if (parsed.errors.length) continue;
+  const res = validatePricing({ rows: parsed.rows, hotels: data.pricing.hotels ?? [], leadHotel: data.pricing.leadHotel, leadTier: data.pricing.leadTier, validUntil: data.pricing.validUntil });
+  res.errors.forEach((e) => errors.push(`${where}: ${e}`));
+  res.warnings.forEach((w) => warn(`${where}: ${w}`));
 }
 
 // Photos: a referenced file must exist in src/assets/images; a missing description only warns.

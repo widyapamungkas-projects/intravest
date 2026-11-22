@@ -34,7 +34,27 @@ const tours = defineCollection({
       nights: z.number().int().min(0),
       summary: z.string().max(160), // card text + meta description
       order: z.number(),
-      priceIDR: z.number().int().positive(), // per person, based on minPax
+      priceIDR: z.number().int().positive().optional(), // fallback "from" price when the package has no price table
+      // Price table: numbers live in src/data/pricing/<slug>.csv, hotel settings and lead-in choice here.
+      pricing: z
+        .object({
+          validUntil: z.string().optional(), // YYYY-MM-DD, shown as "valid until"
+          leadHotel: z.string(), // hotel id whose twin-share price is the "from" price
+          leadTier: z.string(), // tier id (2, 3, 4-5, ...) for the "from" price
+          hotels: z
+            .array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+                stars: z.number().int().min(1).max(5).optional(),
+                area: z.string().optional(),
+                highSeason: z.number().int().min(0).default(0), // high season surcharge, IDR per person
+              }),
+            )
+            .min(1),
+        })
+        .optional(),
+      highSeasonNote: z.string().optional(), // text: which dates count as high season
       priceIsDraft: z.boolean().default(false), // true = price not final yet, shown as such on the page
       minPax: z.number().int().min(1).default(2),
       priceNote: z.string().optional(),
@@ -53,6 +73,10 @@ const tours = defineCollection({
       needsReview: z.boolean().optional(),
       image: z.string().optional(), // file name in src/assets/images (set through the dashboard)
       imageAlt: z.string().optional(),
+    })
+    .refine((t) => t.priceIDR !== undefined || t.pricing !== undefined, {
+      message: 'isi harga per orang atau tabel harga (pricing)',
+      path: ['priceIDR'],
     })
     .refine((t) => t.itinerary.length === t.days, {
       message: 'itinerary must have one entry per day',

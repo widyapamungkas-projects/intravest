@@ -1,4 +1,5 @@
 ---
+import { fromAmount } from '../pricing';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import DialogShell from './DialogShell.astro';
 import DialogScript from './DialogScript.astro';
@@ -45,7 +46,7 @@ const cols = [
           {tours.map((t) => (
             <li class="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
               <a href={routePath(locale, 'tours', tourSlug(t.id))} data-dialog={`tour-${tourSlug(t.id)}`} class="font-bold text-accent hover:underline">{t.data.code} · {t.data.title}</a>
-              <span class="tabular-nums text-muted">{c.from} {formatIDR(locale, t.data.priceIDR)}</span>
+              <span class="tabular-nums text-muted">{c.from} {formatIDR(locale, fromAmount(tourSlug(t.id), t.data).amount)}</span>
             </li>
           ))}
         </ul>

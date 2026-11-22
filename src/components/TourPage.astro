@@ -1,4 +1,5 @@
 ---
+import { fromAmount } from '../pricing';
 import { getEntry, render, type CollectionEntry } from 'astro:content';
 import FormStatus from './FormStatus.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -53,7 +54,7 @@ const ld = {
   },
   ...(d.priceIsDraft
     ? {}
-    : { offers: { '@type': 'Offer', price: d.priceIDR, priceCurrency: 'IDR', url: pageUrl } }),
+    : { offers: { '@type': 'Offer', price: fromAmount(slug, d).amount, priceCurrency: 'IDR', url: pageUrl } }),
 };
 ---
 
@@ -91,7 +92,7 @@ const ld = {
 
       <p class="mt-6">
         <span class="text-muted">{c.from}</span>
-        <span class="ml-1 text-2xl font-semibold">{formatIDR(locale, d.priceIDR)}</span>
+        <span class="ml-1 text-2xl font-semibold">{formatIDR(locale, fromAmount(slug, d).amount)}</span>
         <span class="text-muted"> {c.perPerson}</span>
       </p>
       {d.priceIsDraft && <p class="mt-1 text-sm text-muted">{c.draftPrice}</p>}
@@ -112,7 +113,7 @@ const ld = {
         <p class="text-sm text-muted">{d.code} · {duration}</p>
         <p class="mt-3">
           <span class="text-sm text-muted">{c.from}</span>
-          <span class="ml-1 text-xl font-semibold">{formatIDR(locale, d.priceIDR)}</span>
+          <span class="ml-1 text-xl font-semibold">{formatIDR(locale, fromAmount(slug, d).amount)}</span>
           <span class="text-sm text-muted"> {c.perPerson}</span>
         </p>
         {d.priceIsDraft && <p class="mt-1 text-sm text-muted">{c.draftPrice}</p>}
@@ -182,7 +183,7 @@ const ld = {
       <div class={`${wrap} py-12 sm:py-16`}>
         <h2 class="t-h2">{c.price}</h2>
         <p class="mt-3">
-          <span class="text-2xl font-semibold">{formatIDR(locale, d.priceIDR)}</span>
+          <span class="text-2xl font-semibold">{formatIDR(locale, fromAmount(slug, d).amount)}</span>
           <span class="text-muted"> {c.perPerson}</span>
         </p>
         <p class="mt-1 text-muted">{d.priceNote ?? c.minPax(d.minPax)}</p>
