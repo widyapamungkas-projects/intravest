@@ -90,6 +90,7 @@ content:
             default: false
             description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
           - name: srcDigest
+            hidden: true
             label: Penanda terjemahan (otomatis)
             type: string
             description: Diisi otomatis. Jangan diubah.
@@ -136,6 +137,7 @@ content:
             default: false
             description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
           - name: srcDigest
+            hidden: true
             label: Penanda terjemahan (otomatis)
             type: string
             description: Diisi otomatis. Jangan diubah.
@@ -149,9 +151,9 @@ content:
       primary: slug
       fields:
         - code
-        - slug
-        - priceIDR
-        - priceIsDraft
+        - destination
+        - days
+        - order
       sort:
         - order
       order: asc
@@ -184,6 +186,10 @@ content:
               label: Surabaya
             - value: jakarta-bandung
               label: Jakarta-Bandung
+      - name: image
+        label: Foto utama
+        type: image
+        description: Satu foto untuk EN dan ID. Unggah atau pilih foto. Ukuran asli tidak apa-apa.
       - name: days
         label: Jumlah hari
         type: number
@@ -202,28 +208,6 @@ content:
         required: true
         options:
           min: 1
-      - name: priceIDR
-        label: Harga per orang (Rp)
-        type: number
-        required: true
-        description: "Angka saja, tanpa titik. Contoh: 4900000"
-        options:
-          min: 1
-      - name: priceIsDraft
-        label: Harga masih draf?
-        type: boolean
-        default: true
-        description: Matikan setelah harga final disetujui
-      - name: minPax
-        label: "Dasar harga: jumlah peserta"
-        type: number
-        default: 2
-        options:
-          min: 1
-      - name: image
-        label: Foto utama
-        type: image
-        description: Satu foto untuk EN dan ID. Unggah atau pilih foto. Ukuran asli tidak apa-apa.
       - name: en
         label: Teks Inggris (EN)
         type: object
@@ -282,6 +266,7 @@ content:
             default: false
             description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
           - name: srcDigest
+            hidden: true
             label: Penanda terjemahan (otomatis)
             type: string
             description: Diisi otomatis. Jangan diubah.
@@ -343,9 +328,28 @@ content:
             default: false
             description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
           - name: srcDigest
+            hidden: true
             label: Penanda terjemahan (otomatis)
             type: string
             description: Diisi otomatis. Jangan diubah.
+      - name: priceIDR
+        label: Harga cadangan per orang (Rp)
+        type: number
+        required: true
+        description: "Hanya dipakai kalau paket belum punya tabel harga (CSV). Angka saja."
+        options:
+          min: 1
+      - name: priceIsDraft
+        label: Harga masih draf?
+        type: boolean
+        default: true
+        description: Dipakai bersama harga cadangan.
+      - name: minPax
+        label: "Dasar harga cadangan: jumlah peserta"
+        type: number
+        default: 2
+        options:
+          min: 1
   - name: stories-en
     label: Travel Stories (EN)
     type: collection
@@ -425,6 +429,7 @@ content:
         options:
           maxlength: 450
       - name: threadsPostedAt
+        hidden: true
         label: Sudah diposting ke Threads (otomatis)
         type: string
         description: Diisi otomatis setelah posting. Kosongkan hanya kalau mau memposting ulang.
@@ -510,6 +515,7 @@ content:
         options:
           maxlength: 450
       - name: threadsPostedAt
+        hidden: true
         label: Sudah diposting ke Threads (otomatis)
         type: string
         description: Diisi otomatis setelah posting. Kosongkan hanya kalau mau memposting ulang.
@@ -542,13 +548,6 @@ content:
         type: image
       - name: heroAlt3
         label: Deskripsi foto ke-3
-        type: string
-      - name: whyImage
-        label: Foto bagian "Kenapa Intravest"
-        type: image
-        description: Opsional. Foto di samping daftar keunggulan. Cocok foto guide atau tim.
-      - name: whyAlt
-        label: Deskripsi foto (Kenapa Intravest)
         type: string
       - name: ctaImage
         label: Foto bagian penutup (ajakan WhatsApp)
