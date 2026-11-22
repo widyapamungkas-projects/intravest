@@ -43,12 +43,26 @@ export function enumerate(a, ck, cy, limit = 20000) {
 export const arrTotal = (counts, price) => counts.reduce((s, n, i) => s + n * roomPrice(ROOMS[i], price), 0);
 export const arrRooms = (counts) => counts.reduce((s, n) => s + n, 0);
 
+// Two arrangements that charge exactly the same lines (e.g. who shares with the infant) are one choice.
+function uniqueBill() {
+  const seen = new Set();
+  return (x) => {
+    const bill = {};
+    x.counts.forEach((n, i) => ROOMS[i].items.forEach(([k, c]) => { bill[k] = (bill[k] ?? 0) + n * c; }));
+    const key = x.rooms + ':' + Object.keys(bill).sort().map((k) => k + bill[k]).join(',');
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  };
+}
+
 // Best arrangements: at most one triple room (adults normally share twin), then fewest rooms, then lowest price. Returns up to `top` distinct ones.
 export function suggest(a, ck, cy, price, top = 3) {
   if (a < 1) return [];
   return enumerate(a, ck, cy)
     .map((c) => ({ counts: c, rooms: arrRooms(c), total: arrTotal(c, price) }))
     .sort((x, y) => (x.counts[2] > 1) - (y.counts[2] > 1) || x.rooms - y.rooms || x.total - y.total)
+    .filter(uniqueBill())
     .slice(0, top);
 }
 

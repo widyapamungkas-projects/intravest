@@ -8,7 +8,7 @@ const { id, label, image, imageAlt, closeLabel, wide = false } = Astro.props;
 <dialog id={id} aria-labelledby={`${id}-title`} class:list={['m-auto max-h-[calc(100dvh-2rem)] w-[min(calc(100%-1.5rem),var(--w))] overflow-hidden rounded-2xl border border-border bg-surface p-0 text-[0.875rem] leading-snug text-text shadow-floating backdrop:bg-navy/70']} style={`--w:${wide ? '52rem' : '38rem'}`}>
   <div class="flex max-h-[calc(100dvh-2rem)] flex-col">
     <div class="relative shrink-0">
-      {image ? <Photo src={image} alt={imageAlt} label={label} class="aspect-[16/5] sm:aspect-[16/4] rounded-none! border-0!" sizes="960px" /> : <div class="h-16 bg-navy"></div>}
+      {image ? <Photo src={image} alt={imageAlt} label={label} class="aspect-[16/5] min-h-[11rem] sm:aspect-[16/4] sm:min-h-0 rounded-none! border-0!" sizes="960px" /> : <div class="h-16 bg-navy"></div>}
       <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent"></div>
       <form method="dialog" class="absolute right-3 top-3">
         <button class="inline-flex size-11 items-center justify-center rounded-full bg-navy/70 text-white hover:bg-navy" aria-label={closeLabel}><Icon name="close" class="size-[18px]" /></button>

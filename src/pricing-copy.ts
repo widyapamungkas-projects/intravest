@@ -3,6 +3,7 @@ import type { Locale } from './i18n';
 // Text for the price table and the self-service price calculator.
 export interface PricingCopy {
   tabs: { itinerary: string; prices: string; calc: string };
+  sendWa: string; sendMail: string; tabsLabel: string;
   fromCaption: (minPax: number, hotel: string) => string;
   validUntil: (d: string) => string;
   table: {
@@ -26,6 +27,7 @@ export interface PricingCopy {
 export const pricingCopy: Record<Locale, PricingCopy> = {
   en: {
     tabs: { itinerary: 'Itinerary', prices: 'Prices', calc: 'Calculate your trip' },
+    sendWa: 'Send via WhatsApp', sendMail: 'Send by email', tabsLabel: 'Package details',
     fromCaption: (n, h) => `twin share, min. ${n} adults, ${h}`,
     validUntil: (d) => `Prices valid until ${d}`,
     table: {
@@ -40,7 +42,7 @@ export const pricingCopy: Record<Locale, PricingCopy> = {
         { label: 'CNB (child no bed)', text: '2 adults + 1 child (age 1–3) sharing the parents\' bed.' },
         { label: 'Example', text: '2 adults + 1 child + 1 infant = twin share + CWB + CNB.' },
       ],
-      highSeasonNote: 'Added per person on high season dates. Not included in the prices to the left.',
+      highSeasonNote: 'Added per person on high season dates. Not included in the base prices.',
     },
     sim: {
       title: 'Calculate your trip', intro: 'Choose a hotel and tell us who is travelling. We suggest the rooms and work out an estimate. You can change the rooms.',
@@ -63,6 +65,7 @@ export const pricingCopy: Record<Locale, PricingCopy> = {
   },
   id: {
     tabs: { itinerary: 'Itinerary', prices: 'Harga', calc: 'Hitung sendiri' },
+    sendWa: 'Kirim via WhatsApp', sendMail: 'Kirim lewat email', tabsLabel: 'Detail paket',
     fromCaption: (n, h) => `twin share, min. ${n} dewasa, ${h}`,
     validUntil: (d) => `Harga berlaku sampai ${d}`,
     table: {
@@ -77,7 +80,7 @@ export const pricingCopy: Record<Locale, PricingCopy> = {
         { label: 'CNB (child no bed)', text: '2 dewasa + 1 anak (usia 1–3) tidur satu bed dengan orang tua.' },
         { label: 'Contoh', text: '2 dewasa + 1 anak + 1 bayi = twin share + CWB + CNB.' },
       ],
-      highSeasonNote: 'Ditambahkan per orang pada tanggal musim ramai. Tidak termasuk di harga sebelumnya.',
+      highSeasonNote: 'Ditambahkan per orang pada tanggal musim ramai. Tidak termasuk di harga dasar.',
     },
     sim: {
       title: 'Hitung sendiri', intro: 'Pilih hotel dan isi siapa saja yang berangkat. Kami sarankan susunan kamar dan menghitung estimasinya. Susunan kamar bisa kamu ubah.',

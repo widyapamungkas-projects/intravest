@@ -1,0 +1,209 @@
+---
+// Self-service price calculator for one package: the visitor picks a hotel, adults and children (with ages);
+// the page suggests rooms and works out an estimate. Rooms can be changed by hand. All maths runs in the
+// browser from the package's price table, so there is nothing to submit and nothing stored.
+import { pricingCopy } from '../pricing-copy';
+import type { TourPricing } from '../pricing';
+import type { Locale } from '../i18n';
+import { site } from '../site';
+
+interface Props {
+  locale: Locale;
+  slug: string;
+  pricing: TourPricing;
+  /** First lines of the WhatsApp / email message (package code, name, duration). */
+  base: string;
+  subject: string;
+  heading?: boolean;
+}
+const { locale, slug, pricing, base, subject, heading = true } = Astro.props;
+const s = pricingCopy[locale].sim;
+const config = {
+  locale, uid: `calc-${slug}`, base, subject, number: site.whatsapp.number, email: site.email, leadHotel: pricing.leadHotel.id,
+  hotels: pricing.hotels.map((h) => ({ id: h.id, name: h.name, highSeason: h.highSeason ?? 0, prices: h.prices })),
+};
+const lbl = 'block text-xs font-extrabold uppercase tracking-wider text-muted';
+const ctl = 'min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-semibold text-text';
+const step = 'inline-flex size-11 items-center justify-center rounded-xl border border-border bg-surface text-xl font-bold text-text hover:bg-surface-2';
+---
+
+<section data-calc data-config={JSON.stringify(config)} class="grid min-w-0 gap-5">
+  {heading && (
+    <div>
+      <h3 class="text-lg font-extrabold">{s.title}</h3>
+      <p class="mt-1 text-muted">{s.intro}</p>
+    </div>
+  )}
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[17.5rem_minmax(0,1fr)]">
+    <div class="grid h-fit min-w-0 content-start gap-5 rounded-2xl border border-border bg-surface-2 p-4">
+      {pricing.hotels.length > 1 && (
+        <label class={lbl}>{s.hotel}
+          <select data-hotel class={`${ctl} mt-1.5 w-full`}>
+            {pricing.hotels.map((h) => <option value={h.id} selected={h.id === pricing.leadHotel.id}>{h.name}</option>)}
+          </select>
+        </label>
+      )}
+      <div>
+        <p class={lbl}>{s.adults} <span class="font-semibold normal-case tracking-normal">({s.adultsHint})</span></p>
+        <div class="mt-1.5 flex items-center gap-3">
+          <button type="button" data-act="adults-dec" aria-label={s.decAdults} class={step}>−</button>
+          <output data-el="adults" aria-live="polite" class="min-w-8 text-center text-xl font-extrabold tabular-nums">3</output>
+          <button type="button" data-act="adults-inc" aria-label={s.incAdults} class={step}>+</button>
+        </div>
+      </div>
+      <div>
+        <p class={lbl}>{s.children}</p>
+        <div data-el="kids" class="mt-1.5 grid gap-2"></div>
+        <button type="button" data-act="kid-add" class="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-dashed border-navy px-3 text-sm font-bold text-text hover:bg-surface dark:border-sun">{s.addChild}</button>
+      </div>
+      <label class="flex cursor-pointer items-start gap-2.5 text-sm leading-snug text-muted">
+        <input type="checkbox" data-high class="mt-0.5 size-5 shrink-0 accent-[var(--accent)]" />
+        <span>{s.highSeason}</span>
+      </label>
+      <p data-el="tier" class="border-t border-border pt-3 text-[13px] leading-snug text-muted"></p>
+    </div>
+
+    <div class="grid min-w-0 content-start gap-4">
+      <p data-el="empty" hidden class="rounded-xl border border-border bg-surface-2 p-4 text-muted">{s.noAdult}</p>
+      <div data-el="result" class="grid gap-4">
+        <div class="grid gap-2.5">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+            <h4 class="text-base font-extrabold">{s.roomsTitle}</h4>
+            <p data-el="guests" class="text-xs text-muted"></p>
+          </div>
+          <div data-el="options" class="grid gap-2.5"></div>
+          <div data-el="custom" class="grid gap-2"></div>
+        </div>
+        <div data-el="breakdown" class="overflow-hidden rounded-xl border border-border"></div>
+        <p data-el="infant" hidden class="text-[13px] text-muted">{s.infantNote}</p>
+        <p class="text-[13px] text-muted">{s.disclaimer}</p>
+        <div class="grid gap-2.5 rounded-xl border border-border bg-surface-2 p-3.5">
+          <pre data-el="message" class="m-0 whitespace-pre-wrap font-mono text-xs text-muted"></pre>
+          <div class="flex flex-wrap gap-2.5">
+            <a data-el="wa" rel="noopener" href="#" class="inline-flex min-h-11 items-center rounded-xl bg-accent px-5 text-sm font-bold text-on-accent hover:bg-accent-hover">{pricingCopy[locale].sendWa}</a>
+            <a data-el="mail" href="#" class="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface px-4 text-sm font-bold text-text hover:bg-surface-2">{pricingCopy[locale].sendMail}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { tierForAdults } from '../pricing-core.mjs';
+  import { guestMix, suggest, describe, breakdown, check, ROOMS } from '../rooms-core.mjs';
+  import { pricingCopy } from '../pricing-copy';
+
+  const esc = (t: unknown) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  const field = 'min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-semibold text-text';
+
+  function init(root: HTMLElement) {
+    const cfg = JSON.parse(root.dataset.config!);
+    const c = pricingCopy[cfg.locale as 'en' | 'id'];
+    const s = c.sim;
+    const num = new Intl.NumberFormat(cfg.locale === 'id' ? 'id-ID' : 'en-US');
+    const $ = (n: string) => root.querySelector<HTMLElement>(`[data-el="${n}"]`)!;
+    const st = { hotel: cfg.leadHotel as string, adults: 3, ages: [7] as number[], high: false, pick: 0, custom: ROOMS.map(() => 0) };
+
+    const ageOptions = (sel: number) =>
+      Array.from({ length: 13 }, (_, v) => `<option value="${v}"${v === sel ? ' selected' : ''}>${esc(v === 0 ? s.under1 : s.years(v))}</option>`).join('');
+
+    const renderKids = () => {
+      $('kids').innerHTML = st.ages
+        .map((g, i) => `<div class="flex items-center gap-2"><span class="w-16 shrink-0 text-sm font-bold">${esc(s.childN(i + 1))}</span><select data-kid="${i}" aria-label="${esc(s.ageAria(i + 1))}" class="${field} min-w-0 flex-1">${ageOptions(g)}</select><button type="button" data-act="kid-del" data-i="${i}" aria-label="${esc(s.removeAria(i + 1))}" class="inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface text-lg text-accent hover:bg-surface-2">×</button></div>`)
+        .join('');
+    };
+
+    const render = () => {
+      const focusKey = (document.activeElement as HTMLElement | null)?.dataset?.fk;
+      const hotel = cfg.hotels.find((h: any) => h.id === st.hotel) ?? cfg.hotels[0];
+      const mix = guestMix(st.adults, st.ages);
+      $('adults').textContent = String(st.adults);
+      const tier = tierForAdults(Math.max(mix.a, 2));
+      $('tier').textContent = mix.a < 2 ? s.tierSolo : s.tierNote(tier.label);
+      const noAdult = mix.a < 1;
+      $('empty').hidden = !noAdult;
+      $('result').hidden = noAdult;
+      if (noAdult) return;
+      const price = hotel.prices[tier.id];
+      const sugg = suggest(mix.a, mix.ck, mix.cy, price, 3);
+      if (st.pick >= sugg.length) st.pick = 0;
+      if (!sugg.length) st.pick = -1; // no automatic suggestion (e.g. children without enough adults): choose rooms by hand
+      const custom = st.pick === -1;
+      const counts: number[] = custom ? st.custom : sugg[st.pick].counts;
+      const chk = check(counts, mix.a, mix.ck, mix.cy);
+      const rooms = chk.ok ? breakdown(counts, price) : [];
+      const people = mix.a + mix.ck + mix.cy;
+      const sur = st.high ? (hotel.highSeason ?? 0) * people : 0;
+      const total = rooms.reduce((t: number, r: any) => t + r.total, 0) + sur;
+
+      $('guests').textContent = [s.adultsN(mix.a), mix.ck && s.kidsN(mix.ck), mix.cy && s.youngN(mix.cy), mix.infants && s.infantsN(mix.infants)].filter(Boolean).join(', ');
+
+      const tag = (i: number) => (i === 0 ? '<span class="rounded-md bg-accent px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-on-accent">' + esc(s.recommended) + '</span>' : '<span class="rounded-md border border-border bg-surface-2 px-2 py-1 text-[11px] font-extrabold uppercase tracking-wider text-muted">' + esc(s.alternative) + '</span>');
+      const box = 'relative flex cursor-pointer items-center gap-3 rounded-xl border-2 border-border p-3.5 has-[:checked]:border-navy has-[:checked]:bg-surface-2 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--focus)] dark:has-[:checked]:border-sun';
+      $('options').innerHTML =
+        sugg.map((o: any, i: number) => `<label class="${box}"><input type="radio" class="sr-only" name="${cfg.uid}-arr" value="${i}" data-pick${st.pick === i ? ' checked' : ''}><span class="min-w-0 flex-1"><span class="flex flex-wrap items-center gap-2">${tag(i)}<span class="text-xs text-muted">${esc(s.roomsN(o.rooms))}</span></span><span class="mt-1 block text-sm font-bold">${esc(describe(o.counts))}</span></span><span class="whitespace-nowrap font-extrabold tabular-nums">IDR ${num.format(o.total)}</span></label>`).join('') +
+        `<label class="${box} border-dashed"><input type="radio" class="sr-only" name="${cfg.uid}-arr" value="custom" data-pick${custom ? ' checked' : ''}><span class="min-w-0 flex-1"><span class="block text-sm font-extrabold">${esc(s.custom)}</span><span class="block text-xs text-muted">${esc(s.customHint)}</span></span></label>`;
+
+      $('custom').innerHTML = custom
+        ? `<div class="grid gap-2 rounded-xl border border-border bg-surface-2 p-3.5">${ROOMS.map((r: any, i: number) => `<div class="flex items-center gap-2.5"><span class="min-w-0 flex-1 text-sm font-semibold">${esc(r.label)} <span class="text-xs font-medium text-muted">(${esc(s.roomHints[r.id])})</span></span><button type="button" data-fk="d${i}" data-act="room-dec" data-r="${i}" aria-label="${esc(s.decRoom(r.label))}" class="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-surface text-lg hover:bg-surface-2">−</button><span class="w-6 text-center font-extrabold tabular-nums">${st.custom[i]}</span><button type="button" data-fk="i${i}" data-act="room-inc" data-r="${i}" aria-label="${esc(s.incRoom(r.label))}" class="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-surface text-lg hover:bg-surface-2">+</button></div>`).join('')}<p class="text-[13px] font-bold ${chk.ok ? 'text-success' : 'text-accent-hover dark:text-accent'}" role="status">${esc(chk.ok ? s.allSeated : (chk.da > 0 || chk.dk > 0 || chk.dy > 0 ? s.missing(Math.max(chk.da, 0), Math.max(chk.dk, 0), Math.max(chk.dy, 0)) + ' ' : '') + (chk.da < 0 || chk.dk < 0 || chk.dy < 0 ? s.extra(Math.max(-chk.da, 0), Math.max(-chk.dk, 0), Math.max(-chk.dy, 0)) : ''))}</p></div>`
+        : '';
+
+      if (rooms.length) {
+        $('breakdown').hidden = false;
+        $('breakdown').innerHTML =
+          `<p class="bg-surface-2 px-4 py-3 text-base font-extrabold">${esc(s.breakdown)}</p>` +
+          rooms.map((r: any) => `<div class="border-t border-border px-4 py-3"><p class="flex justify-between gap-3 text-sm font-extrabold"><span>${esc(s.roomN(r.no))}: ${esc(r.label)}</span><span class="tabular-nums">${num.format(r.total)}</span></p>${r.lines.map((l: any) => `<p class="mt-1 flex justify-between gap-3 text-[13px] text-muted"><span>${esc(l.what)} × ${l.n} @ ${num.format(l.unit)}</span><span class="tabular-nums">${num.format(l.sub)}</span></p>`).join('')}</div>`).join('') +
+          (st.high ? `<p class="flex justify-between gap-3 border-t border-border bg-sun/15 px-4 py-3 text-sm font-bold"><span>${esc(s.surcharge(people, num.format(hotel.highSeason ?? 0)))}</span><span class="tabular-nums">+${num.format(sur)}</span></p>` : '') +
+          `<p class="flex items-baseline justify-between gap-3 border-t-2 border-navy px-4 py-4 dark:border-sun"><span class="font-extrabold">${esc(s.total)}</span><span class="text-2xl font-extrabold tabular-nums">${num.format(total)}</span></p>`;
+      } else {
+        $('breakdown').hidden = true;
+      }
+      $('infant').hidden = !mix.infants;
+
+      const kids = st.ages.length ? ', ' + st.ages.length + ' ' + (cfg.locale === 'id' ? 'anak/bayi' : 'children/infants') + ' (' + st.ages.map((g) => (g === 0 ? '<1' : g)).join(', ') + ')' : '';
+      const lines = [cfg.base, `${s.msg.hotel}: ${hotel.name}`, `${s.msg.guests}: ${s.adultsN(st.adults)}${kids}`];
+      if (rooms.length) lines.push(`${s.msg.rooms}: ${describe(counts)}`);
+      lines.push(`${s.msg.season}: ${st.high ? s.msg.seasonYes : s.msg.seasonNo}`);
+      if (rooms.length) lines.push(`${s.msg.estimate}: IDR ${num.format(total)}`);
+      const text = lines.join('\n');
+      $('message').textContent = text;
+      $('wa').setAttribute('href', `https://wa.me/${cfg.number}?text=${encodeURIComponent(text)}`);
+      $('mail').setAttribute('href', `mailto:${cfg.email}?subject=${encodeURIComponent(cfg.subject)}&body=${encodeURIComponent(text)}`);
+
+      if (focusKey) root.querySelector<HTMLElement>(`[data-fk="${focusKey}"]`)?.focus();
+    };
+
+    root.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLElement>('[data-act]');
+      if (!b) return;
+      const act = b.dataset.act;
+      if (act === 'adults-dec') { st.adults = Math.max(0, st.adults - 1); st.pick = 0; }
+      else if (act === 'adults-inc') { st.adults = Math.min(40, st.adults + 1); st.pick = 0; }
+      else if (act === 'kid-add') { st.ages.push(8); st.pick = 0; renderKids(); }
+      else if (act === 'kid-del') { st.ages.splice(Number(b.dataset.i), 1); st.pick = 0; renderKids(); }
+      else if (act === 'room-dec' || act === 'room-inc') { const i = Number(b.dataset.r); st.custom[i] = Math.max(0, st.custom[i] + (act === 'room-inc' ? 1 : -1)); }
+      render();
+    });
+    root.addEventListener('change', (e) => {
+      const t = e.target as HTMLInputElement | HTMLSelectElement;
+      if (t.matches('[data-hotel]')) st.hotel = t.value;
+      else if (t.matches('[data-high]')) st.high = (t as HTMLInputElement).checked;
+      else if (t.matches('[data-kid]')) { st.ages[Number(t.dataset.kid)] = Number(t.value); st.pick = 0; }
+      else if (t.matches('[data-pick]')) {
+        if (t.value === 'custom') {
+          // Start the manual choice from the arrangement that was selected.
+          const hotel = cfg.hotels.find((h: any) => h.id === st.hotel) ?? cfg.hotels[0];
+          const mix = guestMix(st.adults, st.ages);
+          const sg = suggest(mix.a, mix.ck, mix.cy, hotel.prices[tierForAdults(Math.max(mix.a, 2)).id], 3);
+          st.custom = (sg[Math.min(Math.max(st.pick, 0), sg.length - 1)]?.counts ?? ROOMS.map(() => 0)).slice();
+          st.pick = -1;
+        } else st.pick = Number(t.value);
+      }
+      render();
+    });
+    renderKids();
+    render();
+  }
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach(init);
+</script>

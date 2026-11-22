@@ -23,7 +23,7 @@ const isLead = (hotelId: string, tierId: string, key: string) => hotelId === pri
 const leadCell = 'bg-accent-soft font-extrabold text-accent-hover ring-2 ring-inset ring-accent dark:text-accent';
 ---
 
-<section data-pricing-panel class="grid gap-5">
+<section data-pricing-panel class="grid min-w-0 gap-5">
   {
     heading && (
       <div>
@@ -34,7 +34,7 @@ const leadCell = 'bg-accent-soft font-extrabold text-accent-hover ring-2 ring-in
   }
   {pricing.validUntil && <p class="text-sm font-semibold text-muted">{pricingCopy[locale].validUntil(formatValidUntil(locale, pricing.validUntil))}</p>}
 
-  <fieldset>
+  <fieldset class="min-w-0">
     <legend class="mb-2 text-xs font-extrabold uppercase tracking-wider text-muted">{c.tierLegend}</legend>
     <div class="flex flex-wrap gap-2">
       {
@@ -105,10 +105,10 @@ const leadCell = 'bg-accent-soft font-extrabold text-accent-hover ring-2 ring-in
     ))
   }
 
-  <p class="flex items-center gap-2.5 text-sm text-muted">
+  <div data-lead-legend={pricing.leadTierId}><p class="flex items-center gap-2.5 text-sm text-muted">
     <span class="size-[18px] shrink-0 rounded-[5px] border-2 border-accent bg-accent-soft" aria-hidden="true"></span>
     {c.leadLegend}
-  </p>
+  </p></div>
 
   <div class="grid gap-x-8 gap-y-1.5 border-t border-border pt-4 text-[13px] leading-snug text-muted md:grid-cols-2">
     {c.notes.map((n) => <p><b class="text-text">{n.label}:</b> {n.text}</p>)}
@@ -124,6 +124,8 @@ const leadCell = 'bg-accent-soft font-extrabold text-accent-hover ring-2 ring-in
     const apply = () => {
       const on = radios.find((r) => r.checked)?.value;
       panels.forEach((p) => (p.hidden = p.dataset.tierPanel !== on));
+      const legend = root.querySelector<HTMLElement>('[data-lead-legend]');
+      if (legend) legend.hidden = legend.dataset.leadLegend !== on;
     };
     radios.forEach((r) => r.addEventListener('change', apply));
     apply();
