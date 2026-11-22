@@ -93,7 +93,8 @@ const stories = defineCollection({
     description: z.string().max(160), // meta description + card excerpt
     date: z.coerce.date(),
     category: z.string(), // a destination slug (e.g. "bali") or "tips"
-    tags: z.array(z.string()).default([]),
+    // The dashboard keeps tags in one text field ("bali, travel tips"); a YAML list still works.
+    tags: z.preprocess((v) => (typeof v === 'string' ? v.split(',').map((t) => t.trim()).filter(Boolean) : v), z.array(z.string()).default([])),
     ogImage: z.string().optional(), // placeholder until real photos exist (Step 9)
     postToThreads: z.boolean().default(false), // dashboard toggle; scripts/post-threads.mjs posts it once after deploy
     threadsText: z.string().optional(), // optional custom caption

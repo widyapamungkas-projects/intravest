@@ -3,7 +3,7 @@ title: "Why Your Bali Tour Needs a Local Guide"
 description: "What a local guide actually does on a Bali trip: timing, context, safety, and handling the unexpected. And what a good one will not do."
 date: 2026-11-05
 category: "tips"
-tags: ["local guide", "bali tour", "travel tips", "private tour"]
+tags: "local guide, bali tour, travel tips, private tour"
 ogImage: "/og/placeholder.jpg"
 image: /src/assets/images/cam-b-430-1.jpg
 imageAlt: "A convoy of jeeps on a Bali volcano trail led by a local guide"

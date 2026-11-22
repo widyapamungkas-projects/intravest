@@ -146,7 +146,7 @@ content:
     type: collection
     path: src/content/tours
     format: yaml
-    filename: "{primary}.yml"
+    filename: '{primary}.yml'
     view:
       primary: slug
       fields:
@@ -162,12 +162,12 @@ content:
         label: Alamat (slug)
         type: string
         required: true
-        description: "Huruf kecil dan tanda hubung, contoh: bali-essentials. Jadi alamat halaman dan tidak bisa diganti setelah dibuat."
+        description: 'Huruf kecil dan tanda hubung, contoh: bali-essentials. Jadi alamat halaman dan tidak bisa diganti setelah dibuat.'
       - name: code
         label: Kode paket
         type: string
         required: true
-        description: "Contoh: BAL-01"
+        description: 'Contoh: BAL-01'
       - name: destination
         label: Destinasi
         type: select
@@ -208,6 +208,368 @@ content:
         required: true
         options:
           min: 1
+      - name: priceIDR
+        label: Harga cadangan per orang (Rp)
+        type: number
+        required: true
+        description: Hanya dipakai kalau paket belum punya tabel harga (CSV). Angka saja.
+        options:
+          min: 1
+      - name: priceIsDraft
+        label: Harga masih draf?
+        type: boolean
+        default: true
+        description: Dipakai bersama harga cadangan.
+      - name: minPax
+        label: 'Dasar harga cadangan: jumlah peserta'
+        type: number
+        default: 2
+        options:
+          min: 1
+      - name: pricing
+        label: Harga dan hotel
+        type: object
+        description: Angka harga ada di file src/data/pricing/<alamat-paket>.csv. Di sini hanya data hotel dan pilihan harga "mulai dari".
+        fields:
+          - name: validUntil
+            label: Harga berlaku sampai
+            type: date
+          - name: leadTier
+            label: Tier untuk harga "mulai dari"
+            type: select
+            options:
+              values:
+                - value: '2'
+                  label: 2 dewasa
+                - value: '3'
+                  label: 3 dewasa
+                - value: 4-5
+                  label: 4-5 dewasa
+                - value: 6-7
+                  label: 6-7 dewasa
+                - value: 8-9
+                  label: 8-9 dewasa
+                - value: 10-14
+                  label: 10-14 dewasa
+                - value: 15+
+                  label: 15+ dewasa
+          - name: leadHotel
+            label: Hotel untuk harga "mulai dari"
+            type: string
+            description: 'Isi dengan ID salah satu hotel di bawah, contoh: hotel-a'
+          - name: hotels
+            label: Hotel
+            type: object
+            list: true
+            description: Maksimal 10. ID harus sama dengan kolom hotel di file CSV.
+            fields:
+              - name: id
+                label: ID hotel
+                type: string
+                description: 'Huruf kecil dan tanda hubung, contoh: hotel-a'
+              - name: name
+                label: Nama hotel
+                type: string
+              - name: stars
+                label: Bintang
+                type: number
+                options:
+                  min: 1
+                  max: 5
+              - name: area
+                label: Area
+                type: string
+              - name: highSeason
+                label: High season surcharge per orang (Rp)
+                type: number
+                options:
+                  min: 0
+      - name: en
+        hidden: true
+        label: Teks Inggris (EN)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama paket
+            type: string
+          - name: summary
+            label: Ringkasan
+            type: text
+            description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
+            options:
+              maxlength: 160
+          - name: priceNote
+            label: Catatan harga
+            type: string
+          - name: itinerary
+            label: Itinerary
+            type: object
+            list: true
+            description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
+            fields:
+              - name: title
+                label: Judul hari
+                type: string
+              - name: plan
+                label: Rencana hari ini
+                type: string
+                list: true
+                description: Satu baris per kegiatan
+              - name: meals
+                label: Makan
+                type: string
+              - name: stay
+                label: Menginap
+                type: string
+          - name: inclusions
+            label: Sudah termasuk
+            type: string
+            list: true
+          - name: exclusions
+            label: Belum termasuk
+            type: string
+            list: true
+          - name: highSeasonNote
+            label: Tanggal musim ramai
+            type: text
+            description: 'Contoh: 15 Jul-31 Agu dan 20 Des-5 Jan. Tampil di bawah tabel harga.'
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            hidden: true
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+      - name: id
+        hidden: true
+        label: Teks Indonesia (ID)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama paket
+            type: string
+          - name: summary
+            label: Ringkasan
+            type: text
+            description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
+            options:
+              maxlength: 160
+          - name: priceNote
+            label: Catatan harga
+            type: string
+          - name: itinerary
+            label: Itinerary
+            type: object
+            list: true
+            description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
+            fields:
+              - name: title
+                label: Judul hari
+                type: string
+              - name: plan
+                label: Rencana hari ini
+                type: string
+                list: true
+                description: Satu baris per kegiatan
+              - name: meals
+                label: Makan
+                type: string
+              - name: stay
+                label: Menginap
+                type: string
+          - name: inclusions
+            label: Sudah termasuk
+            type: string
+            list: true
+          - name: exclusions
+            label: Belum termasuk
+            type: string
+            list: true
+          - name: highSeasonNote
+            label: Tanggal musim ramai
+            type: text
+            description: 'Contoh: 15 Jul-31 Agu dan 20 Des-5 Jan. Tampil di bawah tabel harga.'
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            hidden: true
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+  - name: tours-en
+    label: 'Paket: Teks EN'
+    type: collection
+    path: src/content/tours
+    format: yaml
+    filename: '{primary}.yml'
+    view:
+      primary: slug
+      fields:
+        - code
+        - destination
+      sort:
+        - order
+      order: asc
+    fields:
+      - name: slug
+        hidden: true
+        label: Alamat (slug)
+        type: string
+        required: true
+        description: 'Huruf kecil dan tanda hubung, contoh: bali-essentials. Jadi alamat halaman dan tidak bisa diganti setelah dibuat.'
+      - name: code
+        hidden: true
+        label: Kode paket
+        type: string
+        required: true
+        description: 'Contoh: BAL-01'
+      - name: destination
+        hidden: true
+        label: Destinasi
+        type: select
+        required: true
+        options:
+          values:
+            - value: bali
+              label: Bali
+            - value: lombok
+              label: Lombok
+            - value: labuan-bajo
+              label: Labuan Bajo
+            - value: yogyakarta
+              label: Yogyakarta
+            - value: surabaya
+              label: Surabaya
+            - value: jakarta-bandung
+              label: Jakarta-Bandung
+      - name: image
+        hidden: true
+        label: Foto utama
+        type: image
+        description: Satu foto untuk EN dan ID. Unggah atau pilih foto. Ukuran asli tidak apa-apa.
+      - name: days
+        hidden: true
+        label: Jumlah hari
+        type: number
+        required: true
+        options:
+          min: 1
+      - name: nights
+        hidden: true
+        label: Jumlah malam
+        type: number
+        required: true
+        options:
+          min: 0
+      - name: order
+        hidden: true
+        label: Urutan tampil
+        type: number
+        required: true
+        options:
+          min: 1
+      - name: priceIDR
+        hidden: true
+        label: Harga cadangan per orang (Rp)
+        type: number
+        required: true
+        description: Hanya dipakai kalau paket belum punya tabel harga (CSV). Angka saja.
+        options:
+          min: 1
+      - name: priceIsDraft
+        hidden: true
+        label: Harga masih draf?
+        type: boolean
+        default: true
+        description: Dipakai bersama harga cadangan.
+      - name: minPax
+        hidden: true
+        label: 'Dasar harga cadangan: jumlah peserta'
+        type: number
+        default: 2
+        options:
+          min: 1
+      - name: pricing
+        hidden: true
+        label: Harga dan hotel
+        type: object
+        description: Angka harga ada di file src/data/pricing/<alamat-paket>.csv. Di sini hanya data hotel dan pilihan harga "mulai dari".
+        fields:
+          - name: validUntil
+            label: Harga berlaku sampai
+            type: date
+          - name: leadTier
+            label: Tier untuk harga "mulai dari"
+            type: select
+            options:
+              values:
+                - value: '2'
+                  label: 2 dewasa
+                - value: '3'
+                  label: 3 dewasa
+                - value: 4-5
+                  label: 4-5 dewasa
+                - value: 6-7
+                  label: 6-7 dewasa
+                - value: 8-9
+                  label: 8-9 dewasa
+                - value: 10-14
+                  label: 10-14 dewasa
+                - value: 15+
+                  label: 15+ dewasa
+          - name: leadHotel
+            label: Hotel untuk harga "mulai dari"
+            type: string
+            description: 'Isi dengan ID salah satu hotel di bawah, contoh: hotel-a'
+          - name: hotels
+            label: Hotel
+            type: object
+            list: true
+            description: Maksimal 10. ID harus sama dengan kolom hotel di file CSV.
+            fields:
+              - name: id
+                label: ID hotel
+                type: string
+                description: 'Huruf kecil dan tanda hubung, contoh: hotel-a'
+              - name: name
+                label: Nama hotel
+                type: string
+              - name: stars
+                label: Bintang
+                type: number
+                options:
+                  min: 1
+                  max: 5
+              - name: area
+                label: Area
+                type: string
+              - name: highSeason
+                label: High season surcharge per orang (Rp)
+                type: number
+                options:
+                  min: 0
       - name: en
         label: Teks Inggris (EN)
         type: object
@@ -253,6 +615,296 @@ content:
             label: Belum termasuk
             type: string
             list: true
+          - name: highSeasonNote
+            label: Tanggal musim ramai
+            type: text
+            description: 'Contoh: 15 Jul-31 Agu dan 20 Des-5 Jan. Tampil di bawah tabel harga.'
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            hidden: true
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+      - name: id
+        hidden: true
+        label: Teks Indonesia (ID)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama paket
+            type: string
+          - name: summary
+            label: Ringkasan
+            type: text
+            description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
+            options:
+              maxlength: 160
+          - name: priceNote
+            label: Catatan harga
+            type: string
+          - name: itinerary
+            label: Itinerary
+            type: object
+            list: true
+            description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
+            fields:
+              - name: title
+                label: Judul hari
+                type: string
+              - name: plan
+                label: Rencana hari ini
+                type: string
+                list: true
+                description: Satu baris per kegiatan
+              - name: meals
+                label: Makan
+                type: string
+              - name: stay
+                label: Menginap
+                type: string
+          - name: inclusions
+            label: Sudah termasuk
+            type: string
+            list: true
+          - name: exclusions
+            label: Belum termasuk
+            type: string
+            list: true
+          - name: highSeasonNote
+            label: Tanggal musim ramai
+            type: text
+            description: 'Contoh: 15 Jul-31 Agu dan 20 Des-5 Jan. Tampil di bawah tabel harga.'
+          - name: imageAlt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto (untuk pembaca layar dan Google).
+          - name: body
+            label: Isi
+            type: rich-text
+          - name: needsReview
+            label: Terjemahan otomatis, perlu dicek
+            type: boolean
+            default: false
+            description: Dinyalakan otomatis oleh terjemah AI. Matikan setelah kamu cek, supaya tidak ditimpa lagi.
+          - name: srcDigest
+            hidden: true
+            label: Penanda terjemahan (otomatis)
+            type: string
+            description: Diisi otomatis. Jangan diubah.
+  - name: tours-id
+    label: 'Paket: Teks ID'
+    type: collection
+    path: src/content/tours
+    format: yaml
+    filename: '{primary}.yml'
+    view:
+      primary: slug
+      fields:
+        - code
+        - destination
+      sort:
+        - order
+      order: asc
+    fields:
+      - name: slug
+        hidden: true
+        label: Alamat (slug)
+        type: string
+        required: true
+        description: 'Huruf kecil dan tanda hubung, contoh: bali-essentials. Jadi alamat halaman dan tidak bisa diganti setelah dibuat.'
+      - name: code
+        hidden: true
+        label: Kode paket
+        type: string
+        required: true
+        description: 'Contoh: BAL-01'
+      - name: destination
+        hidden: true
+        label: Destinasi
+        type: select
+        required: true
+        options:
+          values:
+            - value: bali
+              label: Bali
+            - value: lombok
+              label: Lombok
+            - value: labuan-bajo
+              label: Labuan Bajo
+            - value: yogyakarta
+              label: Yogyakarta
+            - value: surabaya
+              label: Surabaya
+            - value: jakarta-bandung
+              label: Jakarta-Bandung
+      - name: image
+        hidden: true
+        label: Foto utama
+        type: image
+        description: Satu foto untuk EN dan ID. Unggah atau pilih foto. Ukuran asli tidak apa-apa.
+      - name: days
+        hidden: true
+        label: Jumlah hari
+        type: number
+        required: true
+        options:
+          min: 1
+      - name: nights
+        hidden: true
+        label: Jumlah malam
+        type: number
+        required: true
+        options:
+          min: 0
+      - name: order
+        hidden: true
+        label: Urutan tampil
+        type: number
+        required: true
+        options:
+          min: 1
+      - name: priceIDR
+        hidden: true
+        label: Harga cadangan per orang (Rp)
+        type: number
+        required: true
+        description: Hanya dipakai kalau paket belum punya tabel harga (CSV). Angka saja.
+        options:
+          min: 1
+      - name: priceIsDraft
+        hidden: true
+        label: Harga masih draf?
+        type: boolean
+        default: true
+        description: Dipakai bersama harga cadangan.
+      - name: minPax
+        hidden: true
+        label: 'Dasar harga cadangan: jumlah peserta'
+        type: number
+        default: 2
+        options:
+          min: 1
+      - name: pricing
+        hidden: true
+        label: Harga dan hotel
+        type: object
+        description: Angka harga ada di file src/data/pricing/<alamat-paket>.csv. Di sini hanya data hotel dan pilihan harga "mulai dari".
+        fields:
+          - name: validUntil
+            label: Harga berlaku sampai
+            type: date
+          - name: leadTier
+            label: Tier untuk harga "mulai dari"
+            type: select
+            options:
+              values:
+                - value: '2'
+                  label: 2 dewasa
+                - value: '3'
+                  label: 3 dewasa
+                - value: 4-5
+                  label: 4-5 dewasa
+                - value: 6-7
+                  label: 6-7 dewasa
+                - value: 8-9
+                  label: 8-9 dewasa
+                - value: 10-14
+                  label: 10-14 dewasa
+                - value: 15+
+                  label: 15+ dewasa
+          - name: leadHotel
+            label: Hotel untuk harga "mulai dari"
+            type: string
+            description: 'Isi dengan ID salah satu hotel di bawah, contoh: hotel-a'
+          - name: hotels
+            label: Hotel
+            type: object
+            list: true
+            description: Maksimal 10. ID harus sama dengan kolom hotel di file CSV.
+            fields:
+              - name: id
+                label: ID hotel
+                type: string
+                description: 'Huruf kecil dan tanda hubung, contoh: hotel-a'
+              - name: name
+                label: Nama hotel
+                type: string
+              - name: stars
+                label: Bintang
+                type: number
+                options:
+                  min: 1
+                  max: 5
+              - name: area
+                label: Area
+                type: string
+              - name: highSeason
+                label: High season surcharge per orang (Rp)
+                type: number
+                options:
+                  min: 0
+      - name: en
+        hidden: true
+        label: Teks Inggris (EN)
+        type: object
+        description: Isi satu bahasa saja untuk terjemahan otomatis (kosongkan Nama/Judul di bahasa lainnya).
+        fields:
+          - name: title
+            label: Nama paket
+            type: string
+          - name: summary
+            label: Ringkasan
+            type: text
+            description: Maksimal 160 karakter. Tampil di kartu paket dan Google.
+            options:
+              maxlength: 160
+          - name: priceNote
+            label: Catatan harga
+            type: string
+          - name: itinerary
+            label: Itinerary
+            type: object
+            list: true
+            description: Satu entri per hari. Jumlahnya harus sama dengan "Jumlah hari".
+            fields:
+              - name: title
+                label: Judul hari
+                type: string
+              - name: plan
+                label: Rencana hari ini
+                type: string
+                list: true
+                description: Satu baris per kegiatan
+              - name: meals
+                label: Makan
+                type: string
+              - name: stay
+                label: Menginap
+                type: string
+          - name: inclusions
+            label: Sudah termasuk
+            type: string
+            list: true
+          - name: exclusions
+            label: Belum termasuk
+            type: string
+            list: true
+          - name: highSeasonNote
+            label: Tanggal musim ramai
+            type: text
+            description: 'Contoh: 15 Jul-31 Agu dan 20 Des-5 Jan. Tampil di bawah tabel harga.'
           - name: imageAlt
             label: Deskripsi foto
             type: string
@@ -315,6 +967,10 @@ content:
             label: Belum termasuk
             type: string
             list: true
+          - name: highSeasonNote
+            label: Tanggal musim ramai
+            type: text
+            description: 'Contoh: 15 Jul-31 Agu dan 20 Des-5 Jan. Tampil di bawah tabel harga.'
           - name: imageAlt
             label: Deskripsi foto
             type: string
@@ -332,24 +988,6 @@ content:
             label: Penanda terjemahan (otomatis)
             type: string
             description: Diisi otomatis. Jangan diubah.
-      - name: priceIDR
-        label: Harga cadangan per orang (Rp)
-        type: number
-        required: true
-        description: "Hanya dipakai kalau paket belum punya tabel harga (CSV). Angka saja."
-        options:
-          min: 1
-      - name: priceIsDraft
-        label: Harga masih draf?
-        type: boolean
-        default: true
-        description: Dipakai bersama harga cadangan.
-      - name: minPax
-        label: "Dasar harga cadangan: jumlah peserta"
-        type: number
-        default: 2
-        options:
-          min: 1
   - name: stories-en
     label: Travel Stories (EN)
     type: collection
@@ -404,8 +1042,9 @@ content:
       - name: tags
         label: Tag
         type: string
-        list: true
+        description: "Pisahkan dengan koma, contoh: bali, tips perjalanan"
       - name: ogImage
+        hidden: true
         label: Gambar share (opsional)
         type: string
         description: Path gambar, mis. /og/default.jpg. Biarkan kosong kalau belum ada.
@@ -490,8 +1129,9 @@ content:
       - name: tags
         label: Tag
         type: string
-        list: true
+        description: "Pisahkan dengan koma, contoh: bali, tips perjalanan"
       - name: ogImage
+        hidden: true
         label: Gambar share (opsional)
         type: string
         description: Path gambar, mis. /og/default.jpg. Biarkan kosong kalau belum ada.
@@ -528,27 +1168,19 @@ content:
     path: src/data/home.json
     format: json
     fields:
-      - name: heroImage
-        label: Foto utama halaman depan
-        type: image
-        description: Foto besar di atas halaman depan.
-      - name: heroAlt
-        label: Deskripsi foto
-        type: string
-        description: Satu kalimat tentang isi foto.
-      - name: heroImage2
-        label: Foto utama ke-2 (opsional)
-        type: image
-        description: Jika diisi, hero menjadi carousel. Foto 1600 px lebar atau lebih.
-      - name: heroAlt2
-        label: Deskripsi foto ke-2
-        type: string
-      - name: heroImage3
-        label: Foto utama ke-3 (opsional)
-        type: image
-      - name: heroAlt3
-        label: Deskripsi foto ke-3
-        type: string
+      - name: heroSlides
+        label: Foto hero (maksimal 3)
+        type: object
+        list: true
+        description: Foto besar di atas halaman depan. Jika lebih dari satu, tampil sebagai carousel. Pakai foto 1600 px lebar atau lebih. Hanya 3 pertama yang dipakai.
+        fields:
+          - name: image
+            label: Foto
+            type: image
+          - name: alt
+            label: Deskripsi foto
+            type: string
+            description: Satu kalimat tentang isi foto.
       - name: ctaImage
         label: Foto bagian penutup (ajakan WhatsApp)
         type: image

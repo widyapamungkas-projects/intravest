@@ -14,12 +14,10 @@ const { locale } = Astro.props;
 const c = homeCopy[locale];
 const u = homeUiCopy[locale].hero;
 // The dashboard drops fields left empty, so every field is optional.
-const h = homeJson as Record<string, string | undefined>;
-const slides = [
-  { src: h.heroImage, alt: h.heroAlt },
-  { src: h.heroImage2, alt: h.heroAlt2 },
-  { src: h.heroImage3, alt: h.heroAlt3 },
-].filter((s) => s.src) as { src: string; alt?: string }[];
+const h = homeJson as { heroSlides?: { image?: string; alt?: string }[]; heroImage?: string; heroAlt?: string };
+// A list in the dashboard ("Foto hero", up to 3). The old single-photo fields still work if the list is empty.
+const listed = (h.heroSlides ?? []).map((s) => ({ src: s.image, alt: s.alt }));
+const slides = (listed.length ? listed : [{ src: h.heroImage, alt: h.heroAlt }]).filter((s) => s.src).slice(0, 3) as { src: string; alt?: string }[];
 const many = slides.length > 1;
 ---
 

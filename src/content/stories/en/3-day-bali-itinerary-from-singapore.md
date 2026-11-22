@@ -3,7 +3,7 @@ title: "3 Days in Bali: An Itinerary for First-Timers from Singapore"
 description: "A realistic 3-day Bali itinerary around Ubud for first-timers flying in from Singapore, with timing that leaves room to breathe."
 date: 2026-11-05
 category: "bali"
-tags: ["bali itinerary", "first time in bali", "ubud", "from singapore"]
+tags: "bali itinerary, first time in bali, ubud, from singapore"
 ogImage: "/og/placeholder.jpg"
 image: /src/assets/images/dsc07461-1.jpg
 imageAlt: "A white vintage VW car parked beside a rice field in Bali"

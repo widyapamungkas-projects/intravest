@@ -5,15 +5,7 @@ description: Planning your Bali food budget? Make room for local favourites and
   dining experiences
 date: 2026-11-07
 category: tips
-tags:
-  - Bali Holidays
-  - Bali Travelling
-  - Indonesia Travelling
-  - Indonesia DMC
-  - Indonesia Travel Agent
-  - Indonesia Travel Tips
-  - Bali Travel Tips
-  - Holiday Planning
+tags: "Bali Holidays, Bali Travelling, Indonesia Travelling, Indonesia DMC, Indonesia Travel Agent, Indonesia Travel Tips, Bali Travel Tips, Holiday Planning"
 image: /src/assets/images/simple-seafood-dinner-in-jimbaran.png
 imageAlt: Seafood Dinner Jimbaran
 ---

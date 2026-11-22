@@ -3,7 +3,7 @@ title: "Itinerary Bali 4 Hari yang Realistis dan Worth It"
 description: "Itinerary Bali 4 hari 3 malam yang realistis: satu area per hari, jeda setelah aktivitas berat, dan jadwal yang tidak bikin capek di jalan."
 date: 2026-11-05
 category: "bali"
-tags: ["itinerary bali 4 hari", "liburan bali", "ubud", "tips liburan bali"]
+tags: "itinerary bali 4 hari, liburan bali, ubud, tips liburan bali"
 ogImage: "/og/placeholder.jpg"
 image: /src/assets/images/dsc07461-1.jpg
 imageAlt: "Mobil VW putih di samping sawah di Bali"

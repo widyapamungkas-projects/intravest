@@ -103,10 +103,8 @@ for (const l of ['en', 'id']) {
 const homeFile = path.join(src, 'data', 'home.json');
 if (fs.existsSync(homeFile)) {
   const h = JSON.parse(fs.readFileSync(homeFile, 'utf8'));
-  checkImage('Halaman Depan (hero)', h.heroImage, h.heroAlt);
-  checkImage('Halaman Depan (hero 2)', h.heroImage2, h.heroAlt2);
-  checkImage('Halaman Depan (hero 3)', h.heroImage3, h.heroAlt3);
-  checkImage('Halaman Depan (Kenapa Intravest)', h.whyImage, h.whyAlt);
+  const slides = h.heroSlides?.length ? h.heroSlides : [{ image: h.heroImage, alt: h.heroAlt }];
+  slides.forEach((sl, i) => checkImage(`Halaman Depan (foto hero ${i + 1})`, sl.image, sl.alt));
   checkImage('Halaman Depan (penutup)', h.ctaImage, h.ctaAlt);
 }
 
