@@ -1278,3 +1278,5 @@ content:
           - name: threads
             label: Threads
             type: string
+
+# Config revision: tours split into general / EN / ID menus.
