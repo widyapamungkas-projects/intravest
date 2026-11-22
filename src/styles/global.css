@@ -114,8 +114,10 @@
   --text-5xl: 3rem;
 
   --radius-sm: 0.375rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.5rem;
 
   --shadow-raised: var(--shadow-raised);
   --shadow-floating: var(--shadow-floating);

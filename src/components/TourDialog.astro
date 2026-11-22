@@ -23,7 +23,8 @@ const photo = await photoOf('tours', entry);
 const base = tourCopy[locale].page.waMessage(d.code, d.title, code);
 const pricing = getPricing(slug, d);
 const pc = pricingCopy[locale];
-const tabBtn = 'min-h-11 border-b-2 border-transparent px-4 text-sm font-bold text-muted hover:text-text aria-selected:border-accent aria-selected:text-text';
+const tabBtn = 'inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-sm font-bold border-border bg-surface text-text hover:bg-surface-2 aria-selected:border-navy aria-selected:bg-navy aria-selected:text-white dark:aria-selected:border-sun dark:aria-selected:bg-surface-2 dark:aria-selected:text-sun';
+const tabHot = 'inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-sm font-bold border-accent bg-accent-soft text-accent-hover hover:bg-accent-soft aria-selected:bg-accent aria-selected:text-on-accent dark:text-accent dark:aria-selected:text-on-accent';
 const field = 'mt-1 w-full min-h-10 rounded-xl border border-border bg-surface px-3 text-sm text-text placeholder:text-muted';
 const lbl = 'block text-xs font-extrabold uppercase tracking-wider text-muted';
 ---
@@ -35,10 +36,10 @@ const lbl = 'block text-xs font-extrabold uppercase tracking-wider text-muted';
   </Fragment>
   <div data-tabs>
     {pricing && (
-      <div role="tablist" aria-label={pc.tabsLabel} class="sticky top-0 z-10 flex gap-1 overflow-x-auto border-b border-border bg-surface px-4 sm:px-6">
+      <div role="tablist" aria-label={pc.tabsLabel} class="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-border bg-surface px-4 py-2.5 sm:px-6">
         <button type="button" role="tab" data-tab="itinerary" aria-selected="true" class={tabBtn}>{pc.tabs.itinerary}</button>
         <button type="button" role="tab" data-tab="prices" aria-selected="false" class={tabBtn}>{pc.tabs.prices}</button>
-        <button type="button" role="tab" data-tab="calc" aria-selected="false" class={tabBtn}>{pc.tabs.calc}</button>
+        <button type="button" role="tab" data-tab="calc" aria-selected="false" class={tabHot}>{pc.tabs.calc}</button>
       </div>
     )}
     <div data-tab-panel="itinerary">
