@@ -1,8 +1,8 @@
 slug: bali-active
 code: BAL-02
 destination: bali
-days: 4
-nights: 3
+days: 5
+nights: 4
 order: 2
 priceIDR: 4900000
 priceIsDraft: true
@@ -29,7 +29,7 @@ pricing:
 minPax: 2
 image: /src/assets/images/lava-jeep-tour.png
 en:
-  title: Bali Active
+  title: Bali Active Adventure
   imageAlt: Jeeps driving across a volcanic landscape in Bali
   summary: Four days of sunrise trekking, river rafting, and waterfalls around Ubud, with a rest block after each big activity.
   priceNote: Per person, based on 2 travelers sharing a room.
@@ -57,6 +57,11 @@ en:
         - Free afternoon in Ubud
       meals: Breakfast and lunch
       stay: Ubud
+    - title: Hari bebas
+      plan:
+        - Santai di hotel
+        - Belanja oleh-oleh
+      meals: Sarapan
     - title: Craft villages and departure
       plan:
         - Silverwork in Celuk and wood carving in Mas
@@ -112,6 +117,10 @@ id:
         - Sore bebas di Ubud
       meals: Sarapan dan makan siang
       stay: Ubud
+    - title: Hari bebas
+      plan:
+        - Santai di hotel
+      meals: Sarapan
     - title: Desa kerajinan dan pulang
       plan:
         - Kerajinan perak di Celuk dan ukiran kayu di Mas
