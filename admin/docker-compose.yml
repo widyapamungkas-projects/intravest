@@ -1,0 +1,13 @@
+# Dari root repo:  docker compose -f admin/docker-compose.yml --env-file admin/.env up -d --build
+# Di Portainer: Stacks > Add stack > Repository, compose path admin/docker-compose.yml, isi env di UI.
+services:
+  admin:
+    build: { context: .., dockerfile: admin/Dockerfile }
+    image: intravest-admin:latest
+    restart: unless-stopped
+    env_file: .env
+    environment: { NODE_ENV: production, DATA_DIR: /data }
+    volumes: [ "admin-data:/data" ]
+    ports: [ "127.0.0.1:8787:8787" ]   # hanya lokal; dunia luar lewat Cloudflare Tunnel
+volumes:
+  admin-data:
