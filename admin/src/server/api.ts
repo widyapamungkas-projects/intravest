@@ -76,6 +76,7 @@ export function buildApi(repo: RepoStore) {
         overlay.set(p, text);
         labels.push(`${it.baseSha ? 'update' : 'tambah'} paket ${it.slug}`);
       } else if (it.kind === 'csv') {
+        if (it.text !== null && (typeof it.text !== 'string' || it.text.length > 50_000)) return c.json({ error: 'Isi tabel harga tidak valid.' }, 400);
         const p = csvPath(it.slug);
         changes.push({ path: p, content: it.text, baseSha: it.baseSha });
         overlay.set(p, it.text);
@@ -104,6 +105,12 @@ export function buildApi(repo: RepoStore) {
 /** "CMS: update paket bali-active" untuk satu perubahan; ringkasan jumlah untuk banyak. */
 export function summarize(labels: string[]): string {
   if (labels.length === 1) return labels[0];
+  // paket + tabel harganya: satu judul ("update paket + harga bali-active")
+  const parts = labels.map((l) => l.split(' '));
+  if (parts.length === 2 && parts[0][2] === parts[1][2] && parts[0][1] !== parts[1][1]) {
+    const verb = parts[0][0] === parts[1][0] ? parts[0][0] : 'update';
+    return `${verb} ${parts[0][1]} + ${parts[1][1]} ${parts[0][2]}`;
+  }
   const kinds = new Map<string, number>();
   for (const l of labels) kinds.set(l.split(' ')[0] + ' ' + l.split(' ')[1], (kinds.get(l.split(' ')[0] + ' ' + l.split(' ')[1]) ?? 0) + 1);
   return [...kinds].map(([k, n]) => `${k} ×${n}`).join(', ');

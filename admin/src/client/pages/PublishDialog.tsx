@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api, ApiError } from '../api';
 import { Modal } from '../ui';
 import { useApp } from '../App';
-import { clearDrafts, dropDraft, saveDraft, useDrafts, draftKey } from '../drafts';
+import { clearDrafts, dropDraft, saveDraft, useDrafts, draftKey, draftPath } from '../drafts';
 import { Link } from 'wouter';
 
 type Conflict = { path: string; theirSha: string | null; theirContent: string | null };
@@ -20,7 +20,7 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
   async function publish() {
     setBusy(true); setIssues([]); setConflicts([]);
     try {
-      const items = drafts.map((d) => ({ kind: d.kind, slug: d.slug, data: d.data, baseSha: d.baseSha }));
+      const items = drafts.map((d) => (d.kind === 'tour' ? { kind: d.kind, slug: d.slug, data: d.data, baseSha: d.baseSha } : { kind: d.kind, slug: d.slug, text: d.text, baseSha: d.baseSha }));
       const r = await api('/publish', { body: { items, note: note.trim() || undefined } });
       clearDrafts(drafts.map((d) => draftKey(d.kind, d.slug)));
       setDone({ subject: r.subject, warnings: r.warnings ?? [], commit: r.commit });
@@ -35,13 +35,13 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
 
   const slugOf = (path: string) => path.split('/').pop()!.replace(/\.\w+$/, '');
   function keepMine(c: Conflict) {
-    const d = drafts.find((x) => slugOf(c.path) === x.slug);
+    const d = drafts.find((x) => draftPath(x) === c.path);
     if (d) saveDraft({ ...d, baseSha: c.theirSha });
     setConflicts((l) => l.filter((x) => x !== c));
     toast('Perubahanmu akan menimpa versi di repo saat dipublikasikan.');
   }
   function useTheirs(c: Conflict) {
-    const d = drafts.find((x) => slugOf(c.path) === x.slug);
+    const d = drafts.find((x) => draftPath(x) === c.path);
     if (d) dropDraft(d.kind, d.slug);
     setConflicts((l) => l.filter((x) => x !== c));
     toast('Perubahanmu untuk file itu dibuang, versi terbaru dipakai.');
@@ -65,8 +65,8 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
           <ul className="mt-4 divide-y divide-line rounded-lg border border-line">
             {drafts.map((d) => (
               <li key={draftKey(d.kind, d.slug)} className="flex items-center gap-3 px-3 py-2.5 text-sm">
-                <span className="rounded bg-brand-soft px-1.5 py-0.5 text-xs text-brand-ink">{d.baseSha ? 'diubah' : 'baru'}</span>
-                <span className="min-w-0 flex-1 truncate">Paket <b>{d.slug}</b></span>
+                <span className="rounded bg-brand-soft px-1.5 py-0.5 text-xs text-brand-ink">{d.kind === 'csv' && d.text === null ? 'dihapus' : d.baseSha ? 'diubah' : 'baru'}</span>
+                <span className="min-w-0 flex-1 truncate">{d.kind === 'csv' ? (d.text === null ? 'Hapus tabel harga' : 'Tabel harga') : 'Paket'} <b>{d.slug}</b></span>
                 <Link href={`/paket/${d.slug}`} className="text-brand underline" onClick={onClose}>buka</Link>
                 <button className="text-muted underline" onClick={() => confirm(`Buang perubahan di "${d.slug}"?`) && dropDraft(d.kind, d.slug)}>buang</button>
               </li>

@@ -2,7 +2,12 @@ import { useSyncExternalStore } from 'react';
 
 // Perubahan belum dipublikasikan disimpan di browser ini (localStorage), BUKAN di repo.
 // Satu tombol Publish menggabungkan semuanya jadi satu commit => satu build Netlify.
-export type Draft = { kind: 'tour'; slug: string; data: Record<string, any> | null; baseSha: string | null; updatedAt: number };
+export type Draft =
+  | { kind: 'tour'; slug: string; data: Record<string, any> | null; baseSha: string | null; updatedAt: number }
+  | { kind: 'csv'; slug: string; text: string | null; baseSha: string | null; updatedAt: number }; // tabel harga; null = hapus berkas
+
+/** Path berkas di repo yang diubah draf ini (dipakai mencocokkan konflik). */
+export const draftPath = (d: Pick<Draft, 'kind' | 'slug'>) => (d.kind === 'tour' ? `src/content/tours/${d.slug}.yml` : `src/data/pricing/${d.slug}.csv`);
 
 const KEY = 'cms:drafts:v1';
 let cache: Record<string, Draft> | null = null;

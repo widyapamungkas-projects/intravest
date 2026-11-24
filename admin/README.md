@@ -2,7 +2,7 @@
 
 Dashboard konten untuk situs Intravest. Aplikasi terpisah dari situs publik: membaca dan menulis file konten di repo lewat GitHub API, dalam **satu commit per "Publikasikan"**.
 
-Status: **Tahap A** (login, daftar dan editor paket, publish, konflik). Berikutnya: B editor harga, C destinasi + story, D gambar + pengaturan, E riwayat/undo.
+Status: **Tahap A** (login, daftar dan editor paket, publish, konflik) dan **Tahap B** (editor harga) selesai. Berikutnya: C destinasi + story, D gambar + pengaturan, E riwayat/undo.
 
 ## Cara kerja singkat
 - Perubahan disimpan sementara **di browser** (draf). Tidak ada commit sampai tombol **Publikasikan**.
@@ -10,6 +10,12 @@ Status: **Tahap A** (login, daftar dan editor paket, publish, konflik). Berikutn
 - Sebelum commit, server memvalidasi (skema zod + `scripts/check-content.mjs` asli dari repo). Konten yang akan menggagalkan `npm run build` ditolak dengan pesan jelas.
 - Server selalu membandingkan SHA file dengan versi yang kamu buka. Kalau ada yang mengubah file yang sama (commit manual, bot terjemahan), dashboard **tidak menimpa** dan menawarkan pilihan.
 - Token GitHub hanya ada di server (env). Tidak pernah dikirim ke browser.
+
+## Editor harga (tab Harga)
+- Grid hotel × tier × tipe kamar. Ketik langsung, atau salin blok sel dari Excel/Google Sheets, klik sel tujuan, tempel. Tombol "Tempel dari Excel / Sheets" untuk HP atau tabel lengkap (kolom `hotel, tier, single, twin, triple, child_twin, cwb, cnb`).
+- Pengaturan: berlaku sampai, hotel + tier "Mulai dari" (dengan pratinjau harga yang tampil), tambahan musim ramai per hotel, maksimal 10 hotel.
+- Satu Publikasikan menulis `tours/<slug>.yml` dan `pricing/<slug>.csv` dalam satu commit. Sel kosong atau tidak valid menahan publish.
+- Aturan validasi dicek ulang di server memakai `scripts/check-content.mjs` dan `src/pricing-core.mjs` asli situs.
 
 ## Login
 Email + password, lalu kode OTP 6 digit lewat email (Resend). Opsi "percayai perangkat 30 hari" melewati OTP, password tetap diminta. Password di-hash scrypt, sesi cookie `HttpOnly` + `SameSite=Strict`, batas percobaan per IP dan email, akun terkunci 15 menit setelah 5 kali salah. Maksimal 3 admin (`MAX_ADMINS`).
@@ -52,12 +58,13 @@ Password ditanya di terminal (tidak tampil). Minimal 10 karakter, ada huruf dan 
 cd admin && npm install
 LOCAL_REPO=/path/ke/clone/intravest npm run dev   # mode lokal: tanpa GitHub, commit ke clone itu
 npm run cli -- add-admin saya@contoh.com "Saya"
-npm test            # 12 tes: auth, konflik, publish (git lokal + GitHub tiruan), round-trip YAML 3 paket asli
+npm test            # 34 tes: auth, konflik, publish (git lokal + GitHub tiruan), round-trip YAML 3 paket asli
 npm run typecheck
+npm run test:build  # opsional: publish tiruan lalu `npm run build` situs asli (butuh `npm ci` di root)
 ```
 Tanpa `RESEND_API_KEY` (dan bukan production), kode OTP dicetak di log server.
 
 ## Catatan teknis
 - Penulisan GitHub: Git Data API (blob → tree → commit → update ref tanpa force). Konflik = SHA file yang kamu ubah sudah berbeda; file lain yang bergeser tidak menghalangi.
 - Skema paket ada di `src/shared/tour.ts` (cermin `src/content.config.ts`). Kalau skema situs berubah, ubah juga file itu; `check-content.mjs` dan `npm run build` tetap penjaga akhir.
-- Belum ada di Tahap A: hapus paket, editor harga, unggah foto, destinasi, story, riwayat/undo.
+- Belum ada: hapus paket, unggah foto, destinasi, story, riwayat/undo.

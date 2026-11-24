@@ -6,6 +6,8 @@ import { Chip, Field, LinesField, Toggle } from '../ui';
 import { Itinerary, type Day } from './Itinerary';
 import { useApp } from '../App';
 import { dropDraft, getDraft, saveDraft } from '../drafts';
+import { checkPricing, csvToGrid, gridToCsv, type Grid } from '../../shared/pricing';
+import { PricingEditor, type Pricing } from './PricingEditor';
 
 type Data = Record<string, any>;
 type Tab = 'umum' | 'en' | 'id' | 'harga';
@@ -31,10 +33,14 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
   const [tab, setTab] = useState<Tab>('umum');
   const [loadErr, setLoadErr] = useState('');
   const loaded = useRef(false);
+  // tabel harga: grid di memori, jadi CSV hanya saat disimpan. origCsv = CSV repo yang sudah dinormalkan (pembanding "berubah atau tidak").
+  const [grid, setGrid] = useState<Grid | null>(null);
+  const [gridNotes, setGridNotes] = useState<string[]>([]);
+  const [origCsv, setOrigCsv] = useState<string | null>(null);
 
   // --- muat: draf lokal lebih dulu, kalau ada; kalau tidak, versi di repo ---
   useEffect(() => {
-    loaded.current = false; setData(null); setLoadErr(''); setTab('umum');
+    loaded.current = false; setData(null); setLoadErr(''); setTab('umum'); setGrid(null); setGridNotes([]); setOrigCsv(null);
     if (isNew) {
       const nextOrder = 1;
       setOrig(null);
@@ -45,21 +51,45 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
     api(`/tours/${slugProp}`).then((r) => {
       setOrig({ data: r.data, sha: r.sha, csv: r.csv });
       const d = getDraft('tour', slugProp!);
-      setData(d?.data ?? r.data); loaded.current = true;
+      const cd = getDraft('csv', slugProp!);
+      const dd = (d && d.kind === 'tour' ? d.data : null) ?? r.data;
+      setData(dd);
+      const repoHotels: string[] = (r.data.pricing?.hotels ?? []).map((h: any) => h.id);
+      setOrigCsv(r.csv && r.data.pricing ? gridToCsv(csvToGrid(r.csv.text, repoHotels).grid, repoHotels.map((id) => ({ id }))) : null);
+      const text = cd && cd.kind === 'csv' ? cd.text : r.csv?.text ?? null;
+      loadGrid(dd, text);
+      loaded.current = true;
     }).catch((e: ApiError) => {
       const d = getDraft('tour', slugProp!);
-      if (e.status === 404 && d) { setData(d.data); loaded.current = true; } else setLoadErr(e.message);
+      if (e.status === 404 && d && d.kind === 'tour') { setData(d.data); loadGrid(d.data, null); loaded.current = true; } else setLoadErr(e.message);
     });
   }, [slugProp, isNew]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function loadGrid(d: Data | null, text: string | null) {
+    const hotels: string[] = (d?.pricing?.hotels ?? []).map((h: any) => h.id);
+    if (!d?.pricing) { setGrid(null); return; }
+    const r = csvToGrid(text ?? '', hotels);
+    setGrid(r.grid);
+    setGridNotes([
+      ...(r.orphans.length ? [`Baris harga untuk hotel yang tidak ada di daftar hotel (${r.orphans.join(', ')}) tidak ditampilkan dan akan dibuang saat dipublikasikan.`] : []),
+      ...r.problems.map((p) => `Berkas harga: ${p}.`),
+    ]);
+  }
+
+  // CSV yang akan ditulis (null = paket tanpa tabel harga)
+  const csvText = useMemo(() => (grid && data?.pricing ? gridToCsv(grid, data.pricing.hotels ?? []) : null), [grid, data?.pricing]);
+  const csvDirty = csvText !== origCsv;
 
   // --- simpan otomatis ke draf lokal (bukan ke repo) ---
   useEffect(() => {
     if (!data || !loaded.current) return;
     const key = isNew ? slug : slugProp!;
     if (!key || !SLUG_RE.test(key)) return;
-    if (orig && same(data, orig.data)) { dropDraft('tour', key); return; }
-    saveDraft({ kind: 'tour', slug: key, data, baseSha: orig?.sha ?? null, updatedAt: Date.now() });
-  }, [data, slug]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (orig && same(data, orig.data)) dropDraft('tour', key);
+    else saveDraft({ kind: 'tour', slug: key, data, baseSha: orig?.sha ?? null, updatedAt: Date.now() });
+    if (!csvDirty) dropDraft('csv', key);
+    else saveDraft({ kind: 'csv', slug: key, text: csvText, baseSha: orig?.csv?.sha ?? null, updatedAt: Date.now() });
+  }, [data, slug, csvText, csvDirty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = useCallback((patch: Data) => setData((d) => ({ ...d, ...patch })), []);
   const setLoc = useCallback((l: 'en' | 'id', patch: Data) => setData((d) => ({ ...d, [l]: { ...(d?.[l] ?? {}), ...patch } })), []);
@@ -85,13 +115,20 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
   }, []);
 
   const clean = useMemo(() => (data ? cleanTour({ ...data, slug: slug || 'x' }) : null), [data, slug]);
+  const priceCheck = useMemo(() => {
+    const p = data?.pricing as Pricing | undefined;
+    if (!p || !grid) return null;
+    return checkPricing({ grid, hotels: (p.hotels ?? []).map((h) => ({ ...h, name: h.name ?? '', highSeason: h.highSeason ?? 0 })), leadHotel: p.leadHotel, leadTier: p.leadTier, validUntil: p.validUntil });
+  }, [data?.pricing, grid]);
   const issues: Issue[] = useMemo(() => {
     if (!clean) return [];
     const v = validateTour(clean);
     const out = v.ok ? [] : [...v.issues];
+    // isian tabel harga (sel kosong dll) ikut menahan publish; pesannya dibuat checkPricing
+    for (const m of priceCheck?.errors ?? []) if (!out.some((i) => i.message === m)) out.push({ path: ['pricing', '_tabel'], message: m });
     if (isNew && !SLUG_RE.test(slug)) out.unshift({ path: ['slug'], message: 'Alamat (slug) wajib: huruf kecil, angka, dan tanda hubung.' });
     return out;
-  }, [clean, slug, isNew]);
+  }, [clean, slug, isNew, priceCheck]);
   const byTab = (t: Tab) => issues.filter((i) => tabOf(i.path).valueOf() === t);
   const errFor = (...p: (string | number)[]) => issues.find((i) => i.path.join('.') === p.join('.'))?.message;
 
@@ -99,7 +136,7 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
   if (!data) return <div className="text-muted">Memuat…</div>;
 
   const title = data.en?.title || data.id?.title || (isNew ? 'Paket baru' : slugProp);
-  const dirty = !orig || !same(data, orig.data);
+  const dirty = !orig || !same(data, orig.data) || csvDirty;
 
   return (
     <div>
@@ -175,7 +212,8 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
               {data.priceIDR ? <span className="hint block">{rupiah(data.priceIDR)}</span> : null}
             </Field>
           </div>
-          <PricingReadOnly data={data} csv={orig?.csv ?? null} />
+          <PricingEditor pricing={data.pricing} grid={grid} check={priceCheck} notes={gridNotes} hadTable={!!orig?.csv}
+            onChange={(p, g) => { set({ pricing: p }); setGrid(g); }} />
         </div>
       )}
 
@@ -193,7 +231,7 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-panel/95 px-4 py-3 backdrop-blur md:sticky md:mt-6 md:rounded-xl md:border md:px-5">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <div className="hidden min-w-0 flex-1 text-sm text-muted sm:block">{dirty ? 'Tersimpan otomatis di browser ini. Belum masuk ke situs.' : 'Tidak ada perubahan.'}</div>
-          {dirty && orig && <button className="btn-ghost" onClick={() => { if (confirm('Buang semua perubahan paket ini?')) { dropDraft('tour', slugProp!); setData(orig.data); } }}>Buang</button>}
+          {dirty && orig && <button className="btn-ghost" onClick={() => { if (confirm('Buang semua perubahan paket ini?')) { dropDraft('tour', slugProp!); dropDraft('csv', slugProp!); setData(orig.data); loadGrid(orig.data, orig.csv?.text ?? null); } }}>Buang</button>}
           <button className="btn-primary flex-1 sm:flex-none" disabled={!dirty || !!issues.length}
             onClick={() => {
               if (isNew) { saveDraft({ kind: 'tour', slug, data, baseSha: null, updatedAt: Date.now() }); nav(`/paket/${slug}`, { replace: true }); }
@@ -252,31 +290,6 @@ function LocaleTab({ l, data, setLoc, editItin, errFor }: { l: 'en' | 'id'; data
       <div className="card space-y-5 p-5">
         <Field label="Cerita singkat paket" hint="Teks pengantar di halaman paket. Boleh beberapa paragraf, pisahkan dengan baris kosong."><textarea className="field" rows={7} value={x.body ?? ''} onChange={(e) => setLoc(l, { body: e.target.value })} /></Field>
         <Toggle checked={!!x.needsReview} onChange={(v) => setLoc(l, { needsReview: v })} label="Perlu dicek" hint="Nyalakan kalau teks ini hasil terjemahan otomatis dan belum dibaca orang. Matikan setelah dicek." />
-      </div>
-    </div>
-  );
-}
-
-function PricingReadOnly({ data, csv }: { data: Data; csv: { text: string; sha: string } | null }) {
-  const p = data.pricing;
-  if (!p) return <div className="card p-5 text-sm text-muted">Paket ini belum punya tabel harga bertingkat. Harga memakai angka tunggal di atas.</div>;
-  const rows = (csv?.text ?? '').trim().split(/\r?\n/).map((r) => r.split(','));
-  return (
-    <div className="card p-5">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold">Tabel harga</h2>
-        <Chip tone="gray">Hanya lihat. Editor tabel menyusul di Tahap B</Chip>
-      </div>
-      <dl className="mb-4 grid gap-2 text-sm sm:grid-cols-3">
-        <div><dt className="text-muted">Berlaku sampai</dt><dd>{p.validUntil ?? '-'}</dd></div>
-        <div><dt className="text-muted">"Mulai dari" memakai</dt><dd>{p.hotels?.find((h: any) => h.id === p.leadHotel)?.name ?? p.leadHotel} · tier {p.leadTier}</dd></div>
-        <div><dt className="text-muted">Hotel</dt><dd>{p.hotels?.length ?? 0}</dd></div>
-      </dl>
-      <div className="-mx-5 overflow-x-auto px-5">
-        <table className="w-full min-w-[640px] text-sm tabular-nums">
-          <thead><tr className="border-b border-line text-left text-muted">{(rows[0] ?? []).map((h) => <th key={h} className="px-2 py-2 font-medium">{h}</th>)}</tr></thead>
-          <tbody>{rows.slice(1).map((r, i) => <tr key={i} className="border-b border-line/60">{r.map((c, k) => <td key={k} className="px-2 py-1.5">{k > 1 ? Number(c).toLocaleString('id-ID') : c}</td>)}</tr>)}</tbody>
-        </table>
       </div>
     </div>
   );
