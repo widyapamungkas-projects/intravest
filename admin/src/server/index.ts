@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
@@ -42,7 +43,9 @@ export function makeRepo(): RepoStore {
   return new GitHubRepo({ token: config.github.token, repo: config.github.repo, branch: config.github.branch });
 }
 
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('server/index.ts') || process.argv[1]?.endsWith('server/index.js')) {
+// Penentu "dijalankan langsung": harus benar di Windows juga (argv memakai backslash, import.meta.url memakai file:///C:/...).
+const entry = process.argv[1] ? path.resolve(process.argv[1]) : '';
+if (entry === fileURLToPath(import.meta.url) || /server[\\/]index\.(ts|js)$/.test(entry)) {
   const app = buildApp(makeRepo());
   serve({ fetch: app.fetch, port: config.port }, (i) => console.log(`Dashboard Intravest di http://localhost:${i.port} (${config.localRepo ? 'repo lokal' : config.github.repo + '@' + config.github.branch})`));
 }
