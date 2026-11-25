@@ -36,6 +36,7 @@ Salin `.env.example` ke `.env`:
 | `GITHUB_REPO`, `GITHUB_BRANCH` | `widyapamungkas-projects/intravest`, `main` |
 | `RESEND_API_KEY`, `MAIL_FROM` | Kunci Resend dan pengirim dari domain yang sudah diverifikasi di Resend |
 | `MAX_ADMINS` | Default 3 |
+| `DISABLE_OTP` | `1` = lewati kode OTP, login hanya password. Untuk uji lokal. Di production diabaikan kecuali `ALLOW_INSECURE_NO_OTP=1` (tidak disarankan). |
 
 ## Deploy di mini PC (Docker + Cloudflare Tunnel)
 1. `cp admin/.env.example admin/.env`, isi nilainya.
@@ -64,11 +65,11 @@ Password ditanya di terminal (tidak tampil). Minimal 10 karakter, ada huruf dan 
 cd admin && npm install
 LOCAL_REPO=/path/ke/clone/intravest npm run dev   # mode lokal: tanpa GitHub, commit ke clone itu
 npm run cli -- add-admin saya@contoh.com "Saya"
-npm test            # 56 tes: auth, konflik, publish (git lokal + GitHub tiruan), round-trip YAML 3 paket asli
+npm test            # 57 tes: auth, konflik, publish (git lokal + GitHub tiruan), round-trip YAML 3 paket asli
 npm run typecheck
 npm run test:build  # opsional: publish tiruan lalu `npm run build` situs asli (butuh `npm ci` di root)
 ```
-Tanpa `RESEND_API_KEY` (dan bukan production), kode OTP dicetak di log server.
+Tanpa `RESEND_API_KEY` (dan bukan production), kode OTP dicetak di log server. Atau set `DISABLE_OTP=1` supaya login cukup password.
 
 ## Catatan teknis
 - Penulisan GitHub: Git Data API (blob → tree → commit → update ref tanpa force). Konflik = SHA file yang kamu ubah sudah berbeda; file lain yang bergeser tidak menghalangi.

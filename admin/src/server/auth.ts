@@ -185,6 +185,11 @@ authRoutes.post('/login', async (c) => {
     }
   }
 
+  if (config.disableOtp) { // mode uji: password saja, tanpa kode
+    startSession(c, user.id);
+    return c.json({ step: 'done', user: { email: user.email, name: user.name } });
+  }
+
   const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, '0');
   const ch = token();
   db.prepare('DELETE FROM challenges WHERE user_id = ?').run(user.id);

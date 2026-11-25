@@ -46,6 +46,8 @@ export function makeRepo(): RepoStore {
 // Penentu "dijalankan langsung": harus benar di Windows juga (argv memakai backslash, import.meta.url memakai file:///C:/...).
 const entry = process.argv[1] ? path.resolve(process.argv[1]) : '';
 if (entry === fileURLToPath(import.meta.url) || /server[\\/]index\.(ts|js)$/.test(entry)) {
+  if (config.disableOtp) console.warn('\n!! OTP DIMATIKAN (DISABLE_OTP=1): login hanya memakai password. Jangan dipakai untuk dashboard yang terbuka ke internet.\n');
+  if (config.disableOtpRefused) console.warn('\n!! DISABLE_OTP=1 diabaikan karena NODE_ENV=production. Untuk memaksa, tambahkan ALLOW_INSECURE_NO_OTP=1 (tidak disarankan).\n');
   const app = buildApp(makeRepo());
   serve({ fetch: app.fetch, port: config.port }, (i) => console.log(`Dashboard Intravest di http://localhost:${i.port} (${config.localRepo ? 'repo lokal' : config.github.repo + '@' + config.github.branch})`));
 }
