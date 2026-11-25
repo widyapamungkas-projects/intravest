@@ -33,6 +33,7 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
   const [tab, setTab] = useState<Tab>('umum');
   const [loadErr, setLoadErr] = useState('');
   const loaded = useRef(false);
+  const lastKey = useRef<string | null>(null);
   // tabel harga: grid di memori, jadi CSV hanya saat disimpan. origCsv = CSV repo yang sudah dinormalkan (pembanding "berubah atau tidak").
   const [grid, setGrid] = useState<Grid | null>(null);
   const [gridNotes, setGridNotes] = useState<string[]>([]);
@@ -85,6 +86,9 @@ export function TourEditor({ slug: slugProp }: { slug: string | null }) {
     if (!data || !loaded.current) return;
     const key = isNew ? slug : slugProp!;
     if (!key || !SLUG_RE.test(key)) return;
+    // paket baru: slug berubah tiap ketukan, jadi draf dengan slug sebelumnya dibuang (satu paket = satu draf)
+    if (isNew && lastKey.current && lastKey.current !== key) { dropDraft('tour', lastKey.current); dropDraft('csv', lastKey.current); }
+    lastKey.current = key;
     if (orig && same(data, orig.data)) dropDraft('tour', key);
     else saveDraft({ kind: 'tour', slug: key, data, baseSha: orig?.sha ?? null, updatedAt: Date.now() });
     if (!csvDirty) dropDraft('csv', key);

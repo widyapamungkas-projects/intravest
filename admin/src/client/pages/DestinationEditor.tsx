@@ -26,6 +26,7 @@ export function DestinationEditor({ slug: slugProp }: { slug: string | null }) {
   const [loadErr, setLoadErr] = useState('');
   const [deleted, setDeleted] = useState(false);
   const loaded = useRef(false);
+  const lastKey = useRef<string | null>(null);
 
   useEffect(() => {
     loaded.current = false; setData(null); setLoadErr(''); setTab('umum'); setDeleted(false);
@@ -44,6 +45,8 @@ export function DestinationEditor({ slug: slugProp }: { slug: string | null }) {
     if (!data || !loaded.current || deleted) return;
     const key = isNew ? slug : slugProp!;
     if (!key || !SLUG_RE.test(key)) return;
+    if (isNew && lastKey.current && lastKey.current !== key) dropDraft('destination', lastKey.current);
+    lastKey.current = key;
     if (orig && same(data, orig.data)) dropDraft('destination', key);
     else saveDraft({ kind: 'destination', slug: key, data, baseSha: orig?.sha ?? null, updatedAt: Date.now() });
   }, [data, slug, deleted]); // eslint-disable-line react-hooks/exhaustive-deps

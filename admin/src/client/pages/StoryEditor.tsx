@@ -32,6 +32,7 @@ export function StoryEditor({ ref: key }: { ref: { locale: string; slug: string 
   const [loadErr, setLoadErr] = useState('');
   const [deleted, setDeleted] = useState(false);
   const loaded = useRef(false);
+  const lastKey = useRef<string | null>(null);
   const draftKey = `${locale}/${slug}`;
 
   useEffect(() => {
@@ -53,6 +54,8 @@ export function StoryEditor({ ref: key }: { ref: { locale: string; slug: string 
   useEffect(() => {
     if (!fm || !loaded.current || deleted) return;
     if (!SLUG.test(slug)) return;
+    if (isNew && lastKey.current && lastKey.current !== draftKey) dropDraft('story', lastKey.current);
+    lastKey.current = draftKey;
     if (orig && same(fm, orig.fm) && body === orig.body) dropDraft('story', draftKey);
     else saveDraft({ kind: 'story', slug: draftKey, fm, body, baseSha: orig?.sha ?? null, updatedAt: Date.now() });
   }, [fm, body, slug, locale, deleted]); // eslint-disable-line react-hooks/exhaustive-deps

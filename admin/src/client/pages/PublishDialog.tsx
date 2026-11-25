@@ -76,6 +76,7 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
               </li>
             ))}
           </ul>
+          {drafts.length > 1 && <button className="mt-2 text-sm text-muted underline" onClick={() => confirm(`Buang SEMUA ${drafts.length} perubahan yang belum dipublikasikan? Tidak bisa dibatalkan.`) && clearDrafts(drafts.map((d) => draftKey(d.kind, d.slug)))}>Buang semua perubahan</button>}
           <label className="mt-4 block"><span className="label">Catatan <span className="font-normal text-muted">· opsional, masuk ke pesan commit</span></span>
             <input className="field" maxLength={200} value={note} onChange={(e) => setNote(e.target.value)} placeholder="mis. harga Juli diperbarui" /></label>
 
