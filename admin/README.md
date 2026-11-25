@@ -73,4 +73,4 @@ Tanpa `RESEND_API_KEY` (dan bukan production), kode OTP dicetak di log server.
 ## Catatan teknis
 - Penulisan GitHub: Git Data API (blob → tree → commit → update ref tanpa force). Konflik = SHA file yang kamu ubah sudah berbeda; file lain yang bergeser tidak menghalangi.
 - Skema paket ada di `src/shared/tour.ts` (cermin `src/content.config.ts`). Kalau skema situs berubah, ubah juga file itu; `check-content.mjs` dan `npm run build` tetap penjaga akhir.
-- Belum ada: hapus paket, unggah foto, destinasi, story, riwayat/undo.
+- Belum ada: tombol hapus paket, unggah foto, beranda/tentang/pengaturan, riwayat/undo. Panduan mencoba: [CARA-UJI.md](CARA-UJI.md).
