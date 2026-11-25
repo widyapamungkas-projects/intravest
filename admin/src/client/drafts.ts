@@ -4,10 +4,21 @@ import { useSyncExternalStore } from 'react';
 // Satu tombol Publish menggabungkan semuanya jadi satu commit => satu build Netlify.
 export type Draft =
   | { kind: 'tour'; slug: string; data: Record<string, any> | null; baseSha: string | null; updatedAt: number }
-  | { kind: 'csv'; slug: string; text: string | null; baseSha: string | null; updatedAt: number }; // tabel harga; null = hapus berkas
+  | { kind: 'csv'; slug: string; text: string | null; baseSha: string | null; updatedAt: number } // tabel harga; null = hapus berkas
+  | { kind: 'destination'; slug: string; data: Record<string, any> | null; baseSha: string | null; updatedAt: number }
+  | { kind: 'story'; slug: string; fm: Record<string, any> | null; body: string; baseSha: string | null; updatedAt: number }; // slug = "en/nama-artikel"
 
 /** Path berkas di repo yang diubah draf ini (dipakai mencocokkan konflik). */
-export const draftPath = (d: Pick<Draft, 'kind' | 'slug'>) => (d.kind === 'tour' ? `src/content/tours/${d.slug}.yml` : `src/data/pricing/${d.slug}.csv`);
+export const draftPath = (d: Pick<Draft, 'kind' | 'slug'>) => ({
+  tour: `src/content/tours/${d.slug}.yml`,
+  csv: `src/data/pricing/${d.slug}.csv`,
+  destination: `src/content/destinations/${d.slug}.yml`,
+  story: `src/content/stories/${d.slug}.md`,
+})[d.kind];
+
+export const draftHref = (d: Pick<Draft, 'kind' | 'slug'>) => ({ tour: `/paket/${d.slug}`, csv: `/paket/${d.slug}`, destination: `/destinasi/${d.slug}`, story: `/cerita/${d.slug}` })[d.kind];
+export const draftIsDelete = (d: Draft) => (d.kind === 'tour' || d.kind === 'destination' ? d.data === null : d.kind === 'story' ? d.fm === null : d.text === null);
+export const draftNoun = (d: Draft) => ({ tour: 'Paket', csv: 'Tabel harga', destination: 'Destinasi', story: 'Cerita' })[d.kind];
 
 const KEY = 'cms:drafts:v1';
 let cache: Record<string, Draft> | null = null;

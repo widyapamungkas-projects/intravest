@@ -51,3 +51,21 @@ test('publish harga dari dashboard -> npm run build situs lolos dan harga baru t
   const html = fs.readFileSync(path.join(dir, 'dist/en/tours/bali-active/index.html'), 'utf8');
   assert.match(html, /4[.,]321[.,]000/, 'harga baru tampil di halaman paket');
 });
+
+test('publish destinasi + artikel baru dari dashboard -> npm run build lolos dan halaman terbit', { skip: !process.env.RUN_SITE_BUILD, timeout: 600_000 }, async () => {
+  const dir = cloneRepo();
+  fs.symlinkSync(path.join(REPO_ROOT, 'node_modules'), path.join(dir, 'node_modules'), 'dir');
+  const app = buildApp(new LocalGitRepo(dir)); const sid = await login(app);
+  const ds = await (await app.request('/api/destinations/lombok', { headers: { cookie: sid } })).json() as any;
+  ds.data.en.see.push('Baris tambahan dari dashboard (contoh)');
+  const res = await post(app, '/api/publish', { items: [
+    { kind: 'destination', slug: 'lombok', data: ds.data, baseSha: ds.sha },
+    { kind: 'story', locale: 'en', slug: 'artikel-uji-dashboard', fm: { title: 'Artikel uji dashboard (contoh)', description: 'Dibuat lewat dashboard untuk menguji build. Contoh.', date: '2026-11-25', category: 'tips', tags: 'uji, contoh' }, body: 'Paragraf pertama.\n\n## Bagian satu\n\n- poin **tebal**\n- poin dua\n', baseSha: null },
+  ] }, sid);
+  assert.equal(res.status, 200, await res.clone().text());
+  execFileSync('npm', ['run', 'build'], { cwd: dir, stdio: 'pipe', timeout: 540_000 });
+  const story = fs.readFileSync(path.join(dir, 'dist/en/travel-stories/artikel-uji-dashboard/index.html'), 'utf8');
+  assert.match(story, /Artikel uji dashboard \(contoh\)/);
+  assert.match(story, /<h2[^>]*>Bagian satu<\/h2>/);
+  assert.match(fs.readFileSync(path.join(dir, 'dist/en/destinations/lombok/index.html'), 'utf8'), /Baris tambahan dari dashboard/);
+});

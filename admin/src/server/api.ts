@@ -2,7 +2,10 @@ import { Hono } from 'hono';
 import { requireUser, type User } from './auth.ts';
 import { ConflictError, type FileChange, type RepoStore } from './repo/types.ts';
 import { listTours, tourPath, csvPath } from './content/tours.ts';
-import { orderTour, parseYaml, stringifyYaml } from './content/yaml.ts';
+import { destPath, listDestinations, listStories, parseStory, serializeStory, storyPath } from './content/stories.ts';
+import { validateDestination } from '../shared/destination.ts';
+import { validateStory } from '../shared/story.ts';
+import { orderDestination, orderTour, parseYaml, stringifyYaml } from './content/yaml.ts';
 import { cleanTour, validateTour } from '../shared/tour.ts';
 import { checkContent, type Overlay } from './content/validate.ts';
 
@@ -10,7 +13,9 @@ type Env = { Variables: { user: User } };
 
 export type PublishItem =
   | { kind: 'tour'; slug: string; data: Record<string, unknown> | null; baseSha: string | null }
-  | { kind: 'csv'; slug: string; text: string | null; baseSha: string | null };
+  | { kind: 'csv'; slug: string; text: string | null; baseSha: string | null }
+  | { kind: 'destination'; slug: string; data: Record<string, unknown> | null; baseSha: string | null }
+  | { kind: 'story'; locale: 'en' | 'id'; slug: string; fm: Record<string, unknown> | null; body: string; baseSha: string | null };
 
 export function buildApi(repo: RepoStore) {
   const api = new Hono<Env>();
@@ -45,6 +50,30 @@ export function buildApi(repo: RepoStore) {
     return c.json({ slug, data: parseYaml(f.content), sha: f.sha, csv: csv ? { text: csv.content, sha: csv.sha } : null });
   });
 
+  api.get('/destinations', async (c) => {
+    const tours = await listTours(repo);
+    const count = new Map<string, number>();
+    for (const t of tours) count.set(t.destination, (count.get(t.destination) ?? 0) + 1);
+    return c.json({ destinations: await listDestinations(repo, count) });
+  });
+
+  api.get('/destinations/:slug', async (c) => {
+    const slug = c.req.param('slug');
+    const f = await repo.read(destPath(slug));
+    if (!f) return c.json({ error: 'Destinasi tidak ditemukan.' }, 404);
+    return c.json({ slug, data: parseYaml(f.content), sha: f.sha });
+  });
+
+  api.get('/stories', async (c) => c.json({ stories: await listStories(repo) }));
+
+  api.get('/stories/:locale/:slug', async (c) => {
+    const { locale, slug } = c.req.param();
+    if (!/^(en|id)$/.test(locale) || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) return c.json({ error: 'Alamat tidak valid.' }, 400);
+    const f = await repo.read(storyPath(locale, slug));
+    if (!f) return c.json({ error: 'Artikel tidak ditemukan.' }, 404);
+    return c.json({ locale, slug, ...parseStory(f.content), sha: f.sha });
+  });
+
   api.post('/publish', async (c) => {
     const user = c.get('user');
     const body = (await c.req.json().catch(() => null)) as { items?: PublishItem[]; note?: string } | null;
@@ -75,6 +104,38 @@ export function buildApi(repo: RepoStore) {
         changes.push({ path: p, content: text, baseSha: it.baseSha });
         overlay.set(p, text);
         labels.push(`${it.baseSha ? 'update' : 'tambah'} paket ${it.slug}`);
+      } else if (it.kind === 'destination') {
+        const p = destPath(it.slug);
+        if (it.data === null) {
+          changes.push({ path: p, content: null, baseSha: it.baseSha });
+          overlay.set(p, null);
+          labels.push(`hapus destinasi ${it.slug}`);
+          continue;
+        }
+        const cleaned = cleanTour({ ...it.data, slug: it.slug });
+        const v = validateDestination(cleaned);
+        if (!v.ok) { issues.push(...v.issues.map((i) => ({ file: p, ...i }))); continue; }
+        const text = stringifyYaml(orderDestination(cleaned));
+        changes.push({ path: p, content: text, baseSha: it.baseSha });
+        overlay.set(p, text);
+        labels.push(`${it.baseSha ? 'update' : 'tambah'} destinasi ${it.slug}`);
+      } else if (it.kind === 'story') {
+        if (it.locale !== 'en' && it.locale !== 'id') return c.json({ error: 'Bahasa artikel tidak valid.' }, 400);
+        const p = storyPath(it.locale, it.slug);
+        if (it.fm === null) {
+          changes.push({ path: p, content: null, baseSha: it.baseSha });
+          overlay.set(p, null);
+          labels.push(`hapus cerita ${it.locale}/${it.slug}`);
+          continue;
+        }
+        if (typeof it.body !== 'string' || it.body.length > 200_000) return c.json({ error: 'Isi artikel tidak valid.' }, 400);
+        const fm = cleanTour(it.fm);
+        const v = validateStory(fm, it.body);
+        if (!v.ok) { issues.push(...v.issues.map((i) => ({ file: p, ...i }))); continue; }
+        const text = serializeStory(fm, it.body);
+        changes.push({ path: p, content: text, baseSha: it.baseSha });
+        overlay.set(p, text);
+        labels.push(`${it.baseSha ? 'update' : 'tambah'} cerita ${it.locale}/${it.slug}`);
       } else if (it.kind === 'csv') {
         if (it.text !== null && (typeof it.text !== 'string' || it.text.length > 50_000)) return c.json({ error: 'Isi tabel harga tidak valid.' }, 400);
         const p = csvPath(it.slug);
@@ -111,6 +172,8 @@ export function summarize(labels: string[]): string {
     const verb = parts[0][0] === parts[1][0] ? parts[0][0] : 'update';
     return `${verb} ${parts[0][1]} + ${parts[1][1]} ${parts[0][2]}`;
   }
+  // sedikit perubahan: sebut satuannya satu per satu ("tambah cerita en/x, update destinasi lombok")
+  if (labels.length <= 3) return labels.join(', ');
   const kinds = new Map<string, number>();
   for (const l of labels) kinds.set(l.split(' ')[0] + ' ' + l.split(' ')[1], (kinds.get(l.split(' ')[0] + ' ' + l.split(' ')[1]) ?? 0) + 1);
   return [...kinds].map(([k, n]) => `${k} ×${n}`).join(', ');

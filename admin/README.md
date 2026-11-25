@@ -2,7 +2,7 @@
 
 Dashboard konten untuk situs Intravest. Aplikasi terpisah dari situs publik: membaca dan menulis file konten di repo lewat GitHub API, dalam **satu commit per "Publikasikan"**.
 
-Status: **Tahap A** (login, daftar dan editor paket, publish, konflik) dan **Tahap B** (editor harga) selesai. Berikutnya: C destinasi + story, D gambar + pengaturan, E riwayat/undo.
+Status: **Tahap A** (login, daftar dan editor paket, publish, konflik) **Tahap B** (editor harga), dan **Tahap C** (destinasi + cerita) selesai. Berikutnya: D gambar + pengaturan, E riwayat/undo.
 
 ## Cara kerja singkat
 - Perubahan disimpan sementara **di browser** (draf). Tidak ada commit sampai tombol **Publikasikan**.
@@ -16,6 +16,12 @@ Status: **Tahap A** (login, daftar dan editor paket, publish, konflik) dan **Tah
 - Pengaturan: berlaku sampai, hotel + tier "Mulai dari" (dengan pratinjau harga yang tampil), tambahan musim ramai per hotel, maksimal 10 hotel.
 - Satu Publikasikan menulis `tours/<slug>.yml` dan `pricing/<slug>.csv` dalam satu commit. Sel kosong atau tidak valid menahan publish.
 - Aturan validasi dicek ulang di server memakai `scripts/check-content.mjs` dan `src/pricing-core.mjs` asli situs.
+
+## Destinasi dan Cerita Perjalanan
+- **Destinasi**: daftar dengan pencarian dan filter (perlu dicek, belum diterjemah, ada perubahan). Editor bertab Umum | English | Indonesia. "Something to See/Do/Buy" masing-masing satu kotak teks, satu baris per item.
+- **Cerita**: satu artikel = satu bahasa (`stories/en` atau `stories/id`). Tab Tulisan (judul, deskripsi, editor markdown dengan toolbar dan pratinjau) dan Pengaturan (tanggal, kategori, tag satu baris dipisah koma, foto + alt text, posting Threads). Alamat dibuat otomatis dari judul.
+- Hapus: tombol Hapus hanya menandai; berkas baru terhapus saat Publikasikan. Menghapus destinasi yang masih dipakai paket ditolak oleh pemeriksaan konten.
+- Pratinjau markdown di dashboard hanya gambaran sederhana (aman, semua HTML di-escape); tampilan akhir mengikuti situs.
 
 ## Login
 Email + password, lalu kode OTP 6 digit lewat email (Resend). Opsi "percayai perangkat 30 hari" melewati OTP, password tetap diminta. Password di-hash scrypt, sesi cookie `HttpOnly` + `SameSite=Strict`, batas percobaan per IP dan email, akun terkunci 15 menit setelah 5 kali salah. Maksimal 3 admin (`MAX_ADMINS`).
@@ -58,7 +64,7 @@ Password ditanya di terminal (tidak tampil). Minimal 10 karakter, ada huruf dan 
 cd admin && npm install
 LOCAL_REPO=/path/ke/clone/intravest npm run dev   # mode lokal: tanpa GitHub, commit ke clone itu
 npm run cli -- add-admin saya@contoh.com "Saya"
-npm test            # 34 tes: auth, konflik, publish (git lokal + GitHub tiruan), round-trip YAML 3 paket asli
+npm test            # 56 tes: auth, konflik, publish (git lokal + GitHub tiruan), round-trip YAML 3 paket asli
 npm run typecheck
 npm run test:build  # opsional: publish tiruan lalu `npm run build` situs asli (butuh `npm ci` di root)
 ```

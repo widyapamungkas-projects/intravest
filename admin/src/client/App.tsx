@@ -4,6 +4,10 @@ import { api } from './api';
 import { Login } from './pages/Login';
 import { Tours } from './pages/Tours';
 import { TourEditor } from './pages/TourEditor';
+import { Destinations } from './pages/Destinations';
+import { DestinationEditor } from './pages/DestinationEditor';
+import { Stories } from './pages/Stories';
+import { StoryEditor } from './pages/StoryEditor';
 import { PublishDialog } from './pages/PublishDialog';
 import { useDrafts } from './drafts';
 import { Toasts, type ToastMsg } from './ui';
@@ -18,8 +22,8 @@ export const useApp = () => useContext(AppCtx);
 
 const NAV = [
   { href: '/paket', label: 'Paket Wisata', icon: '🧳', on: true },
-  { href: '#', label: 'Destinasi', icon: '📍', on: false },
-  { href: '#', label: 'Cerita Perjalanan', icon: '✍️', on: false },
+  { href: '/destinasi', label: 'Destinasi', icon: '📍', on: true },
+  { href: '/cerita', label: 'Cerita Perjalanan', icon: '✍️', on: true },
   { href: '#', label: 'Beranda & Tentang', icon: '🏠', on: false },
   { href: '#', label: 'Pengaturan Situs', icon: '⚙️', on: false },
 ];
@@ -85,6 +89,12 @@ function Shell({ user, onLogout }: { user: User; onLogout: () => void }) {
               <Route path="/paket/baru"><TourEditor slug={null} /></Route>
               <Route path="/paket/:slug">{(p) => <TourEditor slug={p.slug} />}</Route>
               <Route path="/paket"><Tours /></Route>
+              <Route path="/destinasi/baru"><DestinationEditor slug={null} /></Route>
+              <Route path="/destinasi/:slug">{(p) => <DestinationEditor slug={p.slug} />}</Route>
+              <Route path="/destinasi"><Destinations /></Route>
+              <Route path="/cerita/baru"><StoryEditor ref={null} /></Route>
+              <Route path="/cerita/:locale/:slug">{(p) => <StoryEditor ref={{ locale: p.locale, slug: p.slug }} />}</Route>
+              <Route path="/cerita"><Stories /></Route>
               <Route><Tours /></Route>
             </Switch>
           </div>
