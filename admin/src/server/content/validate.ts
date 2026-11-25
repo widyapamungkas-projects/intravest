@@ -46,7 +46,7 @@ export async function checkContent(repo: RepoStore, files: TreeEntry[], overlay:
     }));
     for (const [p, v] of overlay) if (v !== null && /^src\/assets\/images\//.test(p)) put(p, '');
     fs.mkdirSync(path.join(tmp, 'src/assets/images'), { recursive: true });
-    fs.symlinkSync(path.resolve(import.meta.dirname, '../../../node_modules'), path.join(tmp, 'node_modules'), 'dir');
+    fs.symlinkSync(path.resolve(import.meta.dirname, '../../../node_modules'), path.join(tmp, 'node_modules'), 'junction'); // junction: tidak butuh hak admin di Windows
     if (!fs.existsSync(path.join(tmp, 'scripts/check-content.mjs'))) return { errors: [], warnings: ['scripts/check-content.mjs tidak ada di repo, pemeriksaan tambahan dilewati.'] };
     let stdout = '', stderr = '';
     try {

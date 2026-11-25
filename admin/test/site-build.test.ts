@@ -33,7 +33,7 @@ async function login(app: App) {
 
 test('publish harga dari dashboard -> npm run build situs lolos dan harga baru tampil', { skip: !process.env.RUN_SITE_BUILD, timeout: 600_000 }, async () => {
   const dir = cloneRepo();
-  fs.symlinkSync(path.join(REPO_ROOT, 'node_modules'), path.join(dir, 'node_modules'), 'dir');
+  fs.symlinkSync(path.join(REPO_ROOT, 'node_modules'), path.join(dir, 'node_modules'), 'junction');
   const repo = new LocalGitRepo(dir);
   const app = buildApp(repo); const sid = await login(app);
   const t = await (await app.request('/api/tours/bali-active', { headers: { cookie: sid } })).json() as any;
@@ -54,7 +54,7 @@ test('publish harga dari dashboard -> npm run build situs lolos dan harga baru t
 
 test('publish destinasi + artikel baru dari dashboard -> npm run build lolos dan halaman terbit', { skip: !process.env.RUN_SITE_BUILD, timeout: 600_000 }, async () => {
   const dir = cloneRepo();
-  fs.symlinkSync(path.join(REPO_ROOT, 'node_modules'), path.join(dir, 'node_modules'), 'dir');
+  fs.symlinkSync(path.join(REPO_ROOT, 'node_modules'), path.join(dir, 'node_modules'), 'junction');
   const app = buildApp(new LocalGitRepo(dir)); const sid = await login(app);
   const ds = await (await app.request('/api/destinations/lombok', { headers: { cookie: sid } })).json() as any;
   ds.data.en.see.push('Baris tambahan dari dashboard (contoh)');
