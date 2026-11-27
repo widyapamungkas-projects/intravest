@@ -8,8 +8,11 @@ import { Destinations } from './pages/Destinations';
 import { DestinationEditor } from './pages/DestinationEditor';
 import { Stories } from './pages/Stories';
 import { StoryEditor } from './pages/StoryEditor';
+import { Gallery } from './pages/Gallery';
+import { AboutPage, HomePage, SettingsPage } from './pages/SiteData';
 import { PublishDialog } from './pages/PublishDialog';
 import { useDrafts } from './drafts';
+import { hydrateImages } from './imageStore';
 import { Toasts, type ToastMsg } from './ui';
 
 type User = { email: string; name: string };
@@ -24,8 +27,10 @@ const NAV = [
   { href: '/paket', label: 'Paket Wisata', icon: '🧳', on: true },
   { href: '/destinasi', label: 'Destinasi', icon: '📍', on: true },
   { href: '/cerita', label: 'Cerita Perjalanan', icon: '✍️', on: true },
-  { href: '#', label: 'Beranda & Tentang', icon: '🏠', on: false },
-  { href: '#', label: 'Pengaturan Situs', icon: '⚙️', on: false },
+  { href: '/gambar', label: 'Gambar', icon: '🖼️', on: true },
+  { href: '/beranda', label: 'Beranda', icon: '🏠', on: true },
+  { href: '/tentang', label: 'Tentang', icon: 'ℹ️', on: true },
+  { href: '/pengaturan', label: 'Pengaturan Situs', icon: '⚙️', on: true },
 ];
 
 export function App() {
@@ -52,6 +57,7 @@ function Shell({ user, onLogout }: { user: User; onLogout: () => void }) {
   }, []);
   const reloadMeta = useCallback(() => { api<Meta>('/meta').then(setMeta).catch((e) => toast(e.message, 'bad')); }, [toast]);
   useEffect(reloadMeta, [reloadMeta]);
+  useEffect(() => { hydrateImages(drafts.filter((d) => d.kind === 'image').map((d) => d.slug)); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => setMenu(false), [loc]);
 
   return (
@@ -95,6 +101,10 @@ function Shell({ user, onLogout }: { user: User; onLogout: () => void }) {
               <Route path="/cerita/baru"><StoryEditor ref={null} /></Route>
               <Route path="/cerita/:locale/:slug">{(p) => <StoryEditor ref={{ locale: p.locale, slug: p.slug }} />}</Route>
               <Route path="/cerita"><Stories /></Route>
+              <Route path="/gambar"><Gallery /></Route>
+              <Route path="/beranda"><HomePage /></Route>
+              <Route path="/tentang"><AboutPage /></Route>
+              <Route path="/pengaturan"><SettingsPage /></Route>
               <Route><Tours /></Route>
             </Switch>
           </div>

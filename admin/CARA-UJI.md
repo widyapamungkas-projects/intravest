@@ -76,3 +76,11 @@ Lakukan setelah tingkat 1 berjalan baik.
 4. Setelah yakin, ganti `GITHUB_BRANCH=main`.
 
 Kalau ada yang aneh, catat langkahnya dan layar yang muncul, lalu kirim ke saya.
+
+## Tahap D: gambar dan pengaturan situs
+
+1. Buka **Gambar**, pilih (atau seret) foto dari HP/kamera. Foto otomatis dikecilkan (maks 2000 px) dan jadi WebP; ukuran sebelum/sesudah tampil.
+2. Buka **Beranda**, pilih foto baru di "Foto ajakan" (atau tekan "Unggah foto baru" langsung di sana), isi deskripsi foto.
+3. Buka **Pengaturan Situs**, ubah email. Coba isi WhatsApp `12`: pesan error muncul dan tombol Publikasikan nonaktif.
+4. Tekan **Publikasikan**: foto + beranda + pengaturan masuk sebagai SATU commit.
+5. Di folder repo uji: `git show --stat HEAD` lalu `npm run build`.

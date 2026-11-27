@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { api, ApiError } from '../api';
 import { Modal } from '../ui';
 import { useApp } from '../App';
-import { clearDrafts, dropDraft, saveDraft, useDrafts, draftHref, draftIsDelete, draftKey, draftNoun, draftPath } from '../drafts';
+import { clearDrafts, dropDraft, saveDraft, useDrafts, draftHref, draftIsDelete, draftKey, draftLabel, draftPath } from '../drafts';
 import { Link } from 'wouter';
+import { getImageBlob, removeImage } from '../imageStore';
+
+const toB64 = (b: Blob) => new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
 
 type Conflict = { path: string; theirSha: string | null; theirContent: string | null };
 type Issue = { file: string; path: (string | number)[]; message: string };
@@ -20,13 +23,20 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
   async function publish() {
     setBusy(true); setIssues([]); setConflicts([]);
     try {
-      const items = drafts.map((d) => {
+      const items = await Promise.all(drafts.map(async (d) => {
+        if (d.kind === 'image') {
+          const blob = await getImageBlob(d.slug);
+          if (!blob) throw new ApiError(0, `Isi foto ${d.slug} hilang dari browser ini. Buang lalu unggah ulang.`, {});
+          return { kind: 'image', name: d.slug, b64: await toB64(blob) };
+        }
+        if (d.kind === 'data') return { kind: 'data', name: d.slug, data: d.data, baseSha: d.baseSha };
         if (d.kind === 'tour' || d.kind === 'destination') return { kind: d.kind, slug: d.slug, data: d.data, baseSha: d.baseSha };
         if (d.kind === 'story') { const [locale, slug] = d.slug.split('/'); return { kind: d.kind, locale, slug, fm: d.fm, body: d.body, baseSha: d.baseSha }; }
         return { kind: d.kind, slug: d.slug, text: d.text, baseSha: d.baseSha };
-      });
+      }));
       const r = await api('/publish', { body: { items, note: note.trim() || undefined } });
       clearDrafts(drafts.map((d) => draftKey(d.kind, d.slug)));
+      drafts.filter((d) => d.kind === 'image').forEach((d) => removeImage(d.slug));
       setDone({ subject: r.subject, warnings: r.warnings ?? [], commit: r.commit });
       reloadMeta();
     } catch (e) {
@@ -40,7 +50,7 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
   const slugOf = (path: string) => path.replace(/^src\/(content|data)\//, '').replace(/\.\w+$/, '');
   function keepMine(c: Conflict) {
     const d = drafts.find((x) => draftPath(x) === c.path);
-    if (d) saveDraft({ ...d, baseSha: c.theirSha });
+    if (d && d.kind !== 'image') saveDraft({ ...d, baseSha: c.theirSha });
     setConflicts((l) => l.filter((x) => x !== c));
     toast('Perubahanmu akan menimpa versi di repo saat dipublikasikan.');
   }
@@ -70,7 +80,7 @@ export function PublishDialog({ onClose }: { onClose: () => void }) {
             {drafts.map((d) => (
               <li key={draftKey(d.kind, d.slug)} className="flex items-center gap-3 px-3 py-2.5 text-sm">
                 <span className="rounded bg-brand-soft px-1.5 py-0.5 text-xs text-brand-ink">{draftIsDelete(d) ? 'dihapus' : d.baseSha ? 'diubah' : 'baru'}</span>
-                <span className="min-w-0 flex-1 truncate">{draftNoun(d)} <b>{d.slug}</b></span>
+                <span className="min-w-0 flex-1 truncate"><b>{draftLabel(d)}</b></span>
                 <Link href={draftHref(d)} className="text-brand underline" onClick={onClose}>buka</Link>
                 <button className="text-muted underline" onClick={() => confirm(`Buang perubahan di "${d.slug}"?`) && dropDraft(d.kind, d.slug)}>buang</button>
               </li>
