@@ -5,6 +5,7 @@ import { listTours, tourPath, csvPath } from './content/tours.ts';
 import { destPath, listDestinations, listStories, parseStory, serializeStory, storyPath } from './content/stories.ts';
 import { validateDestination } from '../shared/destination.ts';
 import { validateStory } from '../shared/story.ts';
+import { DATA_NAMES, IMAGE_NAME_RE, MAX_IMAGE_BYTES, imageKind, tidyData, validateData, type DataName } from '../shared/site-data.ts';
 import { orderDestination, orderTour, parseYaml, stringifyYaml } from './content/yaml.ts';
 import { cleanTour, validateTour } from '../shared/tour.ts';
 import { checkContent, type Overlay } from './content/validate.ts';
@@ -15,6 +16,8 @@ export type PublishItem =
   | { kind: 'tour'; slug: string; data: Record<string, unknown> | null; baseSha: string | null }
   | { kind: 'csv'; slug: string; text: string | null; baseSha: string | null }
   | { kind: 'destination'; slug: string; data: Record<string, unknown> | null; baseSha: string | null }
+  | { kind: 'data'; name: DataName; data: Record<string, unknown>; baseSha: string | null }
+  | { kind: 'image'; name: string; b64: string }
   | { kind: 'story'; locale: 'en' | 'id'; slug: string; fm: Record<string, unknown> | null; body: string; baseSha: string | null };
 
 export function buildApi(repo: RepoStore) {
@@ -64,6 +67,14 @@ export function buildApi(repo: RepoStore) {
     return c.json({ slug, data: parseYaml(f.content), sha: f.sha });
   });
 
+  api.get('/data/:name', async (c) => {
+    const name = c.req.param('name') as DataName;
+    if (!DATA_NAMES.includes(name)) return c.json({ error: 'Data tidak dikenal.' }, 404);
+    const f = await repo.read(`src/data/${name}.json`);
+    if (!f) return c.json({ error: 'Berkas tidak ditemukan.' }, 404);
+    return c.json({ name, data: JSON.parse(f.content), sha: f.sha });
+  });
+
   api.get('/stories', async (c) => c.json({ stories: await listStories(repo) }));
 
   api.get('/stories/:locale/:slug', async (c) => {
@@ -88,7 +99,7 @@ export function buildApi(repo: RepoStore) {
     const labels: string[] = [];
 
     for (const it of items) {
-      if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(String((it as { slug?: string }).slug ?? ''))) return c.json({ error: 'Slug tidak valid.' }, 400);
+      if (it.kind !== 'data' && it.kind !== 'image' && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(String((it as { slug?: string }).slug ?? ''))) return c.json({ error: 'Slug tidak valid.' }, 400);
       if (it.kind === 'tour') {
         const p = tourPath(it.slug);
         if (it.data === null) {
@@ -104,6 +115,29 @@ export function buildApi(repo: RepoStore) {
         changes.push({ path: p, content: text, baseSha: it.baseSha });
         overlay.set(p, text);
         labels.push(`${it.baseSha ? 'update' : 'tambah'} paket ${it.slug}`);
+      } else if (it.kind === 'data') {
+        if (!DATA_NAMES.includes(it.name)) return c.json({ error: 'Data tidak dikenal.' }, 400);
+        const p = `src/data/${it.name}.json`;
+        const tidy = tidyData(it.name, it.data);
+        const v = validateData(it.name, tidy);
+        if (!v.ok) { issues.push(...v.issues.map((i) => ({ file: p, ...i }))); continue; }
+        const prev = await repo.read(p); // gaya akhir baris mengikuti berkas lama, supaya diff kecil
+        const text = JSON.stringify(tidy, null, 2) + (prev && !prev.content.endsWith('\n') ? '' : '\n');
+        changes.push({ path: p, content: text, baseSha: it.baseSha });
+        overlay.set(p, text);
+        labels.push(`update ${it.name === 'home' ? 'beranda' : it.name === 'about' ? 'halaman tentang' : 'pengaturan'}`);
+      } else if (it.kind === 'image') {
+        const p = `src/assets/images/${it.name}`;
+        if (typeof it.name !== 'string' || !IMAGE_NAME_RE.test(it.name)) return c.json({ error: `Nama foto "${it.name}" tidak valid.` }, 400);
+        if (typeof it.b64 !== 'string' || it.b64.length > MAX_IMAGE_BYTES * 1.4) return c.json({ error: `Foto ${it.name} terlalu besar (maksimal 4 MB setelah dikompres).` }, 413);
+        const buf = Buffer.from(it.b64, 'base64');
+        const kind = imageKind(buf);
+        const ext = it.name.split('.').pop()!.replace('jpeg', 'jpg');
+        if (!kind || kind !== ext) return c.json({ error: `Isi ${it.name} bukan berkas ${ext.toUpperCase()} yang valid.` }, 400);
+        if (buf.length > MAX_IMAGE_BYTES) return c.json({ error: `Foto ${it.name} terlalu besar (maksimal 4 MB setelah dikompres).` }, 413);
+        changes.push({ path: p, content: buf, baseSha: null });
+        overlay.set(p, '');
+        labels.push(`unggah foto ${it.name}`);
       } else if (it.kind === 'destination') {
         const p = destPath(it.slug);
         if (it.data === null) {
